@@ -80,11 +80,6 @@ export default function MyAuctionsPage() {
               <option value="finished">Finished</option>
             </select>
           </div>
-          <a
-            href="/my-empty-items"
-            className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition">
-            + Add an Auction
-          </a>
         </div>
       </div>
 
