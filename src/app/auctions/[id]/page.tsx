@@ -1,4 +1,4 @@
- 'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
@@ -16,7 +16,7 @@ function AuctionDetailContent() {
   const [auction, setAuction] = useState<any>();
   const [bidAmount, setBidAmount] = useState('');
   const [timeRemaining, setTimeRemaining] = useState('');
-  const [user, setUser] = useState<{ id ?: String, role?: string, name?: string } | null>(null);
+  const [user, setUser] = useState<{ id?: String, role?: string, name?: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [biddings, setBiddings] = useState<any[]>([]);
   const [biddingUsers, setBiddingUsers] = useState<string[]>([]);
@@ -24,7 +24,7 @@ function AuctionDetailContent() {
 
   useEffect(() => {
     if (!user?.id) return;
-    socket = io(process.env.NEXT_PUBLIC_BACKEND_URL, {query : {userId : user.id}});
+    socket = io(process.env.NEXT_PUBLIC_BACKEND_URL, { query: { userId: user.id } });
     socket.on('connect', () => {
     });
 
@@ -34,7 +34,6 @@ function AuctionDetailContent() {
       console.log("New Bidding received: ", bid);
       setBiddings((prev) => [bid, ...prev]);
     });
-    
 
     return () => {
       socket.emit("leaveAuction", auctionId);
@@ -43,7 +42,7 @@ function AuctionDetailContent() {
   }, [auctionId, user?.id]);
 
   useEffect(() => {
-    const handleOutBid = (bid : any) => {
+    const handleOutBid = (bid: any) => {
       setOutBidNoutification(`You were outbid! New bid: ${bid.amount} by ${bid.bidder.name}`);
       setTimeout(() => setOutBidNoutification(null), 5000);
     };
@@ -55,7 +54,7 @@ function AuctionDetailContent() {
   }, [socket]);
 
   useEffect(() => {
-    const handleBiddingIndicator = ({ userName, isBidding} : {userName : string, isBidding : boolean}) => {
+    const handleBiddingIndicator = ({ userName, isBidding }: { userName: string, isBidding: boolean }) => {
       setBiddingUsers(prev => {
         if (isBidding) return prev.includes(userName) ? prev : [...prev, userName];
         return prev.filter(u => u !== userName);
@@ -67,7 +66,7 @@ function AuctionDetailContent() {
     return (() => {
       socket?.off("biddingIndicator", handleBiddingIndicator);
     })
-  })
+  }, [socket])
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -128,7 +127,7 @@ function AuctionDetailContent() {
       });
       setBidAmount("");
       if (auction) {
-        setAuction({...auction, current_price : response.data.amount});
+        setAuction({ ...auction, current_price: response.data.amount });
       }
 
     } catch (err) {
@@ -149,7 +148,7 @@ function AuctionDetailContent() {
       </Link>
 
       {/* Outbid notification */}
-      {outBidNoutification && (
+       {outBidNoutification && (
         <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded shadow-lg z-50">
           {outBidNoutification}
         </div>

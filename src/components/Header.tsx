@@ -2,7 +2,8 @@
 import Link from 'next/link';
 import { FaSearch, FaBell, FaGavel, FaUser } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
-import { useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
+import NotificationBell from "@/components/Notification";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -15,7 +16,7 @@ export default function Header() {
   };
   useEffect(() => {
     checkAuth();
-    
+
     window.addEventListener("storage", checkAuth);
 
     return () => {
@@ -28,8 +29,7 @@ export default function Header() {
     localStorage.removeItem("user");
     setIsLoggedIn(false);
     router.push("/");
-  };  
-
+  };
 
   return (
     <header className="bg-white shadow-md">
@@ -63,22 +63,20 @@ export default function Header() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <button className="text-gray-600 hover:text-purple-600">
-              <FaBell className="text-xl" />
-            </button>
+            <NotificationBell />
 
             {!isLoggedIn ? (
               <>
-              <Link href="/signup" className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2">
-              <FaUser className="text-sm" />
-              <span>Sign Up</span>
-            </Link>
+                <Link href="/signup" className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2">
+                  <FaUser className="text-sm" />
+                  <span>Sign Up</span>
+                </Link>
 
-            <Link href="/login" className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2">
-              <FaUser className="text-sm" />
-              <span>Log In</span>
-            </Link>
-            </> 
+                <Link href="/login" className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2">
+                  <FaUser className="text-sm" />
+                  <span>Log In</span>
+                </Link>
+              </>
             ) : (
               <button
                 onClick={handleLogOut}
