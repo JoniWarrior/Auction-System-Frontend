@@ -43,7 +43,8 @@ export default function MyAuctionsPage() {
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
         return matchesFilter && matchesSearch;
-      })[(auctions, searchTerm, filter)]
+      }),
+    [auctions, searchTerm, filter]
   );
 
   return loading ? (
