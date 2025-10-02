@@ -1,6 +1,6 @@
 "use client";
 import Link from 'next/link';
-import { FaSearch, FaBell, FaGavel, FaUser } from 'react-icons/fa';
+import { FaSearch, FaGavel, FaUser } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 import NotificationBell from "@/components/Notification";
@@ -63,7 +63,7 @@ export default function Header() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <NotificationBell />
+            {isLoggedIn && (<NotificationBell />)}
 
             {!isLoggedIn ? (
               <>

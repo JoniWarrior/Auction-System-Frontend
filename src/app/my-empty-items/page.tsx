@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FaBoxOpen, FaPlus, FaSearch, FaFilter } from "react-icons/fa";
+import { FaBoxOpen, FaPlus, FaSearch } from "react-icons/fa";
 import API from "@/API/API";
 
 export default function MyEmptyItemsPage() {
   const [items, setItems] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("all");
+  // const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
