@@ -1,7 +1,7 @@
 'use client';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import API from '@/API/API';
+import API from '@/utils/API/API';
 
 export default function CreateAuctionPage() {
   const params = useParams();

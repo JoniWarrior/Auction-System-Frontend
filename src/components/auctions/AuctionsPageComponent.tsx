@@ -43,7 +43,6 @@ export default function AuctionsPageComponent() {
           return matchesFilter && matchesSearch;
         })
       : auctions;
-      console.log(filtered);
 
     filtered = filtered
       .sort(
@@ -53,7 +52,7 @@ export default function AuctionsPageComponent() {
       )
       .slice(indexOfFirstAuction, indexOfLastAuction);
     return filtered;
-  }, [auctions, searchTerm, indexOfFirstAuction, indexOfLastAuction]);
+  }, [auctions, searchTerm, filter, indexOfFirstAuction, indexOfLastAuction]);
 
   const totalPages = useMemo(
     () => Math.ceil(auctions.length / auctionsPerPage),

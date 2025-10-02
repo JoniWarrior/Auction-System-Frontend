@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { FaEnvelope, FaLock, FaGavel, FaArrowLeft } from 'react-icons/fa';
-import GuestAPI from '@/API/GuestAPI';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { FaEnvelope, FaLock, FaGavel, FaArrowLeft } from "react-icons/fa";
+import GuestAPI from "@/utils/API/GuestAPI";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,28 +12,32 @@ export default function LoginPage() {
 
   const router = useRouter();
 
-  const handleSubmit = async (e : React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await GuestAPI.post("/auth/login", {email, password});
+      const response = await GuestAPI.post("/auth/login", { email, password });
 
       if (response.data.user) {
-        const {user, token} = response.data;
+        const { user, token } = response.data;
         localStorage.setItem("accessToken", token);
         localStorage.setItem("user", JSON.stringify(user));
         window.dispatchEvent(new Event("storage"));
 
-        router.push("/"); 
+        router.push("/");
       }
-    } catch( err) {
-        console.error("Login Failed! ", err);
+    } catch (err) {
+      console.error("Login Failed! ", err);
     }
-  }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 space-y-8">
         <div className="flex items-center justify-between">
-          <Link href="/" className="text-purple-600 hover:text-purple-700 flex items-center">
+          <Link
+            href="/"
+            className="text-purple-600 hover:text-purple-700 flex items-center"
+          >
             <FaArrowLeft className="mr-2" /> Back to Home
           </Link>
           <div className="flex items-center space-x-2">
@@ -56,7 +60,10 @@ export default function LoginPage() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email Address
               </label>
               <div className="mt-1 relative">
@@ -75,7 +82,10 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <div className="mt-1 relative">
@@ -87,7 +97,7 @@ export default function LoginPage() {
                   className="appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value )}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <FaLock className="absolute left-3 top-3 text-gray-400" />
               </div>
@@ -102,13 +112,19 @@ export default function LoginPage() {
                 type="checkbox"
                 className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-gray-900"
+              >
                 Remember me
               </label>
             </div>
 
             <div className="text-sm">
-              <a href="#" className="font-medium text-purple-600 hover:text-purple-500">
+              <a
+                href="#"
+                className="font-medium text-purple-600 hover:text-purple-500"
+              >
                 Forgot your password?
               </a>
             </div>
@@ -125,8 +141,11 @@ export default function LoginPage() {
 
           <div className="text-center">
             <span className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link href="/signup" className="font-medium text-purple-600 hover:text-purple-500">
+              Don't have an account?{" "}
+              <Link
+                href="/signup"
+                className="font-medium text-purple-600 hover:text-purple-500"
+              >
                 Sign up
               </Link>
             </span>

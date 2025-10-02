@@ -1,49 +1,50 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { FaBoxOpen, FaPlus, FaSearch } from "react-icons/fa";
-import API from "@/API/API";
+import API from "@/utils/API/API";
 
 export default function MyEmptyItemsPage() {
   const [items, setItems] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  // const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchEmptyItems = async () => {
-      try {
-        const token = localStorage.getItem("accessToken");
-        const response = await API.get("items/my-empty-items", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setItems(response.data);
-      } catch (err) {
-        console.error("Error fetching empty items", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchEmptyItems = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await API.get("items/my-empty-items", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setItems(response.data);
+    } catch (err) {
+      console.error("Error fetching empty items", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchEmptyItems();
   }, []);
 
-  if (loading)
-    return <p className="text-center mt-20">Loading your empty items...</p>;
+  const filteredItems = useMemo(
+    () =>
+      items.filter((item) => {
+        const matchesSearch =
+          item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-  const filteredItems = items.filter((item) => {
-    const matchesSearch =
-      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchTerm.toLowerCase());
+        return matchesSearch;
+      }),
+    [items, searchTerm]
+  );
 
-    
-    return matchesSearch;
-  });
-
-  return (
+  return loading ? (
+    <p className="text-center mt-20">Loading your empty items...</p>
+  ) : (
     <div className="container mx-auto px-4 py-8">
       {/* Top section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
