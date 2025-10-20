@@ -16,8 +16,8 @@ export default function CreateAuctionPage() {
     try {
       const response = await API.post('/auctions', {
         itemId,
-        starting_price: Number(startingPrice),
-        end_time: endTime
+        startingPrice: Number(startingPrice),
+        endTime: endTime
       });
       router.push(`/auctions/${response.data.id}`);
     } catch (err) {

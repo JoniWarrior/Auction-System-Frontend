@@ -56,7 +56,8 @@ export default function Home() {
             >
               {linkText} <FaArrowRight className="ml-2" />
             </Link>
-            {user?.role === "bidder" && (
+            
+            {(
               <Link
                 href={"my-auctions-bidder"}
                 className="bg-white text-purple-700 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition duration-300 flex items-center justify-center"

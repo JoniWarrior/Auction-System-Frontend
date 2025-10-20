@@ -143,6 +143,8 @@ export default function AuctionDetailContent() {
       const user = userString ? JSON.parse(userString) : null;
       const userId = user?.id;
 
+      if (auction.item.seller.id === userId) alert ("You cannot bid in your own auction!");
+
       const response = await API.post("biddings", {
         auctionId,
         amount: Number(bidAmount),
@@ -151,7 +153,7 @@ export default function AuctionDetailContent() {
 
       setBidAmount("");
       if (auction) {
-        setAuction({ ...auction, current_price: response.data.amount });
+        setAuction({ ...auction, currentPrice: response.data.amount });
       }
     } catch (err) {
       console.error("Error placing bid:", err);
@@ -223,12 +225,12 @@ export default function AuctionDetailContent() {
               <div className="text-right">
                 <span className="text-sm text-gray-500">Starting Price</span>
                 <div className="text-xl font-semibold">
-                  ${auction?.starting_price?.toLocaleString() ?? 0}
+                  ${auction?.startingPrice?.toLocaleString() ?? 0}
                 </div>
               </div>
             </div>
 
-            {auction?.status !== "finished" && user?.role === "bidder" && (
+            {auction?.status !== "finished" && (
               <>
                 {/* Bidding Indicator */}
                 <div className="text-sm text-gray-500 mb-2">

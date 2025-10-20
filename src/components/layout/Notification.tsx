@@ -18,6 +18,7 @@ export default function NotificationBell() {
     const fetchNotifications = async () => {
       try {
         const response = await API.get(`/notifications/${user.id}`);
+        console.log("Notifications fetched: ", response.data);
         setNotifications(response.data);
         setUnreadCount(response.data.filter((n: any) => !n.isRead).length);
       } catch (err) {
@@ -82,7 +83,7 @@ export default function NotificationBell() {
             <p className="p-3 text-gray-500 text-sm">No notifications</p>
           ) : (
             notifications
-            .sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+            .sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .slice(0, 10)
             .map((n) => (
               <div
