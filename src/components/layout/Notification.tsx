@@ -55,8 +55,7 @@ export default function NotificationBell() {
     try {
       await API.patch(`/notifications/${id}/read`);
 
-
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
+      setNotifications((prev) => prev.filter((n) => n.id !== id)); // remove from the list
       setUnreadCount((prev) => Math.max(prev - 1, 0));
     } catch (err) {
       console.error("Error marking notification as read: ", err);
@@ -83,7 +82,7 @@ export default function NotificationBell() {
             <p className="p-3 text-gray-500 text-sm">No notifications</p>
           ) : (
             notifications
-            .sort((a,b) => new Date(b.created_at).getTime() - new Date(b.created_at).getTime())
+            .sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
             .slice(0, 10)
             .map((n) => (
               <div

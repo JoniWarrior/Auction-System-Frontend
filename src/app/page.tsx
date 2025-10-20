@@ -116,7 +116,7 @@ export default function Home() {
                       >
                         <FaClock className="inline mr-1" />{" "}
                         {auction.status !== "finished"
-                          ? new Date(auction.end_time).toLocaleString()
+                          ? new Date(auction.endTime).toLocaleString()
                           : "Finished"}
                       </div>
                     </div>
@@ -126,7 +126,7 @@ export default function Home() {
                       </h3>
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-2xl font-bold text-purple-700">
-                          ${auction.current_price.toLocaleString()}
+                          ${auction.currentPrice.toLocaleString()}
                         </span>
                       </div>
 

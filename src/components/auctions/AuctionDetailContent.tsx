@@ -56,10 +56,7 @@ export default function AuctionDetailContent() {
       });
     }
 
-    return () => {
-      // Do NOT disconnect socket on component unmount
-      // Socket persists across different pages
-    };
+    return () => {};
   }, []);
 
   useEffect(() => {
@@ -76,7 +73,7 @@ export default function AuctionDetailContent() {
       isBidding,
     }: {
       userName: string;
-      isBidding: boolean;
+      isBidding: boolean; 
     }) => {
       setBiddingUsers((prev) => {
         return isBidding
@@ -119,7 +116,7 @@ export default function AuctionDetailContent() {
     if (!auction) return;
     const timer = setInterval(() => {
       const now = new Date();
-      const end = new Date(auction.end_time);
+      const end = new Date(auction.endTime);
       const diff = end.getTime() - now.getTime();
 
       if (diff <= 0) {
@@ -244,10 +241,10 @@ export default function AuctionDetailContent() {
                   <div className="flex space-x-2">
                     <input
                       type="number"
-                      min={auction.current_price + 1}
+                      min={auction.currentPrice + 1}
                       step="1"
                       placeholder={`Enter $${
-                        auction.current_price + 1
+                        auction.currentPrice + 1
                       } or more`}
                       className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
                       value={bidAmount}

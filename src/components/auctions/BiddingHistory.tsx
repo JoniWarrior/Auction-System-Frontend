@@ -1,7 +1,11 @@
 import { formatDate } from "@/utils/functions";
 import { FaUser } from "react-icons/fa";
 
-export default function BiddingHistory({ biddings }: { biddings: any[] }) {
+interface BiddingHistoryProps {
+  biddings: any[];
+}
+
+export default function BiddingHistory({ biddings }: BiddingHistoryProps) {
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Bid History</h2>
@@ -26,7 +30,7 @@ export default function BiddingHistory({ biddings }: { biddings: any[] }) {
                   ${bidding.amount.toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-500">
-                  {formatDate(bidding.created_at)}
+                  {formatDate(bidding.createdAt)}
                 </div>
               </div>
             </div>

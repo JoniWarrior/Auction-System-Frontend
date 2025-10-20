@@ -154,7 +154,7 @@ export default function AuctionsPageComponent() {
                   >
                     <FaClock className="inline mr-1" />{" "}
                     {auction.status !== "finished"
-                      ? new Date(auction.end_time).toLocaleString()
+                      ? new Date(auction.endTime).toLocaleString()
                       : "Finished"}
                   </div>
                 </div>
@@ -177,7 +177,7 @@ export default function AuctionsPageComponent() {
                     <div>
                       <span className="text-sm text-gray-500">Current bid</span>
                       <span className="text-2xl font-bold text-purple-700 block">
-                        ${auction.current_price.toLocaleString()}
+                        ${auction.currentPrice.toLocaleString()}
                       </span>
                     </div>
                   </div>
@@ -191,7 +191,7 @@ export default function AuctionsPageComponent() {
                         <span className="text-purple-700 font-bold">
                           $
                           {auction?.winningBid?.amount ??
-                            auction.starting_price}
+                            auction.startingPrice}
                         </span>
                       </p>
                     </div>

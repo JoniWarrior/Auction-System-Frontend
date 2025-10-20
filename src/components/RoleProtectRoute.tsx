@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface RolesProtectProps {
-  children: React.ReactNode;
+  children: React.ReactNode; // type of children, same as html that returns a react component
   allowedRoles: string[];
 }
 
