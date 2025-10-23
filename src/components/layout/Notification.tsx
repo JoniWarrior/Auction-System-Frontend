@@ -12,15 +12,24 @@ export default function NotificationBell() {
   const notification = Number(localStorage.getItem("notification")) | 0;
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    let user = null;
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser && storedUser !== "undefined" && storedUser !== "null") {
+        user = JSON.parse(storedUser);
+      }
+    } catch (error) {
+      console.error("Invalid user data in localStorage:", error);
+    }
+
     if (!user?.id) return;
 
     const fetchNotifications = async () => {
       try {
         const response = await API.get(`/notifications/${user.id}`);
-        console.log("Notifications fetched: ", response.data);
-        setNotifications(response.data);
-        setUnreadCount(response.data.filter((n: any) => !n.isRead).length);
+        console.log("Notifications fetched: ", response.data.data);
+        setNotifications(response.data.data);
+        setUnreadCount(response.data.data.filter((n: any) => !n.isRead).length);
       } catch (err) {
         console.error("Error fetching notifications: ", err);
       }
@@ -34,7 +43,6 @@ export default function NotificationBell() {
     socket.on("connect", () => {
       console.log("Connected to socket as user: ", user.id);
     });
-
 
     socket.on("outBid", (notification: any) => {
       console.log("Notification received: ", notification);
@@ -50,7 +58,6 @@ export default function NotificationBell() {
       socket.disconnect();
     };
   }, [notification]);
-
 
   const markAsRead = async (id: string) => {
     try {
@@ -83,24 +90,29 @@ export default function NotificationBell() {
             <p className="p-3 text-gray-500 text-sm">No notifications</p>
           ) : (
             notifications
-            .sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-            .slice(0, 10)
-            .map((n) => (
-              <div
-                key={n.id}
-                className="p-3 border-b flex justify-between items-center bg-white"
-              >
-                <span className="text-sm text-gray-800">
-                  {n.message || `You were outbid with bid $${n.bidding?.amount}`}
-                </span>
-                <button
-                  onClick={() => markAsRead(n.id)}
-                  className="text-xs text-purple-600 hover:underline ml-2"
+              .sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
+              )
+              .slice(0, 10)
+              .map((n) => (
+                <div
+                  key={n.id}
+                  className="p-3 border-b flex justify-between items-center bg-white"
                 >
-                  Mark read
-                </button>
-              </div>
-            ))
+                  <span className="text-sm text-gray-800">
+                    {n.message ||
+                      `You were outbid with bid $${n.bidding?.amount}`}
+                  </span>
+                  <button
+                    onClick={() => markAsRead(n.id)}
+                    className="text-xs text-purple-600 hover:underline ml-2"
+                  >
+                    Mark read
+                  </button>
+                </div>
+              ))
           )}
         </div>
       )}

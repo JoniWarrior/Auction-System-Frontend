@@ -17,7 +17,7 @@ export default function AuctionDetailContent() {
   const [timeRemaining, setTimeRemaining] = useState("");
   const [user, setUser] = useState<{
     id?: string;
-    role?: string;
+    // role?: string;
     name?: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -97,9 +97,9 @@ export default function AuctionDetailContent() {
   const fetchAuction = async () => {
     try {
       const response = await API.get(`/auctions/${auctionId}`);
-      setAuction(response.data);
+      setAuction(response.data.data);
       setBiddings(
-        response.data.biddings.sort((a: any, b: any) => b?.amount - a?.amount)
+        response.data.data.biddings.sort((a: any, b: any) => b?.amount - a?.amount)
       );
     } catch (err) {
       console.error("Error fetching the auction,", err);
@@ -153,7 +153,7 @@ export default function AuctionDetailContent() {
 
       setBidAmount("");
       if (auction) {
-        setAuction({ ...auction, currentPrice: response.data.amount });
+        setAuction({ ...auction, currentPrice: response.data.data.amount });
       }
     } catch (err) {
       console.error("Error placing bid:", err);

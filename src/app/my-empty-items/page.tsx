@@ -18,7 +18,7 @@ export default function MyEmptyItemsPage() {
           Authorization: `Bearer ${token}`,
         },
       });
-      setItems(response.data);
+      setItems(response.data.data);
     } catch (err) {
       console.error("Error fetching empty items", err);
     } finally {

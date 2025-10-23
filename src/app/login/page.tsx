@@ -16,9 +16,8 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const response = await GuestAPI.post("/auth/login", { email, password });
-
-      if (response.data.user) {
-        const { user, token } = response.data;
+      const { user, token } = response.data.data;
+      if (user) {
         localStorage.setItem("accessToken", token);
         localStorage.setItem("user", JSON.stringify(user));
         window.dispatchEvent(new Event("storage"));

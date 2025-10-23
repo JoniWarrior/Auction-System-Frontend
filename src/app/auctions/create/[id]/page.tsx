@@ -19,7 +19,7 @@ export default function CreateAuctionPage() {
         startingPrice: Number(startingPrice),
         endTime: endTime
       });
-      router.push(`/auctions/${response.data.id}`);
+      router.push(`/auctions/${response.data.data.id}`);
     } catch (err) {
       console.error('Error creating auction', err);
     }

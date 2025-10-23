@@ -10,7 +10,7 @@ export default function MyAuctionsPage() {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<{ role?: string } | null>(null);
+  const [user, setUser] = useState(null);
 
   const handleCloseAuction = async (auctionId: string) => {
     const confirmed = window.confirm("Are you sure to close the auction?");
@@ -30,7 +30,7 @@ export default function MyAuctionsPage() {
 
       setAuctions((prev) =>
         prev.map((auction) =>
-          auction.id === auctionId ? { ...auction, ...response.data } : auction
+          auction.id === auctionId ? { ...auction, ...response.data.data } : auction
         )
       );
     } catch (err) {
@@ -49,7 +49,7 @@ export default function MyAuctionsPage() {
   const fetchAuctions = async () => {
     try {
       const response = await API.get("/auctions/my-auctions-as-seller");
-      setAuctions(response.data);
+      setAuctions(response.data.data);
     } catch (err) {
       console.error("Error fetching the data ", err);
     } finally {
@@ -189,7 +189,8 @@ export default function MyAuctionsPage() {
                   href={`/auctions/${auction.id}`}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all flex items-center justify-center"
                 >
-                  {auction.status === "finished" || user?.role === "seller"
+                  {/* {auction.status === "finished" || user?.role === "seller" */}
+                  {auction.status === "finished"
                     ? "View Results"
                     : "Place Bid"}
                 </Link>

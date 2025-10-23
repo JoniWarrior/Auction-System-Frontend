@@ -18,7 +18,7 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState<"bidder" | "seller">("bidder");
+  // const [role, setRole] = useState<"bidder" | "seller">("bidder");
 
   const router = useRouter();
 
@@ -36,10 +36,10 @@ export default function SignUpPage() {
         email,
         password,
         confirmPassword,
-        role,
+        // role,
       });
-      if (response.data.user) {
-        const { user, token } = response.data;
+      if (response.data.data.user) {
+        const { user, token } = response.data.data;
         localStorage.setItem("accessToken", token);
         localStorage.setItem("user", JSON.stringify(user));
         window.dispatchEvent(new Event("storage"));
@@ -168,7 +168,9 @@ export default function SignUpPage() {
               </div>
             </div>
 
-            <div>
+            
+            {/* Set Role Div:
+             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 I want to join as a:
               </label>
@@ -198,7 +200,7 @@ export default function SignUpPage() {
                   Seller
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div>

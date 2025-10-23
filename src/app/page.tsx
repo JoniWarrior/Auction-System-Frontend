@@ -16,14 +16,14 @@ export default function Home() {
     }
   }, []);
 
-  const linkHref =
-    user?.role === "seller" ? "/my-auctions-seller" : "/auctions";
-  const linkText = user?.role === "seller" ? "My Auctions" : "Explore Auctions";
+  const linkHref = "/my-auctions-seller";
+  const linkText = "My Auctions";
 
   const fetchAuctions = async () => {
     try {
       const response = await API.get("/auctions");
-      setFeaturedAuctions(response?.data || []);
+      console.log("Auctions fetched: ", response.data.data);
+      setFeaturedAuctions(response?.data.data || []);
     } catch (err) {
       console.error("Error fetching the items from the backend,", err);
     } finally {
@@ -56,15 +56,15 @@ export default function Home() {
             >
               {linkText} <FaArrowRight className="ml-2" />
             </Link>
-            
-            {(
+
+            {
               <Link
                 href={"my-auctions-bidder"}
                 className="bg-white text-purple-700 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition duration-300 flex items-center justify-center"
               >
                 {"My Biddings"} <FaArrowRight className="ml-2" />
               </Link>
-            )}
+            }
             <Link
               href="/sell"
               className="bg-transparent border-2 border-white text-white font-semibold py-3 px-8 rounded-lg hover:bg-white hover:text-purple-700 transition duration-300"
@@ -131,21 +131,12 @@ export default function Home() {
                         </span>
                       </div>
 
-                      {user?.role === "bidder" ? (
-                        <Link
-                          href={`/auctions/${auction.id}`}
-                          className="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all"
-                        >
-                          Place Bid
-                        </Link>
-                      ) : user?.role === "seller" ? (
-                        <Link
-                          href={`/auctions/${auction.id}`}
-                          className="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all"
-                        >
-                          View Results
-                        </Link>
-                      ) : null}
+                      <Link
+                        href={`/auctions/${auction.id}`}
+                        className="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all"
+                      >
+                        Place Bid
+                      </Link>
                     </div>
                   </div>
                 ))}

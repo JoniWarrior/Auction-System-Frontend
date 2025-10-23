@@ -48,8 +48,8 @@ export default function SellPageContent() {
       setImageURL("");
     } catch (err: any) {
       if (err.response?.data) {
-        console.error("Server error response:", err.response.data);
-        alert(`Error: ${JSON.stringify(err.response.data)}`);
+        console.error("Server error response:", err.response.data.data);
+        alert(`Error: ${JSON.stringify(err.response.data.data)}`);
       } else {
         console.error("Unexpected error:", err);
       }
