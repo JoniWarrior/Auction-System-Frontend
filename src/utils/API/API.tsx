@@ -8,7 +8,6 @@ const API = Axios.create({
     Accept: "application/json",
   },
 });
-
 API.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem("accessToken");

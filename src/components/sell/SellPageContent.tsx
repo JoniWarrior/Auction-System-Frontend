@@ -2,6 +2,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { FaArrowLeft, FaTag, FaAlignLeft, FaUpload } from "react-icons/fa";
 import API from "@/utils/API/API";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export default function SellPageContent() {
   const [title, setTitle] = useState("");
@@ -9,6 +11,7 @@ export default function SellPageContent() {
   const [image, setImage] = useState<File | null>(null);
   const [imageURL, setImageURL] = useState("");
   const [loading, setLoading] = useState(false);
+  const seller = useSelector((state: RootState) => state.auth.user);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -23,8 +26,8 @@ export default function SellPageContent() {
     setLoading(true);
 
     try {
-      const sellerString = localStorage.getItem("user");
-      const seller = sellerString ? JSON.parse(sellerString) : null;
+      // const sellerString = localStorage.getItem("user");
+      // const seller = sellerString ? JSON.parse(sellerString) : null;
       if (!seller) throw new Error("User not logged in!");
 
       const data = new FormData();
