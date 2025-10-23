@@ -5,11 +5,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FaEnvelope, FaLock, FaGavel, FaArrowLeft } from "react-icons/fa";
 import GuestAPI from "@/utils/API/GuestAPI";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { loginSucces } from "@/store/authSlice";
 
 export default function LoginPage() {
+  const dispatch = useDispatch<AppDispatch>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -17,11 +20,10 @@ export default function LoginPage() {
     try {
       const response = await GuestAPI.post("/auth/login", { email, password });
       const { user, token } = response.data.data;
-      if (user) {
-        localStorage.setItem("accessToken", token);
-        localStorage.setItem("user", JSON.stringify(user));
-        window.dispatchEvent(new Event("storage"));
 
+      if (user) {
+        dispatch(loginSucces({user, accessToken : token}))
+        window.dispatchEvent(new Event("storage"));
         router.push("/");
       }
     } catch (err) {

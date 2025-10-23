@@ -7,13 +7,16 @@ import {
   FaLock,
   FaEnvelope,
   FaGavel,
-  FaStore,
   FaArrowLeft,
 } from "react-icons/fa";
 import GuestAPI from "@/utils/API/GuestAPI";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { loginSucces } from "@/store/authSlice";
 
 export default function SignUpPage() {
+  const dispatch = useDispatch<AppDispatch>();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,8 +43,7 @@ export default function SignUpPage() {
       });
       if (response.data.data.user) {
         const { user, token } = response.data.data;
-        localStorage.setItem("accessToken", token);
-        localStorage.setItem("user", JSON.stringify(user));
+        dispatch(loginSucces({user, accessToken : token}))
         window.dispatchEvent(new Event("storage"));
 
         router.push("/");

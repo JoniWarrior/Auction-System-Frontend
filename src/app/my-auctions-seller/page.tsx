@@ -4,24 +4,27 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { FaClock, FaSearch, FaFilter } from "react-icons/fa";
 import API from "@/utils/API/API";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export default function MyAuctionsPage() {
   const [auctions, setAuctions] = useState<any[]>([]);
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const token = useSelector((state: RootState) => state.auth.accessToken);
+  // if (!token) {
+  //   alert("You need to be logged in to close an auction");
+  // }
+  console.log("User: ", user);
 
   const handleCloseAuction = async (auctionId: string) => {
     const confirmed = window.confirm("Are you sure to close the auction?");
     if (!confirmed) return;
 
     try {
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
-        alert("You need to be logged in to close an auction");
-      }
-
       const response = await API.post(`/auctions/${auctionId}/close`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -30,7 +33,9 @@ export default function MyAuctionsPage() {
 
       setAuctions((prev) =>
         prev.map((auction) =>
-          auction.id === auctionId ? { ...auction, ...response.data.data } : auction
+          auction.id === auctionId
+            ? { ...auction, ...response.data.data }
+            : auction
         )
       );
     } catch (err) {
@@ -39,12 +44,12 @@ export default function MyAuctionsPage() {
     }
   };
 
-  useEffect(() => {
-    const userStored = localStorage.getItem("user");
-    if (userStored) {
-      setUser(JSON.parse(userStored));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const userStored = localStorage.getItem("user");
+  //   if (userStored) {
+  //     setUser(JSON.parse(userStored));
+  //   }
+  // }, []);
 
   const fetchAuctions = async () => {
     try {
@@ -190,9 +195,7 @@ export default function MyAuctionsPage() {
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all flex items-center justify-center"
                 >
                   {/* {auction.status === "finished" || user?.role === "seller" */}
-                  {auction.status === "finished"
-                    ? "View Results"
-                    : "Place Bid"}
+                  {auction.status === "finished" ? "View Results" : "Place Bid"}
                 </Link>
                 {auction.status !== "finished" && (
                   <button

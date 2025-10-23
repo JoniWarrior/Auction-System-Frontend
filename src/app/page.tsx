@@ -3,18 +3,22 @@ import Link from "next/link";
 import { FaClock, FaGavel, FaTag, FaStar, FaArrowRight } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import API from "@/utils/API/API";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export default function Home() {
   const [featuredAuctions, setFeaturedAuctions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<{ role?: string } | null>(null);
+  // const [user, setUser] = useState<{ role?: string } | null>(null);
+  const user = useSelector((state : RootState) => state.auth.user);
+  console.log("User: ", user);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("user");
+  //   if (storedUser) {
+  //     setUser(JSON.parse(storedUser));
+  //   }
+  // }, []);
 
   const linkHref = "/my-auctions-seller";
   const linkText = "My Auctions";
@@ -27,7 +31,7 @@ export default function Home() {
     } catch (err) {
       console.error("Error fetching the items from the backend,", err);
     } finally {
-      setLoading(false);
+      setLoading(false);  
     }
   };
 
