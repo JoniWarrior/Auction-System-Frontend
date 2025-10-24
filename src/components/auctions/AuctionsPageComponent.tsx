@@ -5,6 +5,8 @@ import Link from "next/link";
 import { FaClock, FaSearch, FaFilter } from "react-icons/fa";
 import API from "@/utils/API/API";
 import { useSearchParams } from "next/navigation";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export default function AuctionsPageComponent() {
   const searchParams = useSearchParams();
@@ -12,7 +14,8 @@ export default function AuctionsPageComponent() {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
+  const user = useSelector((state: RootState) => state.auth.user);
   const [currentPage, setCurrentPage] = useState(1);
 
   console.log(auctions.length);
@@ -64,12 +67,12 @@ export default function AuctionsPageComponent() {
     setFilter(status);
   }, [searchParams]);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("user");
+  //   if (storedUser) {
+  //     setUser(JSON.parse(storedUser));
+  //   }
+  // }, []);
 
   const fetchAuctions = async () => {
     try {

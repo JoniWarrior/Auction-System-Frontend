@@ -5,6 +5,8 @@ import { FaClock, FaArrowLeft } from "react-icons/fa";
 import API from "@/utils/API/API";
 import { io } from "socket.io-client";
 import BiddingHistory from "./BiddingHistory";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 let socket: any;
 let socketInitialized = false;
@@ -15,28 +17,29 @@ export default function AuctionDetailContent() {
   const [auction, setAuction] = useState<any>();
   const [bidAmount, setBidAmount] = useState("");
   const [timeRemaining, setTimeRemaining] = useState("");
-  const [user, setUser] = useState<{
-    id?: string;
-    // role?: string;
-    name?: string;
-  } | null>(null);
+  // const [user, setUser] = useState<{
+  //   id?: string;
+  //   name?: string;
+  // } | null>(null);
   const [loading, setLoading] = useState(true);
   const [biddings, setBiddings] = useState<any[]>([]);
   const [biddingUsers, setBiddingUsers] = useState<string[]>([]);
   const [outBidNotification, setOutBidNotification] = useState<string | null>(
     null
   );
+  const user = useSelector((state: RootState) => state.auth.user);
+  
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (!storedUser) return;
+    // const storedUser = localStorage.getItem("user");
+    // if (!storedUser) return;
 
-    const userData = JSON.parse(storedUser);
-    setUser(userData);
+    // const userData = JSON.parse(storedUser);
+    // setUser(userData);
 
     if (!socketInitialized) {
       socket = io(process.env.NEXT_PUBLIC_BACKEND_URL, {
-        query: { userId: userData.id },
+        query: { userId: user?.id },
       });
       socketInitialized = true;
 
@@ -139,8 +142,6 @@ export default function AuctionDetailContent() {
   const handlePlaceBid = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const userString = localStorage.getItem("user");
-      const user = userString ? JSON.parse(userString) : null;
       const userId = user?.id;
 
       if (auction.item.seller.id === userId) alert ("You cannot bid in your own auction!");

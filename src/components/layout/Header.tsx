@@ -4,14 +4,19 @@ import { FaSearch, FaGavel, FaUser } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import NotificationBell from "@/components/layout/Notification";
+import { useDispatch, useSelector } from "react-redux";
+// import { toggleTheme } from "@/store/themeSlice";
+import { RootState } from "@/store/store";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch();
+  // const theme = useSelector((state: RootState) => state.themeChange.theme);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
 
   const checkAuth = () => {
-    const user = localStorage.getItem("user");
-    const accessToken = localStorage.getItem("accessToken");
     setIsLoggedIn(!!accessToken && !!user);
   };
 
@@ -42,6 +47,11 @@ export default function Header() {
             </div>
             <span className="text-xl font-bold text-gray-800">Auction</span>
           </Link>
+
+          {/* <button onClick={() => dispatch(toggleTheme())}>
+            {" "}
+            Swith to {theme === "light" ? "dark" : "light"} mode
+          </button> */}
 
           <nav className="hidden md:flex space-x-6">
             <Link

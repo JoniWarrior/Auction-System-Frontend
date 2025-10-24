@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { FaBell } from "react-icons/fa";
 import { io, Socket } from "socket.io-client";
 import API from "@/utils/API/API";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -10,23 +12,24 @@ export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const notification = Number(localStorage.getItem("notification")) | 0;
+  const user = useSelector((state: RootState) => state.auth.user);  
 
   useEffect(() => {
-    let user = null;
-    try {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser && storedUser !== "undefined" && storedUser !== "null") {
-        user = JSON.parse(storedUser);
-      }
-    } catch (error) {
-      console.error("Invalid user data in localStorage:", error);
-    }
+    // let user = null;
+    // try {
+    //   const storedUser = localStorage.getItem("user");
+    //   if (storedUser && storedUser !== "undefined" && storedUser !== "null") {
+    //     user = JSON.parse(storedUser);
+    //   }
+    // } catch (error) {
+    //   console.error("Invalid user data in localStorage:", error);
+    // }
 
-    if (!user?.id) return;
+    // if (!user?.id) return;
 
     const fetchNotifications = async () => {
       try {
-        const response = await API.get(`/notifications/${user.id}`);
+        const response = await API.get(`/notifications/${user?.id}`);
         console.log("Notifications fetched: ", response.data.data);
         setNotifications(response.data.data);
         setUnreadCount(response.data.data.filter((n: any) => !n.isRead).length);
@@ -37,11 +40,11 @@ export default function NotificationBell() {
     fetchNotifications();
 
     const socket: Socket = io(process.env.NEXT_PUBLIC_BACKEND_URL!, {
-      query: { userId: user.id },
+      query: { userId: user?.id },
     });
 
     socket.on("connect", () => {
-      console.log("Connected to socket as user: ", user.id);
+      console.log("Connected to socket as user: ", user?.id);
     });
 
     socket.on("outBid", (notification: any) => {
