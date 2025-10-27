@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Auction Online Platform",
   description: "Bid and win unique items on our online auction platform",
-  icons : {
-    icon : "/favicon.ico"
-  }
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
@@ -32,11 +32,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="flex flex-col min-h-screen">
         <Providers>
-        <Header />
-        <main className="flex-grow">
-          {children}
-        </main>
-        <Footer />
+          <Header />
+          <main className="flex-grow">{children}</main>
+          <Footer />
         </Providers>
       </body>
     </html>

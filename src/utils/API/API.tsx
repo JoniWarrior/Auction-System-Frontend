@@ -10,9 +10,13 @@ const API = Axios.create({
 });
 API.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    const persistedState = localStorage.getItem("persist:root");
+    if (persistedState) {
+      const authState = JSON.parse(JSON.parse(persistedState).auth);
+      const accessToken = authState?.accessToken;
+      if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+      }
     }
     return config;
   },
@@ -30,8 +34,7 @@ API.interceptors.response.use(
 
       if (status === 401) {
         if (typeof window !== "undefined") {
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("user");
+          localStorage.removeItem("persist:root");
           alert("Session expired! Log in again!");
           window.location.href = "/login";
         }

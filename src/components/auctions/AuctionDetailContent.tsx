@@ -144,7 +144,7 @@ export default function AuctionDetailContent() {
     try {
       const userId = user?.id;
 
-      if (auction.item.seller.id === userId) alert ("You cannot bid in your own auction!");
+      if (auction.item.seller?.id === userId) alert ("You cannot bid in your own auction!");
 
       const response = await API.post("biddings", {
         auctionId,

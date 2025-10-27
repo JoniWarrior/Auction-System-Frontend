@@ -26,14 +26,12 @@ export default function SellPageContent() {
     setLoading(true);
 
     try {
-      // const sellerString = localStorage.getItem("user");
-      // const seller = sellerString ? JSON.parse(sellerString) : null;
       if (!seller) throw new Error("User not logged in!");
 
       const data = new FormData();
       data.append("title", title);
       data.append("description", description);
-      data.append("sellerId", seller.id);
+      data.append("sellerId", seller?.id);
 
       if (image) {
         data.append("image", image);

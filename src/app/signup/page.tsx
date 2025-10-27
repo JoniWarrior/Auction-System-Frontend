@@ -13,7 +13,7 @@ import GuestAPI from "@/utils/API/GuestAPI";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
-import { loginSucces } from "@/store/authSlice";
+import { loginSucces } from "@/store/auth/authSlice";
 
 export default function SignUpPage() {
   const dispatch = useDispatch<AppDispatch>();

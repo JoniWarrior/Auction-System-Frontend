@@ -1,39 +1,36 @@
 "use client";
 import Link from "next/link";
 import { FaSearch, FaGavel, FaUser } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import NotificationBell from "@/components/layout/Notification";
 import { useDispatch, useSelector } from "react-redux";
 // import { toggleTheme } from "@/store/themeSlice";
 import { RootState } from "@/store/store";
+import { logOut } from "@/store/auth/authSlice";
 
 export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   // const theme = useSelector((state: RootState) => state.themeChange.theme);
   const user = useSelector((state: RootState) => state.auth.user);
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+  const isLoggedIn = !!accessToken && !!user;
 
-  const checkAuth = () => {
-    setIsLoggedIn(!!accessToken && !!user);
-  };
+  // useEffect(() => {
+  //   checkAuth();
 
-  useEffect(() => {
-    checkAuth();
+  //   // window.addEventListener("storage", checkAuth);
 
-    window.addEventListener("storage", checkAuth);
-
-    return () => {
-      window.removeEventListener("storage", checkAuth);
-    };
-  }, []);
+  //   // return () => {
+  //   //   window.removeEventListener("storage", checkAuth);
+  //   // };
+  // }, []);
 
   const handleLogOut = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
+    // localStorage.removeItem("accessToken");
+    // localStorage.removeItem("user");
+    dispatch(logOut());
     router.push("/");
   };
 

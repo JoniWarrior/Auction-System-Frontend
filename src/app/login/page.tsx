@@ -7,7 +7,7 @@ import { FaEnvelope, FaLock, FaGavel, FaArrowLeft } from "react-icons/fa";
 import GuestAPI from "@/utils/API/GuestAPI";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
-import { loginSucces } from "@/store/authSlice";
+import { loginSucces } from "@/store/auth/authSlice";
 
 export default function LoginPage() {
   const dispatch = useDispatch<AppDispatch>();
