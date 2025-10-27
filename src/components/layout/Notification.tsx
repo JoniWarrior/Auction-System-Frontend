@@ -12,7 +12,7 @@ export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const notification = Number(localStorage.getItem("notification")) | 0;
-  const user = useSelector((state: RootState) => state.auth.user);  
+  const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     // let user = null;
@@ -29,7 +29,8 @@ export default function NotificationBell() {
 
     const fetchNotifications = async () => {
       try {
-        const response = await API.get(`/notifications/${user?.id}`);
+        // const response = await API.get(`/notifications/${user?.id}`);
+        const response = await API.get(`/notifications/${user?.id}/unread`);
         console.log("Notifications fetched: ", response.data.data);
         setNotifications(response.data.data);
         setUnreadCount(response.data.data.filter((n: any) => !n.isRead).length);
