@@ -14,7 +14,6 @@ export default function AuctionsPageComponent() {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-  // const [user, setUser] = useState(null);
   const user = useSelector((state: RootState) => state.auth.user);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -66,13 +65,6 @@ export default function AuctionsPageComponent() {
     const status = searchParams.get("status") || "all";
     setFilter(status);
   }, [searchParams]);
-
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem("user");
-  //   if (storedUser) {
-  //     setUser(JSON.parse(storedUser));
-  //   }
-  // }, []);
 
   const fetchAuctions = async () => {
     try {

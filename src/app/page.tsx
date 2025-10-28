@@ -9,16 +9,8 @@ import { RootState } from "@/store/store";
 export default function Home() {
   const [featuredAuctions, setFeaturedAuctions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  // const [user, setUser] = useState<{ role?: string } | null>(null);
   const user = useSelector((state : RootState) => state.auth.user);
   console.log("User: ", user);
-
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem("user");
-  //   if (storedUser) {
-  //     setUser(JSON.parse(storedUser));
-  //   }
-  // }, []);
 
   const linkHref = "/my-auctions-seller";
   const linkText = "My Auctions";

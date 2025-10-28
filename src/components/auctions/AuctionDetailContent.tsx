@@ -17,10 +17,7 @@ export default function AuctionDetailContent() {
   const [auction, setAuction] = useState<any>();
   const [bidAmount, setBidAmount] = useState("");
   const [timeRemaining, setTimeRemaining] = useState("");
-  // const [user, setUser] = useState<{
-  //   id?: string;
-  //   name?: string;
-  // } | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [biddings, setBiddings] = useState<any[]>([]);
   const [biddingUsers, setBiddingUsers] = useState<string[]>([]);
@@ -31,12 +28,6 @@ export default function AuctionDetailContent() {
   
 
   useEffect(() => {
-    // const storedUser = localStorage.getItem("user");
-    // if (!storedUser) return;
-
-    // const userData = JSON.parse(storedUser);
-    // setUser(userData);
-
     if (!socketInitialized) {
       socket = io(process.env.NEXT_PUBLIC_BACKEND_URL, {
         query: { userId: user?.id },

@@ -15,21 +15,9 @@ export default function NotificationBell() {
   const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
-    // let user = null;
-    // try {
-    //   const storedUser = localStorage.getItem("user");
-    //   if (storedUser && storedUser !== "undefined" && storedUser !== "null") {
-    //     user = JSON.parse(storedUser);
-    //   }
-    // } catch (error) {
-    //   console.error("Invalid user data in localStorage:", error);
-    // }
-
-    // if (!user?.id) return;
 
     const fetchNotifications = async () => {
       try {
-        // const response = await API.get(`/notifications/${user?.id}`);
         const response = await API.get(`/notifications/${user?.id}/unread`);
         console.log("Notifications fetched: ", response.data.data);
         setNotifications(response.data.data);

@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { FaBoxOpen, FaPlus, FaSearch } from "react-icons/fa";
 import API from "@/utils/API/API";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export default function MyEmptyItemsPage() {
   const [items, setItems] = useState<any[]>([]);
@@ -12,7 +14,7 @@ export default function MyEmptyItemsPage() {
 
   const fetchEmptyItems = async () => {
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = useSelector((state: RootState) => state.auth.accessToken);
       const response = await API.get("items/my-empty-items", {
         headers: {
           Authorization: `Bearer ${token}`,

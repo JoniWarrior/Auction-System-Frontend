@@ -1,35 +1,20 @@
 "use client";
 import Link from "next/link";
 import { FaSearch, FaGavel, FaUser } from "react-icons/fa";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import NotificationBell from "@/components/layout/Notification";
 import { useDispatch, useSelector } from "react-redux";
-// import { toggleTheme } from "@/store/themeSlice";
 import { RootState } from "@/store/store";
 import { logOut } from "@/store/auth/authSlice";
 
 export default function Header() {
   const router = useRouter();
   const dispatch = useDispatch();
-  // const theme = useSelector((state: RootState) => state.themeChange.theme);
   const user = useSelector((state: RootState) => state.auth.user);
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const isLoggedIn = !!accessToken && !!user;
 
-  // useEffect(() => {
-  //   checkAuth();
-
-  //   // window.addEventListener("storage", checkAuth);
-
-  //   // return () => {
-  //   //   window.removeEventListener("storage", checkAuth);
-  //   // };
-  // }, []);
-
   const handleLogOut = () => {
-    // localStorage.removeItem("accessToken");
-    // localStorage.removeItem("user");
     dispatch(logOut());
     router.push("/");
   };
@@ -44,11 +29,6 @@ export default function Header() {
             </div>
             <span className="text-xl font-bold text-gray-800">Auction</span>
           </Link>
-
-          {/* <button onClick={() => dispatch(toggleTheme())}>
-            {" "}
-            Swith to {theme === "light" ? "dark" : "light"} mode
-          </button> */}
 
           <nav className="hidden md:flex space-x-6">
             <Link

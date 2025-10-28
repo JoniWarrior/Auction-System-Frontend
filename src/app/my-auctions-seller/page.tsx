@@ -12,13 +12,8 @@ export default function MyAuctionsPage() {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-  // const [user, setUser] = useState(null);
-  const user = useSelector((state: RootState) => state.auth.user);
+  // const user = useSelector((state: RootState) => state.auth.user);
   const token = useSelector((state: RootState) => state.auth.accessToken);
-  // if (!token) {
-  //   alert("You need to be logged in to close an auction");
-  // }
-  console.log("User: ", user);
 
   const handleCloseAuction = async (auctionId: string) => {
     const confirmed = window.confirm("Are you sure to close the auction?");
@@ -43,13 +38,6 @@ export default function MyAuctionsPage() {
       alert("Failed to close the auction");
     }
   };
-
-  // useEffect(() => {
-  //   const userStored = localStorage.getItem("user");
-  //   if (userStored) {
-  //     setUser(JSON.parse(userStored));
-  //   }
-  // }, []);
 
   const fetchAuctions = async () => {
     try {

@@ -13,7 +13,6 @@ export default function MyAuctionsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const user = useSelector((state: RootState) => state.auth.user);
-  console.log("User: ", user);
 
   useEffect(() => {
     const fetchAuctions = async () => {
