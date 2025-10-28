@@ -1,4 +1,8 @@
 import Axios from "axios";
+import {store} from '@/store/store'
+import {logOut} from "@/store/auth/authSlice";
+
+const {getState, dispatch} = store
 
 const API = Axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
@@ -10,14 +14,11 @@ const API = Axios.create({
 });
 API.interceptors.request.use(
   (config) => {
-    const persistedState = localStorage.getItem("persist:root");
-    if (persistedState) {
-      const authState = JSON.parse(JSON.parse(persistedState).auth);
-      const accessToken = authState?.accessToken;
+      const state = getState();
+      const {accessToken} = state.auth;
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
       }
-    }
     return config;
   },
   (error) => {
@@ -34,14 +35,9 @@ API.interceptors.response.use(
 
       if (status === 401) {
         if (typeof window !== "undefined") {
-          localStorage.removeItem("persist:root");
-          alert("Session expired! Log in again!");
-          window.location.href = "/login";
+            dispatch(logOut());
+            window.location.href = "/login";
         }
-      }
-
-      if (status === 403) {
-        alert("You do not have permission to perform this action");
       }
     }
     return Promise.reject(error);
