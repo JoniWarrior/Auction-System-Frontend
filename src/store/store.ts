@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import authReducer from "./auth/authSlice";
+import notificationReducer from "./notifications/notificationSlice";
 import {
   FLUSH,
   REHYDRATE,
@@ -13,12 +14,13 @@ import {
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  notification : notificationReducer
 });
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth"],
+  whitelist: ["auth", "notification"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

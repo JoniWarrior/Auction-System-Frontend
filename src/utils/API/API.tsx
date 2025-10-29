@@ -1,49 +1,60 @@
 import Axios from "axios";
+import { store } from "@/store/store";
+import { logOut, updateAccessToken } from "@/store/auth/authSlice";
 
 const API = Axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
   headers: {
     "Content-Type": "application/json",
-    // "Access-Control-Allow-Origin": "*",
     Accept: "application/json",
   },
 });
+
 API.interceptors.request.use(
   (config) => {
-    const persistedState = localStorage.getItem("persist:root");
-    if (persistedState) {
-      const authState = JSON.parse(JSON.parse(persistedState).auth);
-      const accessToken = authState?.accessToken;
-      if (accessToken) {
-        config.headers.Authorization = `Bearer ${accessToken}`;
-      }
+    const accessToken = store.getState().auth.accessToken;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 API.interceptors.response.use(
   (res) => res,
-  (error) => {
-    console.log(error);
-    if (error.response) {
-      const status = error.response.status;
+  async (error) => {
+    const originalRequest = error.config;
 
-      if (status === 401) {
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("persist:root");
-          alert("Session expired! Log in again!");
-          window.location.href = "/login";
+    // Logjik refresh
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const { refreshToken, user } = store.getState().auth;
+        if (!refreshToken || !user?.id) {
+          store.dispatch(logOut());
+          return Promise.reject(error);
         }
-      }
 
-      if (status === 403) {
-        alert("You do not have permission to perform this action");
+        // Request the new toeke from the back
+        const response = await Axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
+          { userId: user.id, refreshToken }
+        );
+
+        const newAccessToken = response.data.data.accessToken; // could be response.data
+        store.dispatch(updateAccessToken(newAccessToken));
+
+        API.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return API(originalRequest);
+      } catch (err) {
+        store.dispatch(logOut());
+        return Promise.reject(err);
       }
     }
+
     return Promise.reject(error);
   }
 );

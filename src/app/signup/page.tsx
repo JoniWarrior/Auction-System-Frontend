@@ -40,9 +40,8 @@ export default function SignUpPage() {
         confirmPassword,
       });
       if (response.data.data.user) {
-        const { user, token } = response.data.data;
-        dispatch(loginSucces({user, accessToken : token}))
-        window.dispatchEvent(new Event("storage"));
+        const { user, accessToken, refreshToken } = response.data.data;
+        dispatch(loginSucces({user, accessToken, refreshToken}))
 
         router.push("/");
       }

@@ -19,10 +19,12 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const response = await GuestAPI.post("/auth/login", { email, password });
-      const { user, token } = response.data.data;
+      const { user, accessToken, refreshToken } = response.data.data;
+      console.log("AccesToken: ", accessToken);
+      console.log("Refresh Token: ", refreshToken);
 
       if (user) {
-        dispatch(loginSucces({user, accessToken : token}))
+        dispatch(loginSucces({user, accessToken, refreshToken}))
         window.dispatchEvent(new Event("storage"));
         router.push("/");
       }

@@ -11,7 +11,7 @@ export default function SellPageContent() {
   const [image, setImage] = useState<File | null>(null);
   const [imageURL, setImageURL] = useState("");
   const [loading, setLoading] = useState(false);
-  const seller = useSelector((state: RootState) => state.auth.user);
+  const seller = useSelector((state: RootState) => state.auth?.user);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
