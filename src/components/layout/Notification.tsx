@@ -11,11 +11,10 @@ export default function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  // const notification = Number(localStorage.getItem("notification")) | 0;
-  const notification = useSelector((state: RootState) => state.notification.notification);
   const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
+    if (!user?.id) return;
 
     const fetchNotifications = async () => {
       try {
@@ -50,7 +49,7 @@ export default function NotificationBell() {
     return () => {
       socket.disconnect();
     };
-  }, [notification]);
+  }, [user]);
 
   const markAsRead = async (id: string) => {
     try {

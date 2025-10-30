@@ -32,6 +32,8 @@ API.interceptors.response.use(
 
       try {
         const { refreshToken, user } = store.getState().auth;
+        console.log("Access Token Redux State: ", store.getState().auth.accessToken);
+        console.log("Refresh Token in Redux State , ", refreshToken);
         if (!refreshToken || !user?.id) {
           store.dispatch(logOut());
           return Promise.reject(error);
@@ -43,7 +45,8 @@ API.interceptors.response.use(
           { userId: user.id, refreshToken }
         );
 
-        const newAccessToken = response.data.data.accessToken; // could be response.data
+        const newAccessToken = response.data.data.accessToken;
+        console.log("New AccessToken after expiring: ", newAccessToken);
         store.dispatch(updateAccessToken(newAccessToken));
 
         API.defaults.headers.Authorization = `Bearer ${newAccessToken}`;

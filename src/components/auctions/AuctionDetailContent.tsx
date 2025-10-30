@@ -7,7 +7,6 @@ import { io } from "socket.io-client";
 import BiddingHistory from "./BiddingHistory";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { incrementNotificationNumber } from "@/store/notifications/notificationSlice";
 
 let socket: any;
 let socketInitialized = false;
@@ -39,13 +38,7 @@ export default function AuctionDetailContent() {
       socket.on("outBid", (notification: any) => {
         const bid = notification.bidding;
         const bidderName = bid?.bidder?.name ?? "Unknown";
-        // localStorage.setItem(
-        //   "notification",
-        //   String(Number(localStorage.getItem("notification") || 0) + 1)
-        // );
-        dispatch(incrementNotificationNumber());
         
-
         setOutBidNotification(
           `${notification.message ?? "You were outbid!"} by ${bidderName}`
         );

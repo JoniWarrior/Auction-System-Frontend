@@ -29,6 +29,8 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
+      console.log("The accessToken i nstate afer log in ", state.accessToken);
+      console.log("The refreshToken in state after log in", state.refreshToken);
     },
 
     logOut: (state) => {
