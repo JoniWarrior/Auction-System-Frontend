@@ -5,8 +5,8 @@ import { FaClock, FaArrowLeft } from "react-icons/fa";
 import API from "@/utils/API/API";
 import { io } from "socket.io-client";
 import BiddingHistory from "./BiddingHistory";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
 
 let socket: any;
 let socketInitialized = false;
@@ -25,6 +25,7 @@ export default function AuctionDetailContent() {
     null
   );
   const user = useSelector((state: RootState) => state.auth.user);
+  const dispatch = useDispatch<AppDispatch>();
   
 
   useEffect(() => {
@@ -37,11 +38,7 @@ export default function AuctionDetailContent() {
       socket.on("outBid", (notification: any) => {
         const bid = notification.bidding;
         const bidderName = bid?.bidder?.name ?? "Unknown";
-        localStorage.setItem(
-          "notification",
-          String(Number(localStorage.getItem("notification") || 0) + 1)
-        );
-
+        
         setOutBidNotification(
           `${notification.message ?? "You were outbid!"} by ${bidderName}`
         );

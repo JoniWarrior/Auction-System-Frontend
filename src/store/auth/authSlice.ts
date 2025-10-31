@@ -9,11 +9,13 @@ type User = {
 interface AuthState {
   user: User | null;
   accessToken: string | null;
+  refreshToken : string | null; 
 }
 
 const initialState: AuthState = {
   user: null,
   accessToken: null,
+  refreshToken : null
 };
 
 const authSlice = createSlice({
@@ -22,20 +24,25 @@ const authSlice = createSlice({
   reducers: {
     loginSucces: (
       state,
-      action: PayloadAction<{ user: User; accessToken: string }>
+      action: PayloadAction<{ user: User; accessToken: string, refreshToken : string }>
     ) => {
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+      console.log("The accessToken i nstate afer log in ", state.accessToken);
+      console.log("The refreshToken in state after log in", state.refreshToken);
     },
 
     logOut: (state) => {
       state.user = null;
       state.accessToken = null;
-
-  
+      state.refreshToken = null;
     },
+    updateAccessToken : (state, action : PayloadAction<string>) => {
+      state.accessToken = action.payload;
+    }
   },
 });
 
-export const { loginSucces, logOut } = authSlice.actions;
+export const { loginSucces, logOut, updateAccessToken } = authSlice.actions;
 export default authSlice.reducer;

@@ -178,15 +178,17 @@ export default function AuctionsPageComponent() {
                   </div>
 
                   <div className="flex justify-between items-center text-sm text-gray-500 mb-4"></div>
-
                   {auction.status === "finished" ? (
                     <div className="flex justify-center mt-4 mb-4">
-                      <p className="text-sm text-gray-700 border border-black rounded-lg px-4 py-2 bg-white shadow-md font-medium">
-                        Winning Bid:{" "}
+                      <p className="flex items-center gap-3 text-sm text-gray-700 border border-black rounded-lg px-4 py-2 bg-white shadow-md font-medium">
+                        🏆 <span>Winner: </span>
                         <span className="text-purple-700 font-bold">
-                          $
-                          {auction?.winningBid?.amount ??
-                            auction.startingPrice}
+                          {auction?.winningBid?.bidder?.name}
+                        </span>
+                        <span className="text-gray-400"> | </span>
+                        💰 <span> Winning Bid:</span>
+                        <span className="text-purple-700 font-bold">
+                          ${auction?.winningBid?.amount}
                         </span>
                       </p>
                     </div>
@@ -198,8 +200,7 @@ export default function AuctionsPageComponent() {
                     href={`/auctions/${auction.id}`}
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all flex items-center justify-center mt-auto"
                   >
-                    {/* {auction.status === "finished" || user?.role === "seller" */}
-                    {auction.status === "finished" 
+                    {auction.status === "finished"
                       ? "View Results"
                       : "Place Bid"}
                   </Link>
