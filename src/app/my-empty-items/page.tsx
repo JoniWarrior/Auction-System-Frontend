@@ -14,12 +14,8 @@ export default function MyEmptyItemsPage() {
 
   const fetchEmptyItems = async () => {
     try {
-      const token = useSelector((state: RootState) => state.auth.accessToken);
-      const response = await API.get("items/my-empty-items", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await API.get("items/my-empty-items");
+      console.log(response);
       setItems(response.data.data);
     } catch (err) {
       console.error("Error fetching empty items", err);
