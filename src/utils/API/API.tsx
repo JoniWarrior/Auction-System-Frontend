@@ -10,6 +10,16 @@ const API = Axios.create({
   },
 });
 
+const guestRoutes = ['/auth/login', '/auth/register'];
+
+const GUEST_API = Axios.create({
+    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+    headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    },
+})
+
 API.interceptors.request.use(
   (config) => {
     const accessToken = store.getState().auth.accessToken;
@@ -26,23 +36,19 @@ API.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Logjik refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry && !guestRoutes.includes(originalRequest.url)) {
       originalRequest._retry = true;
 
       try {
-        const { refreshToken, user } = store.getState().auth;
-        console.log("Access Token Redux State: ", store.getState().auth.accessToken);
-        console.log("Refresh Token in Redux State , ", refreshToken);
-        if (!refreshToken || !user?.id) {
+        const { refreshToken } = store.getState().auth;
+        if (!refreshToken) {
           store.dispatch(logOut());
           return Promise.reject(error);
         }
 
-        // Request the new toeke from the back
-        const response = await Axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
-          { userId: user.id, refreshToken }
+        const response = await GUEST_API.post(
+          `/auth/refresh`,
+          {  refreshToken }
         );
 
         const newAccessToken = response.data.data.accessToken;
@@ -54,6 +60,7 @@ API.interceptors.response.use(
         return API(originalRequest);
       } catch (err) {
         store.dispatch(logOut());
+        window.location.reload();
         return Promise.reject(err);
       }
     }
