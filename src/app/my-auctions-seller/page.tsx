@@ -40,7 +40,9 @@ export default function MyAuctionsPage() {
 
   const fetchAuctions = async () => {
     try {
-      const response = await API.get("/auctions/my-auctions-as-seller");
+      const response = await API.get("/auctions/my-auctions-as-seller", {
+        params : { status : filter}
+      });
       setAuctions(response.data.data);
     } catch (err) {
       console.error("Error fetching the data ", err);
@@ -51,21 +53,8 @@ export default function MyAuctionsPage() {
 
   useEffect(() => {
     fetchAuctions();
-  }, []);
+  }, [filter]);
 
-  const filteredAuctions = useMemo(
-    () =>
-      auctions.filter((auction) => {
-        const matchesFilter = filter === "all" || auction.status === filter;
-        const matchesSearch =
-          auction.item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          auction.item.description
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        return matchesFilter && matchesSearch;
-      }),
-    [auctions, searchTerm, filter]
-  );
 
   return loading ? (
     <p className="text-center mt-20">Loading All Auctions...</p>
@@ -108,7 +97,7 @@ export default function MyAuctionsPage() {
         </div>
       </div>
 
-      {filteredAuctions.length === 0 ? (
+      {auctions.length === 0 ? (
         <div className="text-center py-12">
           <h2 className="text-2xl font-semibold text-gray-600">
             No auctions found
@@ -119,7 +108,7 @@ export default function MyAuctionsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAuctions.map((auction) => (
+          {auctions.map((auction) => (
             <div
               key={auction.id}
               className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"

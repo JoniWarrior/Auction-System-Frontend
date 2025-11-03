@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FaClock, FaSearch, FaFilter } from "react-icons/fa";
+import { FaClock, FaFilter } from "react-icons/fa";
 import API from "@/utils/API/API";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -10,57 +10,35 @@ import { RootState } from "@/store/store";
 export default function MyAuctionsPage() {
   const [auctions, setAuctions] = useState<any[]>([]);
   const [filter, setFilter] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     const fetchAuctions = async () => {
+      setLoading(true);
       try {
-        const response = await API.get("/auctions/my-auctions-as-bidder");
+        const response = await API.get("/auctions/my-auctions-as-bidder", {
+          params: { status: filter },
+        });
         setAuctions(response.data.data);
       } catch (err) {
-        console.error("Error fetching the data ", err);
+        console.error("Error fetching auctions:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchAuctions();
-  }, []);
 
-  const filteredAuctions = useMemo(
-    () =>
-      auctions.filter((auction) => {
-        const matchesFilter = filter === "all" || auction.status === filter;
-        const matchesSearch =
-          auction.item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          auction.item.description
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        return matchesFilter && matchesSearch;
-      }),
-    [auctions, searchTerm, filter]
-  );
+    fetchAuctions();
+  }, [filter]);
 
   return loading ? (
-    <p className="text-center mt-20">Loading All Auctions...</p>
+    <p className="text-center mt-20">Loading Auctions...</p>
   ) : (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <h1 className="text-3xl font-bold mb-4 md:mb-0"> </h1>
+        <h1 className="text-3xl font-bold mb-4 md:mb-0">My Auctions</h1>
 
         <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search auctions..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <FaSearch className="absolute left-3 top-3 text-gray-400" />
-          </div>
-
           <div className="flex items-center space-x-2">
             <FaFilter className="text-gray-500" />
             <select
@@ -77,18 +55,18 @@ export default function MyAuctionsPage() {
         </div>
       </div>
 
-      {filteredAuctions.length === 0 ? (
+      {auctions.length === 0 ? (
         <div className="text-center py-12">
           <h2 className="text-2xl font-semibold text-gray-600">
             No auctions found
           </h2>
           <p className="text-gray-500 mt-2">
-            Try adjusting your search or filter criteria
+            Try changing the status filter
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAuctions.map((auction) => (
+          {auctions.map((auction) => (
             <div
               key={auction.id}
               className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
@@ -144,17 +122,13 @@ export default function MyAuctionsPage() {
 
                 <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
                   <span>{auction.biddings.length} bids</span>
-                  {/* <span>{auction.watchlist} watching</span> */}
                 </div>
 
                 <Link
                   href={`/auctions/${auction.id}`}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all flex items-center justify-center"
                 >
-                  {/* {auction.status === "finished" || user?.role === "seller" */}
-                  {auction.status === "finished"
-                    ? "View Results"
-                    : "Place Bid"}
+                  {auction.status === "finished" ? "View Results" : "Place Bid"}
                 </Link>
               </div>
             </div>

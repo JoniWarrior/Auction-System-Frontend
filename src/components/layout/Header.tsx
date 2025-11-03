@@ -45,17 +45,6 @@ export default function Header() {
             </Link>
           </nav>
 
-          <div className="hidden md:flex flex-1 max-w-md mx-4">
-            <div className="relative w-full">
-              <input
-                type="text"
-                placeholder="Search auctions..."
-                className="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-              <FaSearch className="absolute right-3 top-3 text-gray-400" />
-            </div>
-          </div>
-
           <div className="flex items-center space-x-4">
             {isLoggedIn && <NotificationBell />}
 
