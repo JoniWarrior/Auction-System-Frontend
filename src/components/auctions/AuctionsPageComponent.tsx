@@ -29,31 +29,26 @@ export default function AuctionsPageComponent() {
   );
 
   const filteredAuctions = useMemo(() => {
-    if (auctions.length < 1) return [];
+  if (auctions.length < 1) return [];
 
-    let filtered = searchTerm
-      ? auctions?.filter((auction) => {
-          const matchesFilter = filter === "all" || auction.status === filter;
-          const matchesSearch =
-            auction.item.title
-              .toLowerCase()
-              .includes(searchTerm.toLowerCase()) ||
-            auction.item.description
-              .toLowerCase()
-              .includes(searchTerm.toLowerCase());
-          return matchesFilter && matchesSearch;
-        })
-      : auctions;
+  let filtered = auctions.filter((auction) => {
+    const matchesFilter = filter === "all" || auction.status === filter;
 
-    filtered = filtered
-      .sort(
-        (auc_1, auc_2) =>
-          Number(auc_1.status === "finished") -
-          Number(auc_2.status === "finished")
-      )
-      .slice(indexOfFirstAuction, indexOfLastAuction);
-    return filtered;
-  }, [auctions, searchTerm, filter, indexOfFirstAuction, indexOfLastAuction]);
+    const matchesSearch =
+      auction.item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      auction.item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && (searchTerm ? matchesSearch : true);
+  });
+
+  filtered = filtered
+    .sort(
+      (a, b) =>
+        Number(a.status === "finished") - Number(b.status === "finished")
+    )
+    .slice(indexOfFirstAuction, indexOfLastAuction);
+
+  return filtered;
+}, [auctions, searchTerm, filter, indexOfFirstAuction, indexOfLastAuction]);
 
   const totalPages = useMemo(
     () => Math.ceil(auctions.length / auctionsPerPage),
