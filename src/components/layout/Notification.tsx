@@ -19,7 +19,6 @@ export default function NotificationBell() {
     const fetchNotifications = async () => {
       try {
         const response = await API.get(`/notifications/${user?.id}/unread`);
-        console.log("Notifications fetched: ", response.data.data);
         setNotifications(response.data.data);
         setUnreadCount(response.data.data.filter((n: any) => !n.isRead).length);
       } catch (err) {

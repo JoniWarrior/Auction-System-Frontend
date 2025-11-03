@@ -17,7 +17,6 @@ export default function AuctionsPageComponent() {
   const user = useSelector((state: RootState) => state.auth.user);
   const [currentPage, setCurrentPage] = useState(1);
 
-  console.log(auctions.length);
   // Pagination logic :
   const auctionsPerPage = 6;
   const indexOfLastAuction = useMemo(

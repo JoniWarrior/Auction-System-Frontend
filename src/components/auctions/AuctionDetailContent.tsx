@@ -40,7 +40,7 @@ export default function AuctionDetailContent() {
         const bidderName = bid?.bidder?.name ?? "Unknown";
         
         setOutBidNotification(
-          `${notification.message ?? "You were outbid!"} by ${bidderName}`
+          `${notification.message ?? "You were outbid!"}`
         );
 
         setTimeout(() => setOutBidNotification(null), 5000);

@@ -1,6 +1,6 @@
 import Axios from "axios";
 import { store } from "@/store/store";
-import { logOut, updateAccessToken } from "@/store/auth/authSlice";
+import { logOut, loginSucces } from "@/store/auth/authSlice";
 
 const API = Axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
@@ -13,12 +13,12 @@ const API = Axios.create({
 const guestRoutes = ['/auth/login', '/auth/register'];
 
 const GUEST_API = Axios.create({
-    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
-    headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-    },
-})
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+});
 
 API.interceptors.request.use(
   (config) => {
@@ -36,27 +36,41 @@ API.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry && !guestRoutes.includes(originalRequest.url)) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !guestRoutes.includes(originalRequest.url)
+    ) {
       originalRequest._retry = true;
 
       try {
-        const { refreshToken } = store.getState().auth;
+        const { refreshToken, user } = store.getState().auth;
         if (!refreshToken) {
           store.dispatch(logOut());
           return Promise.reject(error);
         }
 
-        const response = await GUEST_API.post(
-          `/auth/refresh`,
-          {  refreshToken }
+        // Call refresh endpoint
+        const response = await GUEST_API.post(`/auth/refresh`, {
+          userId: user?.id,
+          refreshToken,
+        });
+
+        const { accessToken: newAccessToken, user: newUser } = response.data.data;
+
+        console.log("New AccessToken after refresh: ", newAccessToken);
+        console.log("Updated User after refresh: ", newUser);
+
+        store.dispatch(
+          loginSucces({
+            user: newUser,
+            accessToken: newAccessToken,
+            refreshToken,
+          })
         );
-
-        const newAccessToken = response.data.data.accessToken;
-        console.log("New AccessToken after expiring: ", newAccessToken);
-        store.dispatch(updateAccessToken(newAccessToken));
-
         API.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
         return API(originalRequest);
       } catch (err) {
         store.dispatch(logOut());
