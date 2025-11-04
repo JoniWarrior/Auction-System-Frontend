@@ -3,15 +3,10 @@ import Link from "next/link";
 import { FaClock, FaGavel, FaTag, FaStar, FaArrowRight } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import API from "@/utils/API/API";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
 
 export default function Home() {
   const [featuredAuctions, setFeaturedAuctions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const user = useSelector((state : RootState) => state.auth.user);
-  console.log("User: ", user);
-
   const linkHref = "/my-auctions-seller";
   const linkText = "My Auctions";
 

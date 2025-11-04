@@ -27,7 +27,6 @@ export default function AuctionDetailContent() {
     null
   );
   const user = useSelector((state: RootState) => state.auth.user);
-  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     if (!socketInitialized) {
@@ -37,11 +36,7 @@ export default function AuctionDetailContent() {
       socketInitialized = true;
 
       socket.on("outBid", (notification: any) => {
-        const bid = notification.bidding;
-        const bidderName = bid?.bidder?.name ?? "Unknown";
-
         setOutBidNotification(`${notification.message ?? "You were outbid!"}`);
-
         setTimeout(() => setOutBidNotification(null), 5000);
       });
     }

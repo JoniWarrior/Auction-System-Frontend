@@ -14,7 +14,6 @@ export default function MyAuctionsPage() {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-  const user = useSelector((state: RootState) => state.auth.user);
   const token = useSelector((state: RootState) => state.auth.accessToken);
 
   const handleCloseAuction = async (auctionId: string) => {
