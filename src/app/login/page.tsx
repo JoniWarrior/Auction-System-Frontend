@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FaEnvelope, FaLock, FaGavel, FaArrowLeft } from "react-icons/fa";
-import GuestAPI from "@/utils/API/GuestAPI";
+import API from "@/utils/API/API";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { loginSucces } from "@/store/auth/authSlice";
@@ -18,7 +18,7 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await GuestAPI.post("/auth/login", { email, password });
+      const response = await API.post("/auth/login", { email, password });
       const { user, accessToken, refreshToken } = response.data.data;
       console.log("AccesToken: ", accessToken);
       console.log("Refresh Token: ", refreshToken);
@@ -136,7 +136,7 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              className="cursor-pointer group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
             >
               Sign in
             </button>

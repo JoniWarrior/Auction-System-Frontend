@@ -1,71 +1,38 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaClock, FaSearch, FaFilter } from "react-icons/fa";
 import API from "@/utils/API/API";
-import { useSearchParams } from "next/navigation";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import _ from "lodash";
 
 export default function AuctionsPageComponent() {
-  const searchParams = useSearchParams();
   const [auctions, setAuctions] = useState<any[]>([]);
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState();
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-  const user = useSelector((state: RootState) => state.auth.user);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState<any>();
 
   // Pagination logic :
   const auctionsPerPage = 6;
-  const indexOfLastAuction = useMemo(
-    () => currentPage * auctionsPerPage,
-    [currentPage]
-  );
-  const indexOfFirstAuction = useMemo(
-    () => indexOfLastAuction - auctionsPerPage,
-    [indexOfLastAuction]
-  );
-
-  const filteredAuctions = useMemo(() => {
-  if (auctions.length < 1) return [];
-
-  let filtered = auctions.filter((auction) => {
-    const matchesFilter = filter === "all" || auction.status === filter;
-
-    const matchesSearch =
-      auction.item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      auction.item.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && (searchTerm ? matchesSearch : true);
-  });
-
-  filtered = filtered
-    .sort(
-      (a, b) =>
-        Number(a.status === "finished") - Number(b.status === "finished")
-    )
-    .slice(indexOfFirstAuction, indexOfLastAuction);
-
-  return filtered;
-}, [auctions, searchTerm, filter, indexOfFirstAuction, indexOfLastAuction]);
-
-  const totalPages = useMemo(
-    () => Math.ceil(auctions.length / auctionsPerPage),
-    [filteredAuctions]
-  );
-
-  useEffect(() => {
-    const status = searchParams.get("status") || "all";
-    setFilter(status);
-  }, [searchParams]);
-
   const fetchAuctions = async () => {
+    setLoading(true);
     try {
-      const response = await API.get("/auctions");
-      setAuctions(response.data.data);
-    } catch (err) {
-      console.error("Error fetching the data ", err);
+      const response = await API.get("/auctions", {
+        params: {
+          status: filter,
+          page: currentPage || 1,
+          pageSize: auctionsPerPage,
+          qs: searchTerm || "",
+        },
+        paramsSerializer: { indexes: null },
+      });
+
+      setAuctions(response?.data?.data?.data); // matcehs beckend {data,meta }
+      setTotalPages(response?.data?.data?.meta?.totalPages);
+    } catch (err: any) {
+      console.error("Error fetching the data ", err.response?.data || err);
     } finally {
       setLoading(false);
     }
@@ -73,11 +40,9 @@ export default function AuctionsPageComponent() {
 
   useEffect(() => {
     fetchAuctions();
-  }, []);
+  }, [filter, searchTerm, currentPage]);
 
-  return loading ? (
-    <p className="text-center mt-20">Loading All Auctions...</p>
-  ) : (
+  return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <h1 className="text-3xl font-bold mb-4 md:mb-0"> </h1>
@@ -88,8 +53,7 @@ export default function AuctionsPageComponent() {
               type="text"
               placeholder="Search auctions..."
               className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={_.debounce((e) => setSearchTerm(e.target.value), 500)}
             />
             <FaSearch className="absolute left-3 top-3 text-gray-400" />
           </div>
@@ -99,9 +63,9 @@ export default function AuctionsPageComponent() {
             <select
               className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
               value={filter}
-              onChange={(e) => setFilter(e.target.value)}
+              onChange={(e: any) => setFilter(e?.target?.value)}
             >
-              <option value="all">All Auctions</option>
+              <option value="">All Auctions</option>
               <option value="active">Active</option>
               <option value="finished">Finished</option>
               <option value="pending">Pending</option>
@@ -111,7 +75,9 @@ export default function AuctionsPageComponent() {
       </div>
       <div className="flex justify-center items-center space-x-4 mt-6"></div>
 
-      {filteredAuctions.length === 0 ? (
+      {loading ? (
+        <p className="text-center mt-20">Loading All Auctions...</p>
+      ) : auctions.length === 0 ? (
         <div className="text-center py-12">
           <h2 className="text-2xl font-semibold text-gray-600">
             No auctions found
@@ -123,7 +89,7 @@ export default function AuctionsPageComponent() {
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAuctions.map((auction) => (
+            {auctions.map((auction) => (
               <div
                 key={auction.id}
                 className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col"

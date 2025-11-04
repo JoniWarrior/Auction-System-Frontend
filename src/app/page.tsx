@@ -17,8 +17,17 @@ export default function Home() {
 
   const fetchAuctions = async () => {
     try {
-      const response = await API.get("/auctions");
-      setFeaturedAuctions(response?.data.data || []);
+      const response = await API.get("/auctions", {
+        params : {
+          status : "active",
+          page : 1,
+          pageSize : 10,
+          qs : ""
+        }
+      });
+
+      console.log(response?.data);
+      setFeaturedAuctions(response?.data.data.data || []);
     } catch (err) {
       console.error("Error fetching the items from the backend,", err);
     } finally {

@@ -9,7 +9,7 @@ import {
   FaGavel,
   FaArrowLeft,
 } from "react-icons/fa";
-import GuestAPI from "@/utils/API/GuestAPI";
+import API from "@/utils/API/API";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
@@ -33,7 +33,7 @@ export default function SignUpPage() {
     }
 
     try {
-      const response = await GuestAPI.post("/auth/register", {
+      const response = await API.post("/auth/register", {
         name,
         email,
         password,

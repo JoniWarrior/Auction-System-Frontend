@@ -12,14 +12,6 @@ const API = Axios.create({
 
 const guestRoutes = ['/auth/login', '/auth/register'];
 
-const GUEST_API = Axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
-  headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  },
-});
-
 API.interceptors.request.use(
   (config) => {
     const accessToken = store.getState().auth.accessToken;
@@ -50,8 +42,7 @@ API.interceptors.response.use(
           return Promise.reject(error);
         }
 
-        // Call refresh endpoint
-        const response = await GUEST_API.post(`/auth/refresh`, {
+        const response = await API.post(`/auth/refresh`, {
           userId: user?.id,
           refreshToken,
         });
