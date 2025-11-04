@@ -33,18 +33,15 @@ export default function SignUpPage() {
     }
 
     try {
-      const response = await API.post("/auth/register", {
-        name,
-        email,
-        password,
-        confirmPassword,
-      });
-      if (response.data.data.user) {
+        const response = await API.post("/auth/register", {
+            name,
+            email,
+            password,
+            confirmPassword,
+        });
         const { user, accessToken, refreshToken } = response.data.data;
         dispatch(loginSucces({user, accessToken, refreshToken}))
-
         router.push("/");
-      }
     } catch (err) {
       console.error("Failed registration! ", err);
     }

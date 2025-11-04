@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FaEnvelope, FaLock, FaGavel, FaArrowLeft } from "react-icons/fa";
-import API from "@/utils/API/API";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { loginSucces } from "@/store/auth/authSlice";
+import API from "@/utils/API/API";
+import {showError} from "@/utils/functions";
+import axios from "axios";
 
 export default function LoginPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -18,18 +20,16 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await API.post("/auth/login", { email, password });
-      const { user, accessToken, refreshToken } = response.data.data;
-      console.log("AccesToken: ", accessToken);
-      console.log("Refresh Token: ", refreshToken);
-
-      if (user) {
+        const response = await API.post("/auth/login", { email, password });
+        const { user, accessToken, refreshToken } = response.data.data;
+        console.log("AccesToken: ", accessToken);
+        console.log("Refresh Token: ", refreshToken);
         dispatch(loginSucces({user, accessToken, refreshToken}))
-        window.dispatchEvent(new Event("storage"));
         router.push("/");
-      }
     } catch (err) {
-      console.error("Login Failed! ", err);
+        if (axios.isAxiosError(err)) {
+            showError(err.response.data.message);
+        }
     }
   };
 
