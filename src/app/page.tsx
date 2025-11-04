@@ -25,8 +25,6 @@ export default function Home() {
           qs : ""
         }
       });
-
-      console.log(response?.data);
       setFeaturedAuctions(response?.data.data.data || []);
     } catch (err) {
       console.error("Error fetching the items from the backend,", err);

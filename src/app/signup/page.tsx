@@ -14,6 +14,8 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { loginSucces } from "@/store/auth/authSlice";
+import { showError, showSuccess } from "@/utils/functions";
+import axios from "axios";
 
 export default function SignUpPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -26,23 +28,22 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (password !== confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-
     try {
-        const response = await API.post("/auth/register", {
-            name,
-            email,
-            password,
-            confirmPassword,
-        });
-        const { user, accessToken, refreshToken } = response.data.data;
-        dispatch(loginSucces({user, accessToken, refreshToken}))
-        router.push("/");
+      const response = await API.post("/auth/register", {
+        name,
+        email,
+        password,
+        confirmPassword,
+      });
+      const { user, accessToken, refreshToken } = response.data.data;
+      dispatch(loginSucces({ user, accessToken, refreshToken }));
+      showSuccess(`Welcome: ${user?.name}`);
+      router.push("/");
     } catch (err) {
+      if (axios.isAxiosError(err)) {
+        // @ts-ignore
+        showError(err.response.data.message);
+      }
       console.error("Failed registration! ", err);
     }
   };

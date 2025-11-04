@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { loginSucces } from "@/store/auth/authSlice";
 import API from "@/utils/API/API";
-import {showError} from "@/utils/functions";
+import {showError, showSuccess} from "@/utils/functions";
 import axios from "axios";
 
 export default function LoginPage() {
@@ -24,10 +24,11 @@ export default function LoginPage() {
         const { user, accessToken, refreshToken } = response.data.data;
         console.log("AccesToken: ", accessToken);
         console.log("Refresh Token: ", refreshToken);
-        dispatch(loginSucces({user, accessToken, refreshToken}))
+        dispatch(loginSucces({user, accessToken, refreshToken}));
         router.push("/");
     } catch (err) {
         if (axios.isAxiosError(err)) {
+            // @ts-ignore 
             showError(err.response.data.message);
         }
     }
