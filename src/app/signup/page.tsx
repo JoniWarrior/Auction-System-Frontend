@@ -9,8 +9,9 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { loginSucces } from '@/store/auth/authSlice';
 import { handleRequestErrors, showSuccess } from '@/utils/functions';
-import CEmailInput from "@/core/inputs/CEmailInput";
-import CPasswordInput from "@/core/inputs/CPasswordInput";
+import CEmailInput from '@/core/inputs/CEmailInput';
+import CPasswordInput from '@/core/inputs/CPasswordInput';
+import CNameInput from '@/core/inputs/CNameInput';
 
 export default function SignUpPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -66,27 +67,13 @@ export default function SignUpPage() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Full Name
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  className="appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="John Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <FaUser className="absolute left-3 top-3 text-gray-400" />
-              </div>
+              <CNameInput
+                label="Full Name"
+                placeholder="John Doe"
+                value={name}
+                onChange={(e: any) => setName(e.target.value)}
+              />
             </div>
-            
 
             <div>
               <CEmailInput
@@ -107,22 +94,12 @@ export default function SignUpPage() {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  className="appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-                <FaLock className="absolute left-3 top-3 text-gray-400" />
-              </div>
+              <CPasswordInput
+                label="Confirm Password"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
             </div>
           </div>
 
