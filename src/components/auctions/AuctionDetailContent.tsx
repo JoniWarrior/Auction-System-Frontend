@@ -26,7 +26,7 @@ export default function AuctionDetailContent() {
   const [outBidNotification, setOutBidNotification] = useState<string | null>(
     null
   );
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector((state: RootState) => state?.auth?.user);
 
   useEffect(() => {
     if (!socketInitialized) {
