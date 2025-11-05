@@ -13,6 +13,7 @@ import CEmailInput from '@/core/inputs/CEmailInput';
 import CPasswordInput from '@/core/inputs/CPasswordInput';
 import GradientButton from '@/core/buttons/electrons/GradientButton';
 import CNameInput from '@/core/inputs/CNameInput';
+import AuthService from '@/services/AuthService';
 
 export default function SignUpPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -28,12 +29,13 @@ export default function SignUpPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await API.post('/auth/register', {
-        name,
-        email,
-        password,
-        confirmPassword
-      });
+      // const response = await API.post('/auth/register', {
+      //   name,
+      //   email,
+      //   password,
+      //   confirmPassword
+      // });
+      const response = await AuthService.register(name, email, password, confirmPassword);
       const { user, accessToken, refreshToken } = response.data.data;
       dispatch(loginSucces({ user, accessToken, refreshToken }));
       router.push('/');

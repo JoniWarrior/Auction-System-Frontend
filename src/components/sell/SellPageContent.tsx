@@ -1,16 +1,17 @@
-import { useState } from "react";
-import Link from "next/link";
-import { FaArrowLeft, FaTag, FaAlignLeft, FaUpload } from "react-icons/fa";
-import API from "@/utils/API/API";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { showError } from "@/utils/functions";
+import { useState } from 'react';
+import Link from 'next/link';
+import { FaArrowLeft, FaTag, FaAlignLeft, FaUpload } from 'react-icons/fa';
+import API from '@/utils/API/API';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { showError } from '@/utils/functions';
+import ItemService from '@/services/ItemService/ItemService';
 
 export default function SellPageContent() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [image, setImage] = useState<File | null>(null);
-  const [imageURL, setImageURL] = useState("");
+  const [imageURL, setImageURL] = useState('');
   const [loading, setLoading] = useState(false);
   const seller = useSelector((state: RootState) => state.auth?.user);
 
@@ -25,35 +26,26 @@ export default function SellPageContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      if (!seller) throw new Error("User not logged in!");
+      if (!seller) throw new Error('User not logged in!');
 
-      const data = new FormData();
-      data.append("title", title);
-      data.append("description", description);
-      data.append("sellerId", seller?.id);
-
-      if (image) {
-        data.append("image", image);
-      }
-
-      await API.post("/items", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      await ItemService.createItem({
+        title,
+        description,
+        sellerId: seller?.id,
+        image
       });
 
-      setTitle("");
-      setDescription("");
+      setTitle('');
+      setDescription('');
       setImage(null);
-      setImageURL("");
+      setImageURL('');
     } catch (err: any) {
       if (err.response?.data) {
-        console.error("Server error response:", err.response.data.data);
+        console.error('Server error response:', err.response.data.data);
         showError(err.response.data.data.message);
       } else {
-        console.error("Unexpected error:", err);
+        console.error('Unexpected error:', err);
       }
     } finally {
       setLoading(false);
@@ -67,10 +59,7 @@ export default function SellPageContent() {
       <div className="max-w-lg mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-6 space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-orange-600 hover:text-orange-700 flex items-center"
-          >
+          <Link href="/" className="text-orange-600 hover:text-orange-700 flex items-center">
             <FaArrowLeft className="mr-2" /> Back to Home
           </Link>
           <div className="flex items-center space-x-2">
@@ -93,10 +82,7 @@ export default function SellPageContent() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700">
                 Item Title
               </label>
               <div className="mt-1 relative">
@@ -115,10 +101,7 @@ export default function SellPageContent() {
             </div>
 
             <div>
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
                 Description
               </label>
               <div className="mt-1 relative">
@@ -138,14 +121,11 @@ export default function SellPageContent() {
 
             {/* Image Upload */}
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Upload Image
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Upload Image</label>
               <div className="mt-1 flex items-center">
                 <label
                   htmlFor="image"
-                  className="cursor-pointer bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-lg flex items-center hover:from-yellow-500 hover:to-orange-600"
-                >
+                  className="cursor-pointer bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-lg flex items-center hover:from-yellow-500 hover:to-orange-600">
                   <FaUpload className="mr-2" /> Choose File
                 </label>
                 <input
@@ -156,11 +136,7 @@ export default function SellPageContent() {
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                {image && (
-                  <span className="ml-4 text-sm text-gray-700 truncate">
-                    {image.name}
-                  </span>
-                )}
+                {image && <span className="ml-4 text-sm text-gray-700 truncate">{image.name}</span>}
               </div>
 
               {imageURL && (
@@ -176,8 +152,7 @@ export default function SellPageContent() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400"
-            >
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400">
               List Item
             </button>
           </div>
