@@ -16,7 +16,7 @@ let socketInitialized = false;
 
 export default function AuctionDetailContent() {
   const params = useParams();
-  const auctionId = params.id;
+  const auctionId = params.id as string;
   const [auction, setAuction] = useState<any>();
   const [bidAmount, setBidAmount] = useState('');
   const [timeRemaining, setTimeRemaining] = useState('');
@@ -132,7 +132,7 @@ export default function AuctionDetailContent() {
       }
 
       const response = await BiddingService.placeBid({
-        auctionId: auctionId as string,
+        auctionId,
         amount: Number(bidAmount)
       });
 

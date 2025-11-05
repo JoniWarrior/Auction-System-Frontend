@@ -7,7 +7,6 @@ import { FaGavel, FaArrowLeft } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { loginSucces } from '@/store/auth/authSlice';
-import API from '@/utils/API/API';
 import { handleRequestErrors } from '@/utils/functions';
 import CEmailInput from '@/core/inputs/CEmailInput';
 import CPasswordInput from '@/core/inputs/CPasswordInput';

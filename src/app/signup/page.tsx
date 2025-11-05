@@ -30,12 +30,6 @@ export default function SignUpPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      // const response = await API.post('/auth/register', {
-      //   name,
-      //   email,
-      //   password,
-      //   confirmPassword
-      // });
       const response = await AuthService.register(name, email, password, confirmPassword);
       const { user, accessToken, refreshToken } = response.data.data;
       dispatch(loginSucces({ user, accessToken, refreshToken }));
