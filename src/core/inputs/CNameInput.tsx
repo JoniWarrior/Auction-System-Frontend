@@ -2,7 +2,7 @@ import React from 'react';
 import CInput, { InputProps } from '@/core/inputs/CInput';
 import { FaEnvelope } from 'react-icons/fa';
 
-const CEmailInput = ({value, onChange, ...props}: InputProps) => {
+const CNameInput = ({value, onChange, ...props}: InputProps) => {
   return (
     <CInput
       value={value}
@@ -13,4 +13,4 @@ const CEmailInput = ({value, onChange, ...props}: InputProps) => {
   );
 };
 
-export default CEmailInput;
+export default CNameInput;
