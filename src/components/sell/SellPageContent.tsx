@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { handleRequestErrors, showError, showSuccess } from '@/utils/functions';
 import ItemService from '@/services/ItemService';
+import { useRouter } from 'next/navigation';
 
 export default function SellPageContent() {
   const [title, setTitle] = useState('');
@@ -13,6 +14,7 @@ export default function SellPageContent() {
   const [image, setImage] = useState<File | null>(null);
   const [imageURL, setImageURL] = useState('');
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -33,8 +35,8 @@ export default function SellPageContent() {
         formData.append('image', image);
       }
       const res = await ItemService.create(formData);
-      showSuccess(res.data.data.message);
-      //   navigate
+      showSuccess(res.data.message);
+      router.push('/my-empty-items');
     } catch (err) {
       handleRequestErrors(err);
     } finally {
