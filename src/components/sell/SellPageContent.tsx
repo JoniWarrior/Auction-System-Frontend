@@ -4,7 +4,7 @@ import { FaArrowLeft, FaTag, FaAlignLeft, FaUpload } from 'react-icons/fa';
 import API from '@/utils/API/API';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
-import { showError } from '@/utils/functions';
+import { handleRequestErrors, showError, showSuccess } from '@/utils/functions';
 import ItemService from '@/services/ItemService';
 
 export default function SellPageContent() {
@@ -13,7 +13,6 @@ export default function SellPageContent() {
   const [image, setImage] = useState<File | null>(null);
   const [imageURL, setImageURL] = useState('');
   const [loading, setLoading] = useState(false);
-  const seller = useSelector((state: RootState) => state.auth?.user);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -27,26 +26,17 @@ export default function SellPageContent() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (!seller) throw new Error('User not logged in!');
-
-      await ItemService.create({
-        title,
-        description,
-        sellerId: seller?.id,
-        image
-      });
-
-      setTitle('');
-      setDescription('');
-      setImage(null);
-      setImageURL('');
-    } catch (err: any) {
-      if (err.response?.data) {
-        console.error('Server error response:', err.response.data.data);
-        showError(err.response.data.data.message);
-      } else {
-        console.error('Unexpected error:', err);
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      if (image) {
+        formData.append('image', image);
       }
+      const res = await ItemService.create(formData);
+      showSuccess(res.data.data.message);
+      //   navigate
+    } catch (err) {
+      handleRequestErrors(err);
     } finally {
       setLoading(false);
     }
