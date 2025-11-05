@@ -1,17 +1,23 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useRouter } from 'next/navigation';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 
 const AuthRoute = ({ children }: PropsWithChildren) => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.accessToken);
   const router = useRouter();
 
-  if (isAuthenticated) {
-    return children;
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, router]);
+
+  if (!isAuthenticated) {
+    return null;
   }
 
-  router.push('/login');
+  return <>{children}</>;
 };
 
 export default AuthRoute;
