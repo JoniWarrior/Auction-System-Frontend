@@ -12,6 +12,7 @@ import { handleRequestErrors } from '@/utils/functions';
 import DefaultButton from '@/core/buttons/electrons/DefaultButton';
 import CEmailInput from '@/core/inputs/CEmailInput';
 import CPasswordInput from '@/core/inputs/CPasswordInput';
+import GradientButton from '@/core/buttons/electrons/GradientButton';
 
 export default function LoginPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -90,7 +91,7 @@ export default function LoginPage() {
               </a>
             </div>
           </div>
-          <DefaultButton label="Sign in" type="submit" />
+          <GradientButton label="Sign in" type="submit" />
           <div className="text-center">
             <span className="text-sm text-gray-600">
               Don't have an account?{' '}
