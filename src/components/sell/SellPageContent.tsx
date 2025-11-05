@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { FaArrowLeft, FaTag, FaAlignLeft, FaUpload } from 'react-icons/fa';
-import API from '@/utils/API/API';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
-import { handleRequestErrors, showError, showSuccess } from '@/utils/functions';
+import { handleRequestErrors, showSuccess } from '@/utils/functions';
 import ItemService from '@/services/ItemService';
 import { useRouter } from 'next/navigation';
 
