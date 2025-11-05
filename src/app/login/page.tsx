@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import {  FaGavel, FaArrowLeft } from 'react-icons/fa';
+import { FaGavel, FaArrowLeft } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { loginSucces } from '@/store/auth/authSlice';
 import API from '@/utils/API/API';
-import { showError ,} from '@/utils/functions';
+import { showError } from '@/utils/functions';
 import axios from 'axios';
 import DefaultButton from '@/core/buttons/electrons/DefaultButton';
 import CEmailInput from '@/core/inputs/CEmailInput';
@@ -31,6 +31,7 @@ export default function LoginPage() {
       router.push('/');
     } catch (err) {
       if (axios.isAxiosError(err)) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
         showError(err.response.data.message);
       }
@@ -41,10 +42,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 space-y-8">
         <div className="flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-purple-600 hover:text-purple-700 flex items-center"
-          >
+          <Link href="/" className="text-purple-600 hover:text-purple-700 flex items-center">
             <FaArrowLeft className="mr-2" /> Back to Home
           </Link>
           <div className="flex items-center space-x-2">
@@ -69,13 +67,13 @@ export default function LoginPage() {
               label="Email Address"
               placeholder="email@example.com"
               value={email}
-              onChange={setEmail}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <CPasswordInput
               label="Password"
               placeholder="••••••••"
               value={password}
-              onChange={setPassword}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="flex items-center justify-between">
