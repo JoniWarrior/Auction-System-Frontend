@@ -1,21 +1,14 @@
 'use client';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
-import { useRouter } from 'next/navigation';
-import { PropsWithChildren, useEffect } from 'react';
+import { redirect } from 'next/navigation';
+import { PropsWithChildren } from 'react';
 
 const GuestRoute = ({ children }: PropsWithChildren) => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.accessToken);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/');
-    }
-  }, [isAuthenticated, router]);
 
   if (isAuthenticated) {
-    return null;
+    return redirect('/');
   }
 
   return <>{children}</>;
