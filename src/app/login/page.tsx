@@ -17,10 +17,12 @@ export default function LoginPage() {
   const dispatch = useDispatch<AppDispatch>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const response = await API.post('/auth/login', { email, password });
       const { user, accessToken, refreshToken } = response.data.data;
@@ -30,6 +32,8 @@ export default function LoginPage() {
       router.push('/');
     } catch (err) {
       handleRequestErrors(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -90,7 +94,7 @@ export default function LoginPage() {
               </a>
             </div>
           </div>
-          <GradientButton label="Sign in" type="submit" />
+          <GradientButton isLoading={isLoading} label="Sign in" type="submit" />
           <div className="text-center">
             <span className="text-sm text-gray-600">
               Don't have an account?{' '}
