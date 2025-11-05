@@ -1,7 +1,7 @@
 import React from 'react';
-import DefaultButton, { ButtonProps } from '@/core/buttons/electrons/DefaultButton';
+import DefaultButton, { DefaultButtonProps } from '@/core/buttons/electrons/DefaultButton';
 
-interface GradientButtonProps extends ButtonProps {
+interface GradientButtonProps extends DefaultButtonProps {
   fromColor?: string;
   toColor?: string;
   hoverFromColor?: string;

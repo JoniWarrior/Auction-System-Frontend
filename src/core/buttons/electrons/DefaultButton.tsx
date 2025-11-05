@@ -1,6 +1,6 @@
 import React from 'react';
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface DefaultButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label: string;
   textColor?: string;
   color?: string;
@@ -14,7 +14,7 @@ const DefaultButton = ({
   color = 'bg-purple-600',
   hoverColor = 'hover:bg-purple-700',
   ...props
-}: ButtonProps) => {
+}: DefaultButtonProps) => {
   return (
     <button
       {...props}
