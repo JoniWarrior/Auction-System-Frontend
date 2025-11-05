@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { loginSucces } from '@/store/auth/authSlice';
-import { handleRequestErrors, showSuccess } from '@/utils/functions';
+import { handleRequestErrors } from '@/utils/functions';
 import CEmailInput from '@/core/inputs/CEmailInput';
 import CPasswordInput from '@/core/inputs/CPasswordInput';
 import GradientButton from '@/core/buttons/electrons/GradientButton';
@@ -20,11 +20,13 @@ export default function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const response = await API.post('/auth/register', {
         name,
@@ -37,6 +39,8 @@ export default function SignUpPage() {
       router.push('/');
     } catch (err) {
       handleRequestErrors(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -91,7 +95,7 @@ export default function SignUpPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
-          <GradientButton label="Create Account" type="submit" />
+          <GradientButton isLoading={isLoading} label="Create Account" type="submit" />
           <div className="text-center">
             <span className="text-sm text-gray-600">
               Already have an account?{' '}
