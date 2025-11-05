@@ -7,6 +7,7 @@ const CNameInput = ({ value, onChange, ...props }: CInputProps) => {
     <CInput
       value={value}
       onChange={onChange}
+      type='text'
       appendIcon={<FaUser className="absolute left-3 top-3 text-gray-400" />}
       {...props}
     />

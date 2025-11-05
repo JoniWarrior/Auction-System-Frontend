@@ -4,8 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { FaBoxOpen, FaPlus, FaSearch } from "react-icons/fa";
 import API from "@/utils/API/API";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import ItemService from "@/services/ItemService/ItemService";
 
 export default function MyEmptyItemsPage() {
   const [items, setItems] = useState<any[]>([]);
@@ -14,7 +13,7 @@ export default function MyEmptyItemsPage() {
 
   const fetchEmptyItems = async () => {
     try {
-      const response = await API.get("items/my-empty-items");
+      const response = await ItemService.fetchMyEmptyItem();
       console.log(response);
       setItems(response.data.data);
     } catch (err) {
