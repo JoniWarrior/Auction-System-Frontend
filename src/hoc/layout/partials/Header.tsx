@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { FaSearch, FaGavel, FaUser } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import NotificationBell from "@/components/layout/Notification";
+import NotificationBell from "@/hoc/layout/partials/Notification";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { logOut } from "@/store/auth/authSlice";
@@ -23,7 +23,7 @@ export default function Header() {
     <header className="bg-white shadow-md">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/public" className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg flex items-center justify-center">
               <FaGavel className="text-white text-lg" />
             </div>
