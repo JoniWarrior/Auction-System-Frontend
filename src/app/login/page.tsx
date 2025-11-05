@@ -12,6 +12,7 @@ import { handleRequestErrors } from '@/utils/functions';
 import CEmailInput from '@/core/inputs/CEmailInput';
 import CPasswordInput from '@/core/inputs/CPasswordInput';
 import GradientButton from '@/core/buttons/electrons/GradientButton';
+import AuthService from '@/services/AuthService';
 
 export default function LoginPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -24,7 +25,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await API.post('/auth/login', { email, password });
+      const response = await AuthService.login(email, password);
       const { user, accessToken, refreshToken } = response.data.data;
       console.log('AccesToken: ', accessToken);
       console.log('Refresh Token: ', refreshToken);
