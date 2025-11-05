@@ -1,0 +1,17 @@
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { useRouter } from 'next/navigation';
+import { PropsWithChildren } from 'react';
+
+const GuestRoute = ({ children }: PropsWithChildren) => {
+  const isAuthenticated = useSelector((state: RootState) => state.auth.accessToken);
+  const router = useRouter();
+
+  if (isAuthenticated) {
+    router.push('/');
+  }
+
+  return children;
+};
+
+export default GuestRoute;
