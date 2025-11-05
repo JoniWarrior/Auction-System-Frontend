@@ -8,8 +8,7 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { loginSucces } from '@/store/auth/authSlice';
 import API from '@/utils/API/API';
-import { showError } from '@/utils/functions';
-import axios from 'axios';
+import { handleRequestErrors } from '@/utils/functions';
 import DefaultButton from '@/core/buttons/electrons/DefaultButton';
 import CEmailInput from '@/core/inputs/CEmailInput';
 import CPasswordInput from '@/core/inputs/CPasswordInput';
@@ -30,11 +29,7 @@ export default function LoginPage() {
       dispatch(loginSucces({ user, accessToken, refreshToken }));
       router.push('/');
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        showError(err.response.data.message);
-      }
+      handleRequestErrors(err);
     }
   };
 
