@@ -2,15 +2,17 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FaUser, FaLock, FaEnvelope, FaGavel, FaArrowLeft } from 'react-icons/fa';
+import { FaGavel, FaArrowLeft } from 'react-icons/fa';
 import API from '@/utils/API/API';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { loginSucces } from '@/store/auth/authSlice';
 import { handleRequestErrors, showSuccess } from '@/utils/functions';
-import CEmailInput from "@/core/inputs/CEmailInput";
-import CPasswordInput from "@/core/inputs/CPasswordInput";
+import CEmailInput from '@/core/inputs/CEmailInput';
+import CPasswordInput from '@/core/inputs/CPasswordInput';
+import GradientButton from '@/core/buttons/electrons/GradientButton';
+import CNameInput from '@/core/inputs/CNameInput';
 
 export default function SignUpPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -65,75 +67,32 @@ export default function SignUpPage() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Full Name
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  className="appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="John Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <FaUser className="absolute left-3 top-3 text-gray-400" />
-              </div>
-            </div>
-            
-
-            <div>
-              <CEmailInput
-                label="Email Address"
-                placeholder="email@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <CPasswordInput
-                label="Password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password
-              </label>
-              <div className="mt-1 relative">
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  className="appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-                <FaLock className="absolute left-3 top-3 text-gray-400" />
-              </div>
-            </div>
+            <CNameInput
+              label="Full Name"
+              placeholder="John Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <CEmailInput
+              label="Email Address"
+              placeholder="email@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <CPasswordInput
+              label="Password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <CPasswordInput
+              label="Confirm Password"
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
           </div>
-
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-              Create Account
-            </button>
-          </div>
-
+          <GradientButton label="Create Account" type="submit" />
           <div className="text-center">
             <span className="text-sm text-gray-600">
               Already have an account?{' '}

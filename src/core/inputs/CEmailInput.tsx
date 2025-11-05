@@ -1,8 +1,8 @@
 import React from 'react';
-import CInput, { InputProps } from '@/core/inputs/CInput';
+import CInput, { CInputProps } from '@/core/inputs/CInput';
 import { FaEnvelope } from 'react-icons/fa';
 
-const CEmailInput = ({value, onChange, ...props}: InputProps) => {
+const CEmailInput = ({ value, onChange, ...props }: CInputProps) => {
   return (
     <CInput
       value={value}
