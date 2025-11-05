@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { showError } from "@/utils/functions";
 import axios from "axios";
+import BiddingService from "@/services/BiddingService";
 
 export default function MyAuctionsPage() {
   const [auctions, setAuctions] = useState<any[]>([]);
@@ -45,9 +46,7 @@ export default function MyAuctionsPage() {
 
   const fetchAuctions = async () => {
     try {
-      const response = await API.get("/auctions/my-auctions-as-seller", {
-        params: { status: filter },
-      });
+      const response = await BiddingService.getSellerAuctions(filter);
       setAuctions(response.data.data);
     } catch (err) {
       console.error("Error fetching the data ", err);

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaClock, FaFilter } from "react-icons/fa";
-import API from "@/utils/API/API";
+import BiddingService from "@/services/BiddingService";
 
 export default function MyAuctionsPage() {
   const [auctions, setAuctions] = useState<any[]>([]);
@@ -14,9 +14,7 @@ export default function MyAuctionsPage() {
     const fetchAuctions = async () => {
       setLoading(true);
       try {
-        const response = await API.get("/auctions/my-auctions-as-bidder", {
-          params: { status: filter },
-        });
+        const response = await BiddingService.getBidderAuctions(filter);
         setAuctions(response.data.data);
       } catch (err) {
         console.error("Error fetching auctions:", err);
