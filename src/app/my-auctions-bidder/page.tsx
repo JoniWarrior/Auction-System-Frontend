@@ -4,14 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaClock, FaFilter } from "react-icons/fa";
 import API from "@/utils/API/API";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
 
 export default function MyAuctionsPage() {
   const [auctions, setAuctions] = useState<any[]>([]);
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
-  const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     const fetchAuctions = async () => {

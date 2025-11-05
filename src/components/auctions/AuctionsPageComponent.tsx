@@ -5,14 +5,17 @@ import Link from "next/link";
 import { FaClock, FaSearch, FaFilter } from "react-icons/fa";
 import API from "@/utils/API/API";
 import _ from "lodash";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
-export default function AuctionsPageComponent() {
+export default function   AuctionsPageComponent() {
   const [auctions, setAuctions] = useState<any[]>([]);
   const [filter, setFilter] = useState();
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState<any>();
+  const user = useSelector((state : RootState) => state.auth.user);
 
   // Pagination logic :
   const auctionsPerPage = 6;
@@ -160,7 +163,7 @@ export default function AuctionsPageComponent() {
                     href={`/auctions/${auction.id}`}
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all flex items-center justify-center mt-auto"
                   >
-                    {auction.status === "finished"
+                    {(auction.status === "finished" || auction.item.seller.id === user?.id)
                       ? "View Results"
                       : "Place Bid"}
                   </Link>

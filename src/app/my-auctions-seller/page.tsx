@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaClock, FaSearch, FaFilter } from "react-icons/fa";
 import API from "@/utils/API/API";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { showError } from "@/utils/functions";
+import axios from "axios";
 
 export default function MyAuctionsPage() {
   const [auctions, setAuctions] = useState<any[]>([]);
@@ -33,15 +35,18 @@ export default function MyAuctionsPage() {
         )
       );
     } catch (err) {
+      if (axios.isAxiosError(err)) {
+        // @ts-ignore
+        showError(err.response.data.message);
+      }
       console.error("Error closing the auction, ", err);
-      alert("Failed to close the auction");
     }
   };
 
   const fetchAuctions = async () => {
     try {
       const response = await API.get("/auctions/my-auctions-as-seller", {
-        params : { status : filter}
+        params: { status: filter },
       });
       setAuctions(response.data.data);
     } catch (err) {
@@ -54,7 +59,6 @@ export default function MyAuctionsPage() {
   useEffect(() => {
     fetchAuctions();
   }, [filter]);
-
 
   return loading ? (
     <p className="text-center mt-20">Loading All Auctions...</p>
@@ -170,8 +174,9 @@ export default function MyAuctionsPage() {
                   href={`/auctions/${auction.id}`}
                   className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all flex items-center justify-center"
                 >
-                  {auction.status === "finished" ? "View Results" : "Place Bid"}
+                  View Results
                 </Link>
+
                 {auction.status !== "finished" && (
                   <button
                     onClick={() => handleCloseAuction(auction.id)}

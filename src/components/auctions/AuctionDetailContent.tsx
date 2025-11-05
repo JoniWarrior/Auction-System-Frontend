@@ -7,6 +7,8 @@ import { io } from "socket.io-client";
 import BiddingHistory from "./BiddingHistory";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
+import { showError } from "@/utils/functions";
+import axios from "axios";
 
 let socket: any;
 let socketInitialized = false;
@@ -25,8 +27,6 @@ export default function AuctionDetailContent() {
     null
   );
   const user = useSelector((state: RootState) => state.auth.user);
-  const dispatch = useDispatch<AppDispatch>();
-  
 
   useEffect(() => {
     if (!socketInitialized) {
@@ -36,13 +36,7 @@ export default function AuctionDetailContent() {
       socketInitialized = true;
 
       socket.on("outBid", (notification: any) => {
-        const bid = notification.bidding;
-        const bidderName = bid?.bidder?.name ?? "Unknown";
-        
-        setOutBidNotification(
-          `${notification.message ?? "You were outbid!"}`
-        );
-
+        setOutBidNotification(`${notification.message ?? "You were outbid!"}`);
         setTimeout(() => setOutBidNotification(null), 5000);
       });
     }
@@ -64,7 +58,7 @@ export default function AuctionDetailContent() {
       isBidding,
     }: {
       userName: string;
-      isBidding: boolean; 
+      isBidding: boolean;
     }) => {
       setBiddingUsers((prev) => {
         return isBidding
@@ -90,7 +84,9 @@ export default function AuctionDetailContent() {
       const response = await API.get(`/auctions/${auctionId}`);
       setAuction(response.data.data);
       setBiddings(
-        response.data.data.biddings.sort((a: any, b: any) => b?.amount - a?.amount)
+        response.data.data.biddings.sort(
+          (a: any, b: any) => b?.amount - a?.amount
+        )
       );
     } catch (err) {
       console.error("Error fetching the auction,", err);
@@ -132,7 +128,10 @@ export default function AuctionDetailContent() {
     try {
       const userId = user?.id;
 
-      if (auction.item.seller?.id === userId) alert ("You cannot bid in your own auction!");
+      if (auction.item.seller?.id === userId) {
+        showError("You cannot bid on your own auction");
+        return;
+      }
 
       const response = await API.post("biddings", {
         auctionId,
@@ -145,6 +144,10 @@ export default function AuctionDetailContent() {
         setAuction({ ...auction, currentPrice: response.data.data.amount });
       }
     } catch (err) {
+      if (axios.isAxiosError(err)) {
+        // @ts-ignore
+        showError(err.response.data.message);
+      }
       console.error("Error placing bid:", err);
     } finally {
       setLoading(false);
@@ -219,58 +222,59 @@ export default function AuctionDetailContent() {
               </div>
             </div>
 
-            {auction?.status !== "finished" && (
-              <>
-                {/* Bidding Indicator */}
-                <div className="text-sm text-gray-500 mb-2">
-                  {biddingUsers.length > 0 &&
-                    biddingUsers.map((userName) => (
-                      <p key={userName}>{userName} is bidding...</p>
-                    ))}
-                </div>
-                <form onSubmit={handlePlaceBid}>
-                  <div className="flex space-x-2">
-                    <input
-                      type="number"
-                      min={auction.currentPrice + 1}
-                      step="1"
-                      placeholder={`Enter $${
-                        auction.currentPrice + 1
-                      } or more`}
-                      className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      value={bidAmount}
-                      onChange={(e) => {
-                        setBidAmount(e.target.value);
-                        if (e.target.value) {
-                          socket.emit("startBidding", {
-                            auctionId,
-                            userName: user?.name,
-                          });
-                        } else {
+            {auction?.status !== "finished" &&
+              auction?.item.seller?.id !== user?.id && (
+                <>
+                  {/* Bidding Indicator */}
+                  <div className="text-sm text-gray-500 mb-2">
+                    {biddingUsers.length > 0 &&
+                      biddingUsers.map((userName) => (
+                        <p key={userName}>{userName} is bidding...</p>
+                      ))}
+                  </div>
+                  <form onSubmit={handlePlaceBid}>
+                    <div className="flex space-x-2">
+                      <input
+                        type="number"
+                        min={auction.currentPrice + 1}
+                        step="1"
+                        placeholder={`Enter $${
+                          auction.currentPrice + 1
+                        } or more`}
+                        className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        value={bidAmount}
+                        onChange={(e) => {
+                          setBidAmount(e.target.value);
+                          if (e.target.value) {
+                            socket.emit("startBidding", {
+                              auctionId,
+                              userName: user?.name,
+                            });
+                          } else {
+                            socket.emit("stopBidding", {
+                              auctionId,
+                              userName: user?.name,
+                            });
+                          }
+                        }}
+                        onBlur={() =>
                           socket.emit("stopBidding", {
                             auctionId,
                             userName: user?.name,
-                          });
+                          })
                         }
-                      }}
-                      onBlur={() =>
-                        socket.emit("stopBidding", {
-                          auctionId,
-                          userName: user?.name,
-                        })
-                      }
-                      required
-                    />
-                    <button
-                      type="submit"
-                      className="justify-end bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium px-6 py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all"
-                    >
-                      Place Bid
-                    </button>
-                  </div>
-                </form>
-              </>
-            )}
+                        required
+                      />
+                      <button
+                        type="submit"
+                        className="justify-end bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium px-6 py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all"
+                      >
+                        Place Bid
+                      </button>
+                    </div>
+                  </form>
+                </>
+              )}
           </div>
 
           {/* Bids History */}

@@ -4,6 +4,7 @@ import { FaArrowLeft, FaTag, FaAlignLeft, FaUpload } from "react-icons/fa";
 import API from "@/utils/API/API";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { showError } from "@/utils/functions";
 
 export default function SellPageContent() {
   const [title, setTitle] = useState("");
@@ -50,7 +51,7 @@ export default function SellPageContent() {
     } catch (err: any) {
       if (err.response?.data) {
         console.error("Server error response:", err.response.data.data);
-        alert(`Error: ${JSON.stringify(err.response.data.data)}`);
+        showError(err.response.data.data.message);
       } else {
         console.error("Unexpected error:", err);
       }
