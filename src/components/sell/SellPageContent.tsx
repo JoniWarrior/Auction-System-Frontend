@@ -5,7 +5,7 @@ import API from '@/utils/API/API';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { showError } from '@/utils/functions';
-import ItemService from '@/services/ItemService/ItemService';
+import ItemService from '@/services/ItemService';
 
 export default function SellPageContent() {
   const [title, setTitle] = useState('');
@@ -29,7 +29,7 @@ export default function SellPageContent() {
     try {
       if (!seller) throw new Error('User not logged in!');
 
-      await ItemService.createItem({
+      await ItemService.create({
         title,
         description,
         sellerId: seller?.id,

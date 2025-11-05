@@ -1,23 +1,23 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useMemo } from "react";
-import Link from "next/link";
-import { FaBoxOpen, FaPlus, FaSearch } from "react-icons/fa";
-import API from "@/utils/API/API";
-import ItemService from "@/services/ItemService/ItemService";
+import { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
+import { FaBoxOpen, FaPlus, FaSearch } from 'react-icons/fa';
+import API from '@/utils/API/API';
+import ItemService from '@/services/ItemService';
 
 export default function MyEmptyItemsPage() {
   const [items, setItems] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
   const fetchEmptyItems = async () => {
     try {
-      const response = await ItemService.fetchMyEmptyItem();
+      const response = await ItemService.getEmptyItems();
       console.log(response);
       setItems(response.data.data);
     } catch (err) {
-      console.error("Error fetching empty items", err);
+      console.error('Error fetching empty items', err);
     } finally {
       setLoading(false);
     }
@@ -64,9 +64,7 @@ export default function MyEmptyItemsPage() {
       {filteredItems.length === 0 ? (
         <div className="text-center py-12">
           <FaBoxOpen className="mx-auto text-5xl text-gray-400 mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-600">
-            No empty items found
-          </h2>
+          <h2 className="text-2xl font-semibold text-gray-600">No empty items found</h2>
           <p className="text-gray-500 mt-2">
             Start by creating items that are not linked to auctions yet.
           </p>
@@ -76,26 +74,18 @@ export default function MyEmptyItemsPage() {
           {filteredItems.map((item) => (
             <div
               key={item.id}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-            >
+              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <div className="h-48 bg-gray-200">
-                <img
-                  src={item.imageURL}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
+                <img src={item.imageURL} alt={item.title} className="w-full h-full object-cover" />
               </div>
 
               <div className="p-4">
                 <h3 className="font-semibold text-lg truncate">{item.title}</h3>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                  {item.description}
-                </p>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{item.description}</p>
 
                 <Link
                   href={`/auctions/create/${item.id}`}
-                  className="w-full bg-gradient-to-r from-green-600 to-teal-500 text-white font-medium py-2 rounded-lg hover:from-green-700 hover:to-teal-600 transition-all flex items-center justify-center gap-2"
-                >
+                  className="w-full bg-gradient-to-r from-green-600 to-teal-500 text-white font-medium py-2 rounded-lg hover:from-green-700 hover:to-teal-600 transition-all flex items-center justify-center gap-2">
                   <FaPlus /> Create Auction
                 </Link>
               </div>

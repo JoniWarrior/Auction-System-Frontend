@@ -8,7 +8,7 @@ export interface CreateItemPayload {
 }
 
 const ItemService = {
-  createItem: async (payload: CreateItemPayload) => {
+  create: async (payload: CreateItemPayload) => {
     const { title, description, sellerId, image } = payload;
     const formData = new FormData();
     formData.append('title', title);
@@ -25,7 +25,7 @@ const ItemService = {
       }
     });
   },
-  fetchMyEmptyItem : () => API.get("items/my-empty-items")
+  getEmptyItems: () => API.get('items/my-empty-items')
 };
 
 export default ItemService;
