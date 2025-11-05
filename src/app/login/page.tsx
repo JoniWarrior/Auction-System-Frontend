@@ -9,18 +9,20 @@ import { AppDispatch } from '@/store/store';
 import { loginSucces } from '@/store/auth/authSlice';
 import API from '@/utils/API/API';
 import { handleRequestErrors } from '@/utils/functions';
-import DefaultButton from '@/core/buttons/electrons/DefaultButton';
 import CEmailInput from '@/core/inputs/CEmailInput';
 import CPasswordInput from '@/core/inputs/CPasswordInput';
+import GradientButton from '@/core/buttons/electrons/GradientButton';
 
 export default function LoginPage() {
   const dispatch = useDispatch<AppDispatch>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const response = await API.post('/auth/login', { email, password });
       const { user, accessToken, refreshToken } = response.data.data;
@@ -30,6 +32,8 @@ export default function LoginPage() {
       router.push('/');
     } catch (err) {
       handleRequestErrors(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -90,7 +94,7 @@ export default function LoginPage() {
               </a>
             </div>
           </div>
-          <DefaultButton label="Sign in" type="submit" />
+          <GradientButton isLoading={isLoading} label="Sign in" type="submit" />
           <div className="text-center">
             <span className="text-sm text-gray-600">
               Don't have an account?{' '}

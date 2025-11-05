@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FaUser, FaLock, FaEnvelope, FaGavel, FaArrowLeft } from 'react-icons/fa';
+import { FaGavel, FaArrowLeft } from 'react-icons/fa';
 import API from '@/utils/API/API';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
@@ -11,6 +11,7 @@ import { loginSucces } from '@/store/auth/authSlice';
 import { handleRequestErrors, showSuccess } from '@/utils/functions';
 import CEmailInput from '@/core/inputs/CEmailInput';
 import CPasswordInput from '@/core/inputs/CPasswordInput';
+import GradientButton from '@/core/buttons/electrons/GradientButton';
 import CNameInput from '@/core/inputs/CNameInput';
 
 export default function SignUpPage() {
@@ -33,7 +34,6 @@ export default function SignUpPage() {
       });
       const { user, accessToken, refreshToken } = response.data.data;
       dispatch(loginSucces({ user, accessToken, refreshToken }));
-      showSuccess(`Welcome: ${user?.name}`);
       router.push('/');
     } catch (err) {
       handleRequestErrors(err);
@@ -66,51 +66,32 @@ export default function SignUpPage() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            <div>
-              <CNameInput
-                label="Full Name"
-                placeholder="John Doe"
-                value={name}
-                onChange={(e: any) => setName(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <CEmailInput
-                label="Email Address"
-                placeholder="email@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <CPasswordInput
-                label="Password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <CPasswordInput
-                label="Confirm Password"
-                placeholder="••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
+            <CNameInput
+              label="Full Name"
+              placeholder="John Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <CEmailInput
+              label="Email Address"
+              placeholder="email@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <CPasswordInput
+              label="Password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <CPasswordInput
+              label="Confirm Password"
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
           </div>
-
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-              Create Account
-            </button>
-          </div>
-
+          <GradientButton label="Create Account" type="submit" />
           <div className="text-center">
             <span className="text-sm text-gray-600">
               Already have an account?{' '}

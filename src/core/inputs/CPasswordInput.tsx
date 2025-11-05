@@ -1,8 +1,8 @@
 import React from 'react';
-import CInput, { InputProps } from '@/core/inputs/CInput';
+import CInput, { CInputProps } from '@/core/inputs/CInput';
 import { FaLock } from 'react-icons/fa';
 
-const CPasswordInput = (props: InputProps) => {
+const CPasswordInput = (props: CInputProps) => {
   return (
     <CInput
       type="password"
