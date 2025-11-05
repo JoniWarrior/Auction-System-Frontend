@@ -15,8 +15,6 @@ const CInput = ({ label, value, appendIcon, className, ...props }: CInputProps) 
       )}
       <div className="mt-1 relative">
         <input
-          id="email"
-          name="email"
           type="email"
           className={`appearance-none block w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 ${className}`}
           value={value}

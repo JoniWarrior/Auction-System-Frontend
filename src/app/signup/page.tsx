@@ -34,7 +34,6 @@ export default function SignUpPage() {
       });
       const { user, accessToken, refreshToken } = response.data.data;
       dispatch(loginSucces({ user, accessToken, refreshToken }));
-      showSuccess(`Welcome: ${user?.name}`);
       router.push('/');
     } catch (err) {
       handleRequestErrors(err);
