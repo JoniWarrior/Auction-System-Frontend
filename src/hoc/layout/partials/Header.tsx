@@ -1,11 +1,12 @@
-"use client";
-import Link from "next/link";
-import { FaSearch, FaGavel, FaUser } from "react-icons/fa";
-import { useRouter } from "next/navigation";
-import NotificationBell from "@/hoc/layout/partials/Notification";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { logOut } from "@/store/auth/authSlice";
+'use client';
+import Link from 'next/link';
+import { FaSearch, FaGavel, FaUser } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
+import NotificationBell from '@/hoc/layout/partials/Notification';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { logOut } from '@/store/auth/authSlice';
+import GradientButton from '@/core/buttons/electrons/GradientButton';
 
 export default function Header() {
   const router = useRouter();
@@ -16,14 +17,14 @@ export default function Header() {
 
   const handleLogOut = () => {
     dispatch(logOut());
-    router.push("/");
+    router.push('/');
   };
 
   return (
     <header className="bg-white shadow-md">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <Link href="/public" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg flex items-center justify-center">
               <FaGavel className="text-white text-lg" />
             </div>
@@ -31,16 +32,10 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex space-x-6">
-            <Link
-              href="/auctions"
-              className="text-gray-600 hover:text-purple-600 font-medium"
-            >
+            <Link href="/auctions" className="text-gray-600 hover:text-purple-600 font-medium">
               Auctions
             </Link>
-            <Link
-              href="/sell"
-              className="text-gray-600 hover:text-purple-600 font-medium"
-            >
+            <Link href="/sell" className="text-gray-600 hover:text-purple-600 font-medium">
               Sell
             </Link>
           </nav>
@@ -52,28 +47,33 @@ export default function Header() {
               <>
                 <Link
                   href="/signup"
-                  className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2"
-                >
+                  className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2">
                   <FaUser className="text-sm" />
                   <span>Sign Up</span>
                 </Link>
 
                 <Link
                   href="/login"
-                  className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2"
-                >
+                  className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2">
                   <FaUser className="text-sm" />
                   <span>Log In</span>
                 </Link>
               </>
             ) : (
-              <button
+              <GradientButton
                 onClick={handleLogOut}
-                className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2"
-              >
-                <FaUser className="text-sm" />
-                <span>Log Out</span>
-              </button>
+                fromColor="from-purple-600"
+                toColor="to-blue-500"
+                hoverFromColor="hover:from-purple-700"
+                hoverToColor="hover:to-blue-600"
+                className="text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2"
+                label={
+                  <span className="flex items-center space-x-2">
+                    <FaUser className="text-sm" />
+                    <span>Log Out</span>
+                  </span>
+                }
+              />
             )}
           </div>
         </div>

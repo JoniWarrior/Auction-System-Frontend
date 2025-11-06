@@ -1,7 +1,7 @@
 import React from 'react';
 
 export interface DefaultButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  label: string;
+  label: any;
   textColor?: string;
   color?: string;
   hoverColor?: string;

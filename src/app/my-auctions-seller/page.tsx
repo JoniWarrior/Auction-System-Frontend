@@ -1,38 +1,29 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { FaClock, FaSearch, FaFilter } from "react-icons/fa";
-import API from "@/utils/API/API";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { showError } from "@/utils/functions";
-import axios from "axios";
-import BiddingService from "@/services/BiddingService";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { FaClock, FaSearch, FaFilter } from 'react-icons/fa';
+import { showError } from '@/utils/functions';
+import axios from 'axios';
+import AuctionService from '@/services/AuctionService';
+import Image from 'next/image';
+import GradientButton from '@/core/buttons/electrons/GradientButton';
 
 export default function MyAuctionsPage() {
   const [auctions, setAuctions] = useState<any[]>([]);
-  const [filter, setFilter] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
-  const token = useSelector((state: RootState) => state.auth.accessToken);
 
   const handleCloseAuction = async (auctionId: string) => {
-    const confirmed = window.confirm("Are you sure to close the auction?");
+    const confirmed = window.confirm('Are you sure to close the auction?');
     if (!confirmed) return;
 
     try {
-      const response = await API.post(`/auctions/${auctionId}/close`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const response = await AuctionService.closeAuction(auctionId);
       setAuctions((prev) =>
         prev.map((auction) =>
-          auction.id === auctionId
-            ? { ...auction, ...response.data.data }
-            : auction
+          auction.id === auctionId ? { ...auction, ...response.data.data } : auction
         )
       );
     } catch (err) {
@@ -40,16 +31,16 @@ export default function MyAuctionsPage() {
         // @ts-ignore
         showError(err.response.data.message);
       }
-      console.error("Error closing the auction, ", err);
+      console.error('Error closing the auction, ', err);
     }
   };
 
   const fetchAuctions = async () => {
     try {
-      const response = await BiddingService.getSellerAuctions(filter);
+      const response = await AuctionService.getSellerAuctions(filter);
       setAuctions(response.data.data);
     } catch (err) {
-      console.error("Error fetching the data ", err);
+      console.error('Error fetching the data ', err);
     } finally {
       setLoading(false);
     }
@@ -83,8 +74,7 @@ export default function MyAuctionsPage() {
             <select
               className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
               value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            >
+              onChange={(e) => setFilter(e.target.value)}>
               <option value="all">All Auctions</option>
               <option value="active">Active</option>
               <option value="pending">Pending</option>
@@ -93,8 +83,7 @@ export default function MyAuctionsPage() {
           </div>
           <a
             href="/my-empty-items"
-            className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition"
-          >
+            className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition">
             + Add an Auction
           </a>
         </div>
@@ -102,45 +91,36 @@ export default function MyAuctionsPage() {
 
       {auctions.length === 0 ? (
         <div className="text-center py-12">
-          <h2 className="text-2xl font-semibold text-gray-600">
-            No auctions found
-          </h2>
-          <p className="text-gray-500 mt-2">
-            Try adjusting your search or filter criteria
-          </p>
+          <h2 className="text-2xl font-semibold text-gray-600">No auctions found</h2>
+          <p className="text-gray-500 mt-2">Try adjusting your search or filter criteria</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {auctions.map((auction) => (
             <div
               key={auction.id}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-            >
+              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <div className="h-48 bg-gray-200 relative">
-                <img
+                <Image
                   src={auction.item.imageURL}
                   alt={auction.item.title}
+                  fill
                   className="w-full h-full object-cover"
                 />
                 <div
                   className={`absolute top-4 left-4 text-white text-sm font-medium py-1 px-3 rounded-full ${
-                    auction.status !== "finished"
-                      ? "bg-green-500"
-                      : "bg-red-500"
-                  }`}
-                >
-                  <FaClock className="inline mr-1" />{" "}
-                  {auction.status !== "finished"
+                    auction.status !== 'finished' ? 'bg-green-500' : 'bg-red-500'
+                  }`}>
+                  <FaClock className="inline mr-1" />{' '}
+                  {auction.status !== 'finished'
                     ? new Date(auction.endTime).toLocaleString()
-                    : "Finished"}
+                    : 'Finished'}
                 </div>
               </div>
 
               <div className="p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-semibold text-lg truncate">
-                    {auction.item.title}
-                  </h3>
+                  <h3 className="font-semibold text-lg truncate">{auction.item.title}</h3>
                   <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
                     By {auction?.item?.seller?.name}
                   </span>
@@ -171,18 +151,20 @@ export default function MyAuctionsPage() {
 
                 <Link
                   href={`/auctions/${auction.id}`}
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all flex items-center justify-center"
-                >
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all flex items-center justify-center">
                   View Results
                 </Link>
 
-                {auction.status !== "finished" && (
-                  <button
+                {auction.status !== 'finished' && (
+                  <GradientButton
+                    label="Close Auction"
                     onClick={() => handleCloseAuction(auction.id)}
-                    className="w-full bg-red-600 text-white font-medium py-2 rounded-lg hover:bg-red-700 transition mt-2"
-                  >
-                    Close Auction
-                  </button>
+                    fromColor="from-red-500"
+                    toColor="to-red-700"
+                    hoverFromColor="hover:from-red-600"
+                    hoverToColor="hover:to-red-800"
+                    className="w-full text-white font-medium py-2 rounded-lg transition mt-2"
+                  />
                 )}
               </div>
             </div>

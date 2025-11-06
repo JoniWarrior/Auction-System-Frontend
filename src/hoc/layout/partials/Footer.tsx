@@ -1,3 +1,4 @@
+import GradientButton from '@/core/buttons/electrons/GradientButton';
 import Link from 'next/link';
 import { FaGavel, FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
 
@@ -7,7 +8,7 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
-            <Link href="/public" className="flex items-center space-x-2 mb-4">
+            <Link href="/" className="flex items-center space-x-2 mb-4">
               <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-500 rounded-lg flex items-center justify-center">
                 <FaGavel className="text-white text-lg" />
               </div>
@@ -87,9 +88,7 @@ export default function Footer() {
                 placeholder="Your email"
                 className="bg-gray-800 text-white py-2 px-4 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
               />
-              <button className="bg-gradient-to-r from-purple-600 to-blue-500 text-white py-2 px-4 rounded-r-lg font-medium">
-                Subscribe
-              </button>
+              <GradientButton type='submit' label='Subscribe'/>
             </div>
           </div>
         </div>

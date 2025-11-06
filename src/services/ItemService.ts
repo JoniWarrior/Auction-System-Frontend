@@ -1,9 +1,13 @@
 import API from '@/utils/API/API';
-
+export interface GetItemsParams {
+  page?: number;
+  pageSize?: number;
+  qs?: string;
+}
 const ItemService = {
   create: async (payload: FormData) =>
     API.post('/items', payload, { headers: { 'Content-Type': 'multipart/form-data' } }),
-  getEmptyItems: () => API.get('items/my-empty-items')
+  getEmptyItems: (params : GetItemsParams) => API.get('items/my-empty-items', {params})
 };
 
 export default ItemService;

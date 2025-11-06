@@ -4,6 +4,8 @@ import { FaArrowLeft, FaTag, FaAlignLeft, FaUpload } from 'react-icons/fa';
 import { handleRequestErrors, showSuccess } from '@/utils/functions';
 import ItemService from '@/services/ItemService';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import GradientButton from '@/core/buttons/electrons/GradientButton';
 
 export default function SellPageContent() {
   const [title, setTitle] = useState('');
@@ -32,7 +34,7 @@ export default function SellPageContent() {
         formData.append('image', image);
       }
       const res = await ItemService.create(formData);
-      showSuccess(res.data.message);
+      showSuccess('Item Listed Successfully!');
       router.push('/my-empty-items');
     } catch (err) {
       handleRequestErrors(err);
@@ -129,21 +131,20 @@ export default function SellPageContent() {
               </div>
 
               {imageURL && (
-                <img
-                  src={imageURL}
-                  alt="Preview"
-                  className="mt-4 w-full h-64 object-cover rounded-lg border border-gray-200"
-                />
+                <div className="relative w-115 h-48 mt-4">
+                  <Image
+                    src={imageURL}
+                    alt="Preview"
+                    fill
+                    className="object-cover rounded-lg border border-gray-200"
+                  />
+                </div>
               )}
             </div>
           </div>
 
           <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400">
-              List Item
-            </button>
+            <GradientButton type="submit" label="List Item" />
           </div>
         </form>
       </div>

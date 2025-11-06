@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { FaClock, FaArrowLeft } from 'react-icons/fa';
-import API from '@/utils/API/API';
 import { io } from 'socket.io-client';
 import BiddingHistory from './BiddingHistory';
 import { useSelector } from 'react-redux';
@@ -10,6 +9,9 @@ import { RootState } from '@/store/store';
 import { showError } from '@/utils/functions';
 import axios from 'axios';
 import BiddingService from '@/services/BiddingService';
+import AuctionService from '@/services/AuctionService';
+import Image from 'next/image';
+import GradientButton from '@/core/buttons/electrons/GradientButton';
 
 let socket: any;
 let socketInitialized = false;
@@ -80,7 +82,7 @@ export default function AuctionDetailContent() {
 
   const fetchAuction = async () => {
     try {
-      const response = await API.get(`/auctions/${auctionId}`);
+      const response = await AuctionService.getSingleAuction(auctionId);
       setAuction(response.data.data);
       setBiddings(response.data.data.biddings.sort((a: any, b: any) => b?.amount - a?.amount));
     } catch (err) {
@@ -170,10 +172,11 @@ export default function AuctionDetailContent() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
-          <div className="bg-gray-200 rounded-lg overflow-hidden h-80">
-            <img
-              src={auction?.item.imageURL}
+          <div className="bg-gray-200 rounded-lg overflow-hidden h-80 relative">
+            <Image
+              src={auction?.item?.imageURL}
               alt={auction?.item.title}
+              fill
               className="w-full h-full object-cover"
             />
           </div>
@@ -253,11 +256,15 @@ export default function AuctionDetailContent() {
                       }
                       required
                     />
-                    <button
+                    <GradientButton
                       type="submit"
-                      className="justify-end bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium px-6 py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all">
-                      Place Bid
-                    </button>
+                      label="Place Bid"
+                      fromColor="from-purple-600"
+                      toColor="to-blue-500"
+                      hoverFromColor="hover:from-purple-700"
+                      hoverToColor="hover:to-blue-600"
+                      className="font-medium px-6 py-2 rounded-lg transition-all"
+                    />
                   </div>
                 </form>
               </>

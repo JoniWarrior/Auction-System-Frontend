@@ -1,10 +1,11 @@
-"use client";
-import { useEffect, useState } from "react";
-import { FaBell } from "react-icons/fa";
-import { io, Socket } from "socket.io-client";
-import API from "@/utils/API/API";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+'use client';
+import { useEffect, useState } from 'react';
+import { FaBell } from 'react-icons/fa';
+import { io, Socket } from 'socket.io-client';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import NotificationService from '@/services/NotificationService';
+import GradientButton from '@/core/buttons/electrons/GradientButton';
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -18,26 +19,20 @@ export default function NotificationBell() {
 
     const fetchNotifications = async () => {
       try {
-        const response = await API.get(`/notifications/${user?.id}/unread`);
+        const response = await NotificationService.getUnreadNotification(user?.id);
         setNotifications(response.data.data);
         setUnreadCount(response.data.data.filter((n: any) => !n.isRead).length);
       } catch (err) {
-        console.error("Error fetching notifications: ", err);
+        console.error('Error fetching notifications: ', err);
       }
     };
     fetchNotifications();
 
     const socket: Socket = io(process.env.NEXT_PUBLIC_BACKEND_URL!, {
-      query: { userId: user?.id },
+      query: { userId: user?.id }
     });
 
-    socket.on("connect", () => {
-      console.log("Connected to socket as user: ", user?.id);
-    });
-
-    socket.on("outBid", (notification: any) => {
-      console.log("Notification received: ", notification);
-
+    socket.on('outBid', (notification: any) => {
       setNotifications((prev) => [notification, ...prev]);
       setUnreadCount((prev) => prev + 1);
 
@@ -52,28 +47,34 @@ export default function NotificationBell() {
 
   const markAsRead = async (id: string) => {
     try {
-      await API.patch(`/notifications/${id}/read`);
-
+      await NotificationService.markAsRead(id);
       setNotifications((prev) => prev.filter((n) => n.id !== id)); // remove from the list
       setUnreadCount((prev) => Math.max(prev - 1, 0));
     } catch (err) {
-      console.error("Error marking notification as read: ", err);
+      console.error('Error marking notification as read: ', err);
     }
   };
 
   return (
     <div className="relative">
-      <button
-        className="relative text-gray-600 hover:text-purple-600"
+      <GradientButton
         onClick={() => setIsOpen(!isOpen)}
-      >
-        <FaBell className="text-xl" />
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-            {unreadCount}
-          </span>
-        )}
-      </button>
+        fromColor="from-purple-500"
+        toColor="to-blue-500"
+        hoverFromColor="hover:from-purple-800"
+        hoverToColor="hover:to-blue-600"
+        className="!w-auto p-2 rounded-full relative text-white"
+        label={
+          <>
+            <FaBell className="text-l" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                {unreadCount}
+              </span>
+            )}
+          </>
+        }
+      />
 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg max-h-96 overflow-y-auto z-50">
@@ -81,25 +82,16 @@ export default function NotificationBell() {
             <p className="p-3 text-gray-500 text-sm">No notifications</p>
           ) : (
             notifications
-              .sort(
-                (a, b) =>
-                  new Date(b.createdAt).getTime() -
-                  new Date(a.createdAt).getTime()
-              )
+              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
               .slice(0, 10)
               .map((n) => (
-                <div
-                  key={n.id}
-                  className="p-3 border-b flex justify-between items-center bg-white"
-                >
+                <div key={n.id} className="p-3 border-b flex justify-between items-center bg-white">
                   <span className="text-sm text-gray-800">
-                    {n.message ||
-                      `You were outbid with bid $${n.bidding?.amount}`}
+                    {n.message || `You were outbid with bid $${n.bidding?.amount}`}
                   </span>
                   <button
                     onClick={() => markAsRead(n.id)}
-                    className="text-xs text-purple-600 hover:underline ml-2"
-                  >
+                    className="text-xs text-purple-600 hover:underline ">
                     Mark read
                   </button>
                 </div>

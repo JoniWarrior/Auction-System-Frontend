@@ -1,7 +1,8 @@
 'use client';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import API from '@/utils/API/API';
+import AuctionService, { CreateAuctionPayload } from '@/services/AuctionService';
+import GradientButton from '@/core/buttons/electrons/GradientButton';
 
 export default function CreateAuctionPage() {
   const params = useParams();
@@ -14,11 +15,13 @@ export default function CreateAuctionPage() {
   const handleCreateAuction = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await API.post('/auctions', {
+      const payload: CreateAuctionPayload = {
         itemId,
         startingPrice: Number(startingPrice),
-        endTime: endTime
-      });
+        endTime
+      };
+
+      const response = await AuctionService.createAuction(payload);
       router.push(`/auctions/${response.data.data.id}`);
     } catch (err) {
       console.error('Error creating auction', err);
@@ -27,7 +30,7 @@ export default function CreateAuctionPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">Create Auction for Item {itemId}</h1>
+      <h1 className="text-2xl font-bold mb-4">Create Auction for Item</h1>
       <form onSubmit={handleCreateAuction} className="space-y-4 max-w-md">
         <div>
           <label>Starting Price:</label>
@@ -49,7 +52,7 @@ export default function CreateAuctionPage() {
             required
           />
         </div>
-        <button className="bg-purple-600 text-white px-4 py-2 rounded">Create Auction</button>
+        <GradientButton type="submit" label="Create Auction"/>
       </form>
     </div>
   );

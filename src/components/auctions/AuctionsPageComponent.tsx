@@ -1,41 +1,44 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { FaClock, FaSearch, FaFilter } from "react-icons/fa";
-import API from "@/utils/API/API";
-import _ from "lodash";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import { FaClock, FaSearch, FaFilter } from 'react-icons/fa';
+import _ from 'lodash';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import AuctionService, { GetAuctionsParams } from '@/services/AuctionService';
+import Image from 'next/image';
 
-export default function   AuctionsPageComponent() {
+export default function AuctionsPageComponent() {
   const [auctions, setAuctions] = useState<any[]>([]);
   const [filter, setFilter] = useState();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState<any>();
-  const user = useSelector((state : RootState) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
 
-  // Pagination logic :
-  const auctionsPerPage = 6;
+  const handleSearchChange = useCallback(
+    _.debounce((value: string) => setSearchTerm(value), 500),
+    []
+  );
+
+  const auctionsPerPage = 6; // ?
   const fetchAuctions = async () => {
     setLoading(true);
     try {
-      const response = await API.get("/auctions", {
-        params: {
-          status: filter,
-          page: currentPage || 1,
-          pageSize: auctionsPerPage,
-          qs: searchTerm || "",
-        },
-        paramsSerializer: { indexes: null },
-      });
+      const params: GetAuctionsParams = {
+        status: filter,
+        page: currentPage || 1,
+        pageSize: auctionsPerPage,
+        qs: searchTerm || ''
+      };
+      const response = await AuctionService.getAllAuctions(params);
 
       setAuctions(response?.data?.data?.data); // matcehs beckend {data,meta }
       setTotalPages(response?.data?.data?.meta?.totalPages);
     } catch (err: any) {
-      console.error("Error fetching the data ", err.response?.data || err);
+      console.error('Error fetching the data ', err.response?.data || err);
     } finally {
       setLoading(false);
     }
@@ -56,7 +59,7 @@ export default function   AuctionsPageComponent() {
               type="text"
               placeholder="Search auctions..."
               className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
-              onChange={_.debounce((e) => setSearchTerm(e.target.value), 500)}
+              onChange={(e) => handleSearchChange(e.target.value)}
             />
             <FaSearch className="absolute left-3 top-3 text-gray-400" />
           </div>
@@ -66,8 +69,7 @@ export default function   AuctionsPageComponent() {
             <select
               className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
               value={filter}
-              onChange={(e: any) => setFilter(e?.target?.value)}
-            >
+              onChange={(e: any) => setFilter(e?.target?.value)}>
               <option value="">All Auctions</option>
               <option value="active">Active</option>
               <option value="finished">Finished</option>
@@ -82,12 +84,8 @@ export default function   AuctionsPageComponent() {
         <p className="text-center mt-20">Loading All Auctions...</p>
       ) : auctions.length === 0 ? (
         <div className="text-center py-12">
-          <h2 className="text-2xl font-semibold text-gray-600">
-            No auctions found
-          </h2>
-          <p className="text-gray-500 mt-2">
-            Try adjusting your search or filter criteria
-          </p>
+          <h2 className="text-2xl font-semibold text-gray-600">No auctions found</h2>
+          <p className="text-gray-500 mt-2">Try adjusting your search or filter criteria</p>
         </div>
       ) : (
         <>
@@ -95,33 +93,29 @@ export default function   AuctionsPageComponent() {
             {auctions.map((auction) => (
               <div
                 key={auction.id}
-                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col"
-              >
+                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
                 <div className="h-48 bg-gray-200 relative">
-                  <img
+                  <Image
                     src={auction.item.imageURL}
                     alt={auction.item.title}
+                    fill
                     className="w-full h-full object-cover"
                   />
+
                   <div
                     className={`absolute top-4 left-4 text-white text-sm font-medium py-1 px-3 rounded-full ${
-                      auction.status !== "finished"
-                        ? "bg-green-500"
-                        : "bg-red-500"
-                    }`}
-                  >
-                    <FaClock className="inline mr-1" />{" "}
-                    {auction.status !== "finished"
+                      auction.status !== 'finished' ? 'bg-green-500' : 'bg-red-500'
+                    }`}>
+                    <FaClock className="inline mr-1" />{' '}
+                    {auction.status !== 'finished'
                       ? new Date(auction.endTime).toLocaleString()
-                      : "Finished"}
+                      : 'Finished'}
                   </div>
                 </div>
 
                 <div className="p-4 flex flex-col flex-grow">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-lg truncate">
-                      {auction.item.title}
-                    </h3>
+                    <h3 className="font-semibold text-lg truncate">{auction.item.title}</h3>
                     <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
                       By {auction.item.seller.name}
                     </span>
@@ -141,7 +135,7 @@ export default function   AuctionsPageComponent() {
                   </div>
 
                   <div className="flex justify-between items-center text-sm text-gray-500 mb-4"></div>
-                  {auction.status === "finished" ? (
+                  {auction.status === 'finished' ? (
                     <div className="flex justify-center mt-4 mb-4">
                       <p className="flex items-center gap-3 text-sm text-gray-700 border border-black rounded-lg px-4 py-2 bg-white shadow-md font-medium">
                         🏆 <span>Winner: </span>
@@ -161,11 +155,10 @@ export default function   AuctionsPageComponent() {
 
                   <Link
                     href={`/auctions/${auction.id}`}
-                    className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all flex items-center justify-center mt-auto"
-                  >
-                    {(auction.status === "finished" || auction.item.seller.id === user?.id)
-                      ? "View Results"
-                      : "Place Bid"}
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all flex items-center justify-center mt-auto">
+                    {auction.status === 'finished' || auction.item.seller.id === user?.id
+                      ? 'View Results'
+                      : 'Place Bid'}
                   </Link>
                 </div>
               </div>
@@ -177,22 +170,17 @@ export default function   AuctionsPageComponent() {
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-            >
+              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50">
               Previous
             </button>
-
             <span>
               Page {currentPage} of {totalPages}
             </span>
 
             <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-            >
+              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50">
               Next
             </button>
           </div>

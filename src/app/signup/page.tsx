@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { FaGavel, FaArrowLeft } from 'react-icons/fa';
-import API from '@/utils/API/API';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';

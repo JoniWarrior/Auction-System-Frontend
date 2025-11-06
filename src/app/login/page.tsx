@@ -27,8 +27,6 @@ export default function LoginPage() {
     try {
       const response = await AuthService.login(email, password);
       const { user, accessToken, refreshToken } = response.data.data;
-      console.log('AccesToken: ', accessToken);
-      console.log('Refresh Token: ', refreshToken);
       dispatch(loginSucces({ user, accessToken, refreshToken }));
       router.push('/');
     } catch (err) {

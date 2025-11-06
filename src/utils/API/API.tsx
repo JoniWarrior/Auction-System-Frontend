@@ -49,10 +49,6 @@ API.interceptors.response.use(
         
 
         const { accessToken: newAccessToken, user: newUser } = response.data.data;
-
-        console.log("New AccessToken after refresh: ", newAccessToken);
-        console.log("Updated User after refresh: ", newUser);
-
         store.dispatch(
           loginSucces({
             user: newUser,
