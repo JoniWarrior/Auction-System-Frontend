@@ -1,12 +1,13 @@
 'use client';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
 import { useRouter } from 'next/navigation';
-import { PropsWithChildren, useEffect } from 'react';
+import { RootState } from '@/store/store';
+import { PropsWithChildren } from 'react';
 
 const AuthRoute = ({ children }: PropsWithChildren) => {
-  const isAuthenticated = useSelector((state: RootState) => state.auth.accessToken);
   const router = useRouter();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.accessToken);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -15,7 +16,7 @@ const AuthRoute = ({ children }: PropsWithChildren) => {
   }, [isAuthenticated, router]);
 
   if (!isAuthenticated) {
-    return null;
+    return null; // or a loading spinner
   }
 
   return <>{children}</>;
