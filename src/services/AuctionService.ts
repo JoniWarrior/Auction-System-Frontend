@@ -13,15 +13,11 @@ export interface CreateAuctionPayload {
   endTime: any;
 }
 const AuctionService = {
-  getBidderAuctions: async (filter?: string) => {
-    return API.get('/auctions/my-auctions-as-bidder', {
-      params: { status: filter }
-    });
+  getBidderAuctions: (params : GetAuctionsParams) => {
+    return API.get('/auctions/my-auctions-as-bidder', { params });
   },
-  getSellerAuctions: async (filter?: string) => {
-    return API.get('/auctions/my-auctions-as-seller', {
-      params: { status: filter }
-    });
+  getSellerAuctions: (params : GetAuctionsParams) => {
+    return API.get('/auctions/my-auctions-as-seller', {params});
   },
   getSingleAuction: async (auctionId: string) => {
     return API.get(`/auctions/${auctionId}`);

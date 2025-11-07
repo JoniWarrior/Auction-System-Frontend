@@ -1,7 +1,6 @@
 import API from '@/utils/API/API';
 export interface GetItemsParams {
   page?: number;
-  pageSize?: number;
   qs?: string;
 }
 const ItemService = {
