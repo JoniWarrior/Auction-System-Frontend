@@ -14,28 +14,26 @@ export default function NotificationBell() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const user = useSelector((state: RootState) => state.auth.user);
 
+  const fetchNotifications = async (user: any) => {
+    try {
+      const response = await NotificationService.getUnreadNotification(user?.id);
+      setNotifications(response.data.data);
+      setUnreadCount(response.data.data.filter((n: any) => !n.isRead).length);
+    } catch (err) {
+      console.error('Error fetching notifications: ', err);
+    }
+  };
+
   useEffect(() => {
     if (!user?.id) return;
-
-    const fetchNotifications = async () => {
-      try {
-        const response = await NotificationService.getUnreadNotification(user?.id);
-        setNotifications(response.data.data);
-        setUnreadCount(response.data.data.filter((n: any) => !n.isRead).length);
-      } catch (err) {
-        console.error('Error fetching notifications: ', err);
-      }
-    };
-    fetchNotifications();
+    fetchNotifications(user);
 
     const socket: Socket = io(process.env.NEXT_PUBLIC_BACKEND_URL!, {
       query: { userId: user?.id }
     });
-
     socket.on('outBid', (notification: any) => {
       setNotifications((prev) => [notification, ...prev]);
       setUnreadCount((prev) => prev + 1);
-
       setToastMessage(notification.message);
       setTimeout(() => setToastMessage(null), 5000);
     });

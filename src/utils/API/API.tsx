@@ -43,7 +43,7 @@ API.interceptors.response.use(
         }
 
         const response = await API.post(`/auth/refresh`, {
-          userId: user?.id,
+          userId: user?.id, // Could be not necessary ? check the back coordination too
           refreshToken,
         });
         

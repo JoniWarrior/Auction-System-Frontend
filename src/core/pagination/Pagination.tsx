@@ -1,11 +1,10 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import GradientButton from '../buttons/electrons/GradientButton';
 
 interface PaginationProps {
   totalPages: number;
   currentPage: number,
   onChange: Dispatch<SetStateAction<number>>;
-
 }
 
 const Pagination = ({ totalPages, currentPage, onChange }: PaginationProps) => {
