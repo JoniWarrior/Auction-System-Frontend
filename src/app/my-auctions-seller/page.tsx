@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FaClock, FaSearch, FaFilter } from 'react-icons/fa';
+import { FaClock, FaFilter } from 'react-icons/fa';
 import { showError } from '@/utils/functions';
 import axios from 'axios';
 import AuctionService, { GetAuctionsParams } from '@/services/AuctionService';
