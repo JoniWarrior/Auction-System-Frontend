@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FaClock } from 'react-icons/fa';
-import AuctionService, { GetAuctionsParams } from '@/services/AuctionService';
+import AuctionService, { passParams } from '@/services/AuctionService';
 import Image from 'next/image';
 import _ from 'lodash';
 import Pagination from '@/core/pagination/Pagination';
@@ -22,11 +22,12 @@ const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 5
   const fetchAuctions = async () => {
     setLoading(true);
     try {
-      const params: GetAuctionsParams = {
-        status: filter && filter !== 'all' ? filter : undefined,
-        page: currentPage || 1,
-        qs: searchTerm || ''
-      };
+      // const params: GetAuctionsParams = {
+      //   status: filter && filter !== 'all' ? filter : undefined,
+      //   page: currentPage || 1,
+      //   qs: searchTerm || ''
+      // };
+      const params = passParams(filter, currentPage, searchTerm);
       const response = await AuctionService.getBidderAuctions(params);
       setAuctions(response?.data?.data?.data);
       setTotalPages(response?.data?.data?.meta?.totalPages);
@@ -57,7 +58,7 @@ const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 5
 
       {loading ? (
         <p className="text-center mt-20">Loading All Auctions...</p>
-      ) : auctions.length === 0 ? (
+      ) : auctions?.length === 0 ? (
         <div className="text-center py-12">
           <h2 className="text-2xl font-semibold text-gray-600">No auctions found</h2>
           <p className="text-gray-500 mt-2">Try changing the status filter</p>
@@ -97,7 +98,7 @@ const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 5
                 </div>
 
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                  {auction.item.description}
+                  {auction?.item?.description}
                 </p>
 
                 <div className="flex justify-between items-center mb-3">

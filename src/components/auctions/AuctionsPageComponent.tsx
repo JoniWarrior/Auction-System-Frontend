@@ -6,7 +6,7 @@ import { FaClock, FaSearch } from 'react-icons/fa';
 import _ from 'lodash';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
-import AuctionService, { GetAuctionsParams } from '@/services/AuctionService';
+import AuctionService, { passParams } from '@/services/AuctionService';
 import Image from 'next/image';
 import Pagination from '@/core/pagination/Pagination';
 import CFilter from '@/core/inputs/Cfilter';
@@ -25,11 +25,12 @@ export default function AuctionsPageComponent() {
   const fetchAuctions = async () => {
     setLoading(true);
     try {
-      const params: GetAuctionsParams = {
-        status: filter && filter !== 'all' ? filter : undefined,
-        page: currentPage || 1,
-        qs: searchTerm || ''
-      };
+      // const params: GetAuctionsParams = {
+      //   status: filter && filter !== 'all' ? filter : undefined,
+      //   page: currentPage || 1,
+      //   qs: searchTerm || ''
+      // };
+      const params = passParams(filter, currentPage, searchTerm);
       const response = await AuctionService.getAllAuctions(params);
       setAuctions(response?.data?.data?.data); // matcehs beckend {data,meta }
       setTotalPages(response?.data?.data?.meta?.totalPages);
@@ -69,7 +70,7 @@ export default function AuctionsPageComponent() {
 
           <div className="flex justify-center items-center space-x-4 mt-6"></div>
 
-          {auctions.length === 0 ? (
+          {auctions?.length === 0 ? (
             <div className="text-center py-12">
               <h2 className="text-2xl font-semibold text-gray-600">No auctions found</h2>
               <p className="text-gray-500 mt-2">Try adjusting your search or filter criteria</p>

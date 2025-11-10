@@ -12,12 +12,22 @@ export interface CreateAuctionPayload {
   startingPrice: number;
   endTime: any;
 }
+export const passParams = (
+  filter?: string,
+  currentPage?: number,
+  searchTerm?: string
+): GetAuctionsParams => ({
+  status: filter && filter !== 'all' ? filter : undefined,
+  page: currentPage || 1,
+  qs: searchTerm || ''
+});
+
 const AuctionService = {
-  getBidderAuctions: (params : GetAuctionsParams) => {
+  getBidderAuctions: (params: GetAuctionsParams) => {
     return API.get('/auctions/my-auctions-as-bidder', { params });
   },
-  getSellerAuctions: (params : GetAuctionsParams) => {
-    return API.get('/auctions/my-auctions-as-seller', {params});
+  getSellerAuctions: (params: GetAuctionsParams) => {
+    return API.get('/auctions/my-auctions-as-seller', { params });
   },
   getSingleAuction: async (auctionId: string) => {
     return API.get(`/auctions/${auctionId}`);
@@ -28,7 +38,7 @@ const AuctionService = {
   createAuction: (payload: CreateAuctionPayload) => {
     return API.post('/auctions', payload);
   },
-  closeAuction : (auctionId : string) => {
+  closeAuction: (auctionId: string) => {
     return API.post(`/auctions/${auctionId}/close`);
   }
 };
