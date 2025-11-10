@@ -55,7 +55,7 @@ API.interceptors.response.use(
             accessToken: newAccessToken,
             refreshToken,
           })
-        );
+        );  
         API.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 

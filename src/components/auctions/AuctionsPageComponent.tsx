@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FaClock, FaSearch, FaFilter } from 'react-icons/fa';
+import { FaClock, FaSearch } from 'react-icons/fa';
 import _ from 'lodash';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import AuctionService, { GetAuctionsParams } from '@/services/AuctionService';
 import Image from 'next/image';
 import Pagination from '@/core/pagination/Pagination';
+import CFilter from '@/core/inputs/Cfilter';
 
 export default function AuctionsPageComponent() {
   const [auctions, setAuctions] = useState<any[]>([]);
@@ -62,19 +63,7 @@ export default function AuctionsPageComponent() {
                 />
                 <FaSearch className="absolute left-3 top-3 text-gray-400" />
               </div>
-
-              <div className="flex items-center space-x-2">
-                <FaFilter className="text-gray-500" />
-                <select
-                  className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  value={filter}
-                  onChange={(e: any) => setFilter(e?.target?.value)}>
-                  <option value="all">All Auctions</option>
-                  <option value="active">Active</option>
-                  <option value="finished">Finished</option>
-                  <option value="pending">Pending</option>
-                </select>
-              </div>
+              <CFilter filter={filter} onFilterChange={setFilter} />
             </div>
           </div>
 

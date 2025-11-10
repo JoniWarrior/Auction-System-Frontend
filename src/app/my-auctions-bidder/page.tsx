@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FaClock, FaFilter, FaSearch } from 'react-icons/fa';
+import { FaClock } from 'react-icons/fa';
 import AuctionService, { GetAuctionsParams } from '@/services/AuctionService';
 import Image from 'next/image';
 import _ from 'lodash';
 import Pagination from '@/core/pagination/Pagination';
 import CSearch from '@/core/inputs/CSearch';
+import CFilter from '@/core/inputs/Cfilter';
 
 export default function MyAuctionsPage() {
   const [auctions, setAuctions] = useState<any[]>([]);
@@ -50,19 +51,7 @@ const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 5
           <div className="relative">
             <CSearch onSearch={handleSearchChange} />
           </div>
-          <div className="flex items-center space-x-2">
-            <FaFilter className="text-gray-500" />
-            <select
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            >
-              <option value="all">All Auctions</option>
-              <option value="active">Active</option>
-              <option value="pending">Pending</option>
-              <option value="finished">Finished</option>
-            </select>
-          </div>
+          <CFilter filter={filter} onFilterChange={setFilter}/>
         </div>
       </div>
 

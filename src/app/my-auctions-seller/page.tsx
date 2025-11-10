@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FaClock, FaFilter } from 'react-icons/fa';
+import { FaClock } from 'react-icons/fa';
 import { showError } from '@/utils/functions';
 import axios from 'axios';
 import AuctionService, { GetAuctionsParams } from '@/services/AuctionService';
@@ -11,6 +11,7 @@ import GradientButton from '@/core/buttons/electrons/GradientButton';
 import _ from 'lodash';
 import Pagination from '@/core/pagination/Pagination';
 import CSearch from '@/core/inputs/CSearch';
+import CFilter from '@/core/inputs/Cfilter';
 
 export default function MyAuctionsPage() {
   const [auctions, setAuctions] = useState<any[]>([]);
@@ -73,16 +74,7 @@ export default function MyAuctionsPage() {
           <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
             <CSearch onSearch={handleSearchChange} />
             <div className="flex items-center space-x-2">
-              <FaFilter className="text-gray-500" />
-              <select
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}>
-                <option value="all">All Auctions</option>
-                <option value="active">Active</option>
-                <option value="pending">Pending</option>
-                <option value="finished">Finished</option>
-              </select>
+              <CFilter filter={filter} onFilterChange={setFilter}/>
             </div>
             <a
               href="/my-empty-items"
