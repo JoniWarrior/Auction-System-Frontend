@@ -1,15 +1,17 @@
 'use client';
 import Link from 'next/link';
 import { FaSearch, FaGavel, FaUser } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import NotificationBell from '@/hoc/layout/partials/Notification';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { logOut } from '@/store/auth/authSlice';
 import GradientButton from '@/core/buttons/electrons/GradientButton';
+import { showLoader } from '@/store/loadingSlice';
 
 export default function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
@@ -19,6 +21,22 @@ export default function Header() {
     dispatch(logOut());
     router.push('/');
   };
+
+  const handleLoginClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (pathname !== "/login") {
+      dispatch(showLoader("Loading Login Page..."));
+      router.push("/login")}
+  };
+
+  const handleSignUpClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (pathname !== "/signup") {
+      dispatch(showLoader("Loading Signup Page..."));
+      router.push("/signup")
+    }
+  }
+
 
   return (
     <header className="bg-white shadow-md">
@@ -46,18 +64,22 @@ export default function Header() {
             {!isLoggedIn ? (
               <>
                 <Link
-                  href="/signup"
+                  href="#"
+                  onClick={handleSignUpClick}
                   className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2">
                   <FaUser className="text-sm" />
                   <span>Sign Up</span>
                 </Link>
 
                 <Link
-                  href="/login"
-                  className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2">
+                  href="#"
+                  onClick={handleLoginClick}
+                  className="bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-2 rounded-lg font-medium flex items-center space-x-2"
+                >
                   <FaUser className="text-sm" />
                   <span>Log In</span>
                 </Link>
+
               </>
             ) : (
               <GradientButton

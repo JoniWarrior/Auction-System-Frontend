@@ -22,17 +22,17 @@ export default function AuctionDetailContent() {
   const [auction, setAuction] = useState<any>();
   const [bidAmount, setBidAmount] = useState('');
   const [timeRemaining, setTimeRemaining] = useState('');
-
   const [loading, setLoading] = useState(true);
   const [biddings, setBiddings] = useState<any[]>([]);
   const [biddingUsers, setBiddingUsers] = useState<string[]>([]);
   const [outBidNotification, setOutBidNotification] = useState<string | null>(null);
   const user = useSelector((state: RootState) => state?.auth?.user);
 
+  // Socket initialization
   useEffect(() => {
     if (!socketInitialized) {
       socket = io(process.env.NEXT_PUBLIC_BACKEND_URL, {
-        query: { userId: user?.id }
+        query: { userId: user?.id },
       });
       socketInitialized = true;
 
@@ -45,6 +45,7 @@ export default function AuctionDetailContent() {
     return () => {};
   }, []);
 
+  // Join auction room and listen for updates
   useEffect(() => {
     if (!user?.id || !auctionId || !socket) return;
 
@@ -55,19 +56,19 @@ export default function AuctionDetailContent() {
     };
 
     const handleBiddingIndicator = ({
-      userName,
-      isBidding
-    }: {
+                                      userName,
+                                      isBidding,
+                                    }: {
       userName: string;
       isBidding: boolean;
     }) => {
-      setBiddingUsers((prev) => {
-        return isBidding
+      setBiddingUsers((prev) =>
+        isBidding
           ? prev.includes(userName)
             ? prev
             : [...prev, userName]
-          : prev.filter((u) => u !== userName);
-      });
+          : prev.filter((u) => u !== userName)
+      );
     };
 
     socket.on('newBid', handleNewBid);
@@ -80,13 +81,15 @@ export default function AuctionDetailContent() {
     };
   }, [auctionId, user?.id]);
 
+  // Fetch auction
   const fetchAuction = async () => {
+    setLoading(true);
     try {
       const response = await AuctionService.getSingleAuction(auctionId);
       setAuction(response.data.data);
-      setBiddings(response.data.data.biddings.sort((a: any, b: any) => b?.amount - a?.amount));
+      setBiddings(response.data.data.biddings.sort((a: any, b: any) => b.amount - a.amount));
     } catch (err) {
-      console.error('Error fetching the auction,', err);
+      console.error('Error fetching the auction:', err);
     } finally {
       setLoading(false);
     }
@@ -96,6 +99,7 @@ export default function AuctionDetailContent() {
     fetchAuction();
   }, [auctionId]);
 
+  // Countdown timer
   useEffect(() => {
     if (!auction) return;
     const timer = setInterval(() => {
@@ -110,7 +114,6 @@ export default function AuctionDetailContent() {
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
         setTimeRemaining(`${days}d ${hours}h ${minutes}m ${seconds}s`);
       }
     }, 1000);
@@ -118,6 +121,7 @@ export default function AuctionDetailContent() {
     return () => clearInterval(timer);
   }, [auction]);
 
+  // Place bid
   const handlePlaceBid = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -135,7 +139,7 @@ export default function AuctionDetailContent() {
 
       const response = await BiddingService.placeBid({
         auctionId,
-        amount: Number(bidAmount)
+        amount: Number(bidAmount),
       });
 
       setBidAmount('');
@@ -145,7 +149,7 @@ export default function AuctionDetailContent() {
     } catch (err) {
       if (axios.isAxiosError(err)) {
         // @ts-ignore
-        showError(err.response.data.message);
+        showError(err.response?.data?.message);
       }
       console.error('Error placing bid:', err);
     } finally {
@@ -153,13 +157,15 @@ export default function AuctionDetailContent() {
     }
   };
 
+  // ===================== RETURN =====================
   return loading ? (
-    <p className="text-center mt-20">Loading All Auctions...</p>
+    <p className="text-center mt-20">Loading Auction Details...</p>
   ) : (
     <div className="container mx-auto px-4 py-8">
       <Link
         href="/auctions"
-        className="inline-flex items-center text-purple-600 hover:text-purple-800 mb-6">
+        className="inline-flex items-center text-purple-600 hover:text-purple-800 mb-6"
+      >
         <FaArrowLeft className="mr-2" /> Back to Auctions
       </Link>
 
@@ -171,109 +177,62 @@ export default function AuctionDetailContent() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left side: image */}
         <div>
           <div className="bg-gray-200 rounded-lg overflow-hidden h-80 relative">
             <Image
               src={auction?.item?.imageURL}
-              alt={auction?.item.title}
+              alt={auction?.item?.title}
               fill
               className="w-full h-full object-cover"
             />
           </div>
         </div>
 
-        {/* Details */}
+        {/* Right side: auction details */}
         <div>
-          <div
-            className={`inline-block text-white text-sm font-medium py-1 px-3 rounded-full mb-4 ${
-              auction?.status === 'finished' ? 'bg-gray-500' : 'bg-red-500'
-            }`}>
-            <FaClock className="inline mr-1" />
-            {auction?.status === 'finished' ? 'Auction Finished' : `Ends in: ${timeRemaining}`}
+          <h2 className="text-3xl font-bold mb-2">{auction?.item?.title}</h2>
+          <p className="text-gray-600 mb-4">{auction?.item?.description}</p>
+
+          <div className="flex items-center mb-4">
+            <FaClock className="text-gray-500 mr-2" />
+            <span className="font-medium">
+              {timeRemaining === 'Finished'
+                ? 'Auction Finished'
+                : `Ends in: ${timeRemaining}`}
+            </span>
           </div>
 
-          <h1 className="text-3xl font-bold mb-2">{auction?.item.title}</h1>
+          <p className="text-xl mb-4">
+            <strong>Current Price:</strong> ${auction?.currentPrice?.toFixed(2)}
+          </p>
 
-          <div className="flex items-center text-gray-600 mb-6">
-            <span>Seller : {auction?.item.seller.name}</span>
-            <span className="mx-2">•</span>
-            <span className="mx-2">•</span>
-            <span>{auction?.biddings.length} biddings</span>
-          </div>
+          <form onSubmit={handlePlaceBid} className="flex gap-3">
+            <input
+              type="number"
+              value={bidAmount}
+              onChange={(e) => setBidAmount(e.target.value)}
+              placeholder="Enter your bid"
+              className="border border-gray-300 rounded-md px-3 py-2 w-full"
+              required
+            />
+            <GradientButton
+              type="submit"
+              label="Place Bid"
+              fromColor="from-purple-600"
+              toColor="to-blue-500"
+              hoverFromColor="hover:from-purple-700"
+              hoverToColor="hover:to-blue-600"
+              className="font-medium px-6 py-2 rounded-lg transition-all"
+            />
 
-          <div className="bg-gray-50 p-6 rounded-lg mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <span className="text-sm text-gray-500">Current Bid</span>
-                <div className="text-3xl font-bold text-purple-700">
-                  ${biddings[0]?.amount.toLocaleString()}
-                </div>
-              </div>
-
-              <div className="text-right">
-                <span className="text-sm text-gray-500">Starting Price</span>
-                <div className="text-xl font-semibold">
-                  ${auction?.startingPrice?.toLocaleString() ?? 0}
-                </div>
-              </div>
-            </div>
-
-            {auction?.status !== 'finished' && auction?.item.seller?.id !== user?.id && (
-              <>
-                {/* Bidding Indicator */}
-                <div className="text-sm text-gray-500 mb-2">
-                  {biddingUsers.length > 0 &&
-                    biddingUsers.map((userName) => <p key={userName}>{userName} is bidding...</p>)}
-                </div>
-                <form onSubmit={handlePlaceBid}>
-                  <div className="flex space-x-2">
-                    <input
-                      type="number"
-                      min={auction.currentPrice + 1}
-                      step="1"
-                      placeholder={`Enter $${auction.currentPrice + 1} or more`}
-                      className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      value={bidAmount}
-                      onChange={(e) => {
-                        setBidAmount(e.target.value);
-                        if (e.target.value) {
-                          socket.emit('startBidding', {
-                            auctionId,
-                            userName: user?.name
-                          });
-                        } else {
-                          socket.emit('stopBidding', {
-                            auctionId,
-                            userName: user?.name
-                          });
-                        }
-                      }}
-                      onBlur={() =>
-                        socket.emit('stopBidding', {
-                          auctionId,
-                          userName: user?.name
-                        })
-                      }
-                      required
-                    />
-                    <GradientButton
-                      type="submit"
-                      label="Place Bid"
-                      fromColor="from-purple-600"
-                      toColor="to-blue-500"
-                      hoverFromColor="hover:from-purple-700"
-                      hoverToColor="hover:to-blue-600"
-                      className="font-medium px-6 py-2 rounded-lg transition-all"
-                    />
-                  </div>
-                </form>
-              </>
-            )}
-          </div>
-
-          {/* Bids History */}
-          <BiddingHistory biddings={biddings} />
+          </form>
         </div>
+      </div>
+
+      {/* Bidding history */}
+      <div className="mt-10">
+        <BiddingHistory biddings={biddings}/>
       </div>
     </div>
   );

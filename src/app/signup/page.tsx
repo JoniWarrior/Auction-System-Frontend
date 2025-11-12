@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FaGavel, FaArrowLeft } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
@@ -14,6 +14,7 @@ import GradientButton from '@/core/buttons/electrons/GradientButton';
 import CNameInput from '@/core/inputs/CNameInput';
 import AuthService from '@/services/AuthService';
 import GuestRoute from '@/routes/GuestRoute';
+import { hideLoader, showLoader } from '@/store/loadingSlice';
 
 export default function SignUpPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -27,6 +28,7 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    dispatch(showLoader("Signing up... Please wait!"))
     setIsLoading(true);
     try {
       const response = await AuthService.register(name, email, password, confirmPassword);
@@ -37,8 +39,13 @@ export default function SignUpPage() {
       handleRequestErrors(err);
     } finally {
       setIsLoading(false);
+      dispatch(hideLoader());
     }
   };
+
+  useEffect(() => {
+    dispatch(hideLoader())
+  }, [dispatch]);
 
   return (
     <GuestRoute>

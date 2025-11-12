@@ -4,18 +4,19 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FaClock, FaSearch } from 'react-icons/fa';
 import _ from 'lodash';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store/store';
 import AuctionService, { passParams } from '@/services/AuctionService';
 import Image from 'next/image';
 import Pagination from '@/core/pagination/Pagination';
 import CFilter from '@/core/inputs/Cfilter';
+import { hideLoader, showLoader } from '@/store/loadingSlice';
 
 export default function AuctionsPageComponent() {
+  const dispatch = useDispatch<AppDispatch>();
   const [auctions, setAuctions] = useState<any[]>([]);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const user = useSelector((state: RootState) => state.auth.user);
@@ -23,13 +24,8 @@ export default function AuctionsPageComponent() {
   const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 500);
 
   const fetchAuctions = async () => {
-    setLoading(true);
+    dispatch(showLoader(true));
     try {
-      // const params: GetAuctionsParams = {
-      //   status: filter && filter !== 'all' ? filter : undefined,
-      //   page: currentPage || 1,
-      //   qs: searchTerm || ''
-      // };
       const params = passParams(filter, currentPage, searchTerm);
       const response = await AuctionService.getAllAuctions(params);
       setAuctions(response?.data?.data?.data); // matcehs beckend {data,meta }
@@ -37,9 +33,13 @@ export default function AuctionsPageComponent() {
     } catch (err: any) {
       console.error('Error fetching the data ', err.response?.data || err);
     } finally {
-      setLoading(false);
+      dispatch(hideLoader());
     }
   };
+
+  useEffect(() => {
+    dispatch(hideLoader());
+  }, [dispatch])
 
   useEffect(() => {
     fetchAuctions();
@@ -67,14 +67,7 @@ export default function AuctionsPageComponent() {
 
         <div className="flex justify-center items-center space-x-4 mt-6"></div>
 
-        {loading ? (
-          <p className="text-center mt-20">Loading All Auctions...</p>
-        ) : auctions?.length === 0 ? (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-semibold text-gray-600">No auctions found</h2>
-            <p className="text-gray-500 mt-2">Try adjusting your search or filter criteria</p>
-          </div>
-        ) : (
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {auctions.map((auction) => (
               <div
@@ -154,8 +147,6 @@ export default function AuctionsPageComponent() {
               </div>
             ))}
           </div>
-        )}
-
         <Pagination
           totalPages={totalPages}
           currentPage={currentPage}

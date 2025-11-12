@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FaClock } from 'react-icons/fa';
+import { FaClock, FaUser } from 'react-icons/fa';
 import { showError } from '@/utils/functions';
 import axios from 'axios';
 import AuctionService, { passParams } from '@/services/AuctionService';
@@ -12,17 +12,27 @@ import _ from 'lodash';
 import Pagination from '@/core/pagination/Pagination';
 import CSearch from '@/core/inputs/CSearch';
 import CFilter from '@/core/inputs/Cfilter';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store/store';
+import { hideLoader, showLoader } from '@/store/loadingSlice';
+import { router } from 'next/client';
+import { useRouter } from 'next/navigation';
 
 export default function MyAuctionsPage() {
+  const router = useRouter();
   const [auctions, setAuctions] = useState<any[]>([]);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [totalPages, setTotalPages] = useState<any>();
-  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
 
+  const dispatch = useDispatch<AppDispatch>();
+  const MyEmptyItemsClick = async (e : React.MouseEvent) => {
+    e.preventDefault();
+    dispatch(showLoader("Displaying Your Empty Items..."));
+    router.push("/my-empty-items");
+  }
   const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 500);
-
   const handleCloseAuction = async (auctionId: string) => {
     const confirmed = window.confirm('Are you sure to close the auction?');
     if (!confirmed) return;
@@ -44,13 +54,8 @@ export default function MyAuctionsPage() {
   };
 
   const fetchAuctions = async () => {
-    setLoading(true);
+    dispatch(showLoader(true));
     try {
-      // const params: GetAuctionsParams = {
-      //   status: filter && filter !== 'all' ? filter : undefined,
-      //   page: currentPage || 1,
-      //   qs: searchTerm || ''
-      // };
       const params = passParams(filter, currentPage, searchTerm);
 
       const response = await AuctionService.getSellerAuctions(params);
@@ -59,9 +64,14 @@ export default function MyAuctionsPage() {
     } catch (err) {
       console.error('Error fetching the data ', err);
     } finally {
-      setLoading(false);
+      dispatch(hideLoader())
     }
   };
+
+  useEffect(() => {
+    hideLoader()
+  }, [dispatch]);
+
 
   useEffect(() => {
     fetchAuctions();
@@ -78,22 +88,15 @@ export default function MyAuctionsPage() {
             <div className="flex items-center space-x-2">
               <CFilter filter={filter} onFilterChange={setFilter}/>
             </div>
-            <a
-              href="/my-empty-items"
+            <Link
+              href="#"
+              onClick={MyEmptyItemsClick}
               className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition">
-              + Add an Auction
-            </a>
+              <span>+ Add an Auction</span>
+            </Link>
           </div>
         </div>
 
-        {loading ? (
-          <p className="text-center mt-20">Loading All Auctions...</p>
-        ) : auctions?.length === 0 ? (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-semibold text-gray-600">No auctions found</h2>
-            <p className="text-gray-500 mt-2">Try adjusting your search or filter criteria</p>
-          </div>
-        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {auctions.map((auction) => (
               <div
@@ -169,7 +172,6 @@ export default function MyAuctionsPage() {
               </div>
             ))}
           </div>
-        )}
       </div>
       <Pagination totalPages={totalPages} currentPage={currentPage} onChange={setCurrentPage} />
     </>

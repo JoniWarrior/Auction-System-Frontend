@@ -9,24 +9,22 @@ import _ from 'lodash';
 import Pagination from '@/core/pagination/Pagination';
 import CSearch from '@/core/inputs/CSearch';
 import CFilter from '@/core/inputs/Cfilter';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store/store';
+import { hideLoader, showLoader } from '@/store/loadingSlice';
 
 export default function MyAuctionsPage() {
   const [auctions, setAuctions] = useState<any[]>([]);
   const [filter, setFilter] = useState('all');
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [totalPages, setTotalPages] = useState<any>();
   const [currentPage, setCurrentPage] = useState(1);
+  const dispatch = useDispatch<AppDispatch>();
 
-const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 500);
+  const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 500);
   const fetchAuctions = async () => {
-    setLoading(true);
+    dispatch(showLoader(true));
     try {
-      // const params: GetAuctionsParams = {
-      //   status: filter && filter !== 'all' ? filter : undefined,
-      //   page: currentPage || 1,
-      //   qs: searchTerm || ''
-      // };
       const params = passParams(filter, currentPage, searchTerm);
       const response = await AuctionService.getBidderAuctions(params);
       setAuctions(response?.data?.data?.data);
@@ -34,9 +32,13 @@ const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 5
     } catch (err) {
       console.error('Error fetching auctions:', err);
     } finally {
-      setLoading(false);
+      dispatch(hideLoader());
     }
   };
+
+  useEffect(() => {
+    dispatch(hideLoader())
+  }, [dispatch]);
 
   useEffect(() => {
     fetchAuctions();
@@ -56,14 +58,6 @@ const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 5
         </div>
       </div>
 
-      {loading ? (
-        <p className="text-center mt-20">Loading All Auctions...</p>
-      ) : auctions?.length === 0 ? (
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-semibold text-gray-600">No auctions found</h2>
-          <p className="text-gray-500 mt-2">Try changing the status filter</p>
-        </div>
-      ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {auctions.map((auction) => (
             <div
@@ -130,7 +124,6 @@ const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 5
             </div>
           ))}
         </div>
-      )}
       <Pagination
         totalPages={totalPages}
         currentPage={currentPage}

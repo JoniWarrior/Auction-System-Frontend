@@ -1,4 +1,6 @@
-import { useState } from 'react';
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FaArrowLeft, FaTag, FaAlignLeft, FaUpload } from 'react-icons/fa';
 import { handleRequestErrors, showSuccess } from '@/utils/functions';
@@ -6,13 +8,16 @@ import ItemService from '@/services/ItemService';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import GradientButton from '@/core/buttons/electrons/GradientButton';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store/store';
+import { showLoader, hideLoader } from '@/store/loadingSlice';
 
 export default function SellPageContent() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [imageURL, setImageURL] = useState('');
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,27 +30,28 @@ export default function SellPageContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    dispatch(showLoader('Listing your item...')); // ✅ Show global loader
     try {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('description', description);
-      if (image) {
-        formData.append('image', image);
-      }
-      const res = await ItemService.create(formData);
+      if (image) formData.append('image', image);
+
+      await ItemService.create(formData);
       showSuccess('Item Listed Successfully!');
       router.push('/my-empty-items');
     } catch (err) {
       handleRequestErrors(err);
     } finally {
-      setLoading(false);
+      dispatch(hideLoader());
     }
   };
 
-  return loading ? (
-    <p className="text-center mt-20">Loading All Auctions...</p>
-  ) : (
+  useEffect(() => {
+    dispatch(hideLoader());
+  }, [dispatch]);
+
+  return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-lg mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-6 space-y-8">
         {/* Header */}
@@ -61,6 +67,7 @@ export default function SellPageContent() {
           </div>
         </div>
 
+        {/* Form */}
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             List Your Item for Auction
@@ -71,6 +78,7 @@ export default function SellPageContent() {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {/* Title & Description */}
           <div className="space-y-4">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700">
@@ -143,6 +151,7 @@ export default function SellPageContent() {
             </div>
           </div>
 
+          {/* Submit */}
           <div>
             <GradientButton type="submit" label="List Item" />
           </div>

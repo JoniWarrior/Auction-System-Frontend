@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaGavel, FaArrowLeft } from 'react-icons/fa';
@@ -13,6 +13,7 @@ import CPasswordInput from '@/core/inputs/CPasswordInput';
 import GradientButton from '@/core/buttons/electrons/GradientButton';
 import AuthService from '@/services/AuthService';
 import GuestRoute from '@/routes/GuestRoute';
+import { hideLoader, showLoader } from '@/store/loadingSlice';
 
 export default function LoginPage() {
   const dispatch = useDispatch<AppDispatch>();
@@ -23,6 +24,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    dispatch(showLoader("Logging in..."));
     setIsLoading(true);
     try {
       const response = await AuthService.login(email, password);
@@ -33,10 +35,20 @@ export default function LoginPage() {
       handleRequestErrors(err);
     } finally {
       setIsLoading(false);
+      dispatch(hideLoader());
     }
   };
 
-  return (
+  useEffect(() => {
+    dispatch(hideLoader())
+  }, [dispatch]);
+
+  return isLoading ? (
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-purple-600"></div>
+      <span className="ml-3 text-lg text-gray-700">Loading Login Page...</span>
+    </div>
+    ) : (
     <GuestRoute>
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 space-y-8">

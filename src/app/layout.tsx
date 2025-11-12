@@ -5,6 +5,7 @@ import Header from '../hoc/layout/partials/Header';
 import Footer from '../hoc/layout/partials/Footer';
 import Providers from '@/store/Providers';
 import { ToastContainer } from 'react-toastify';
+import PageLoader from '@/layout/pageLoader';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -24,21 +25,21 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RootLayout({
-  children
-}: Readonly<{
+export default function RootLayout({ children }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen">
-        <Providers>
-          <Header />
-          <main className="flex-grow">{children}</main>
-          <Footer />
-          <ToastContainer />
-        </Providers>
-      </body>
+    <body className="flex flex-col min-h-screen">
+    <Providers>
+      <PageLoader />
+      <Header />
+      <main className="flex-grow">{children}</main>
+      <Footer />
+      <ToastContainer />
+    </Providers>
+    </body>
     </html>
   );
 }
+

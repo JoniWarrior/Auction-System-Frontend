@@ -8,18 +8,20 @@ import Image from 'next/image';
 import _ from 'lodash';
 import Pagination from '@/core/pagination/Pagination';
 import CSearch from '@/core/inputs/CSearch';
+import { useDispatch } from 'react-redux';
+import { hideLoader, showLoader } from '@/store/loadingSlice';
 
 export default function MyEmptyItemsPage() {
   const [items, setItems] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [totalPages, setTotalPages] = useState<any>();
-  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
+  const dispatch = useDispatch();
 
   const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 500);
 
   const fetchEmptyItems = async () => {
-    setLoading(true);
+    dispatch(showLoader(true))
     try {
       const params: GetItemsParams = {
         page: currentPage || 1,
@@ -31,9 +33,13 @@ export default function MyEmptyItemsPage() {
     } catch (err) {
       console.error('Error fetching empty items', err);
     } finally {
-      setLoading(false);
+      dispatch(hideLoader())
     }
   };
+
+  useEffect(() => {
+    dispatch(hideLoader())
+  }, [dispatch]);
 
   useEffect(() => {
     fetchEmptyItems();
@@ -53,17 +59,6 @@ export default function MyEmptyItemsPage() {
           </div>
         </div>
 
-        {loading ? (
-          <p className="text-center mt-20">Loading your empty items...</p>
-        ) : items.length === 0 ? (
-          <div className="text-center py-12">
-            <FaBoxOpen className="mx-auto text-5xl text-gray-400 mb-4" />
-            <h2 className="text-2xl font-semibold text-gray-600">No empty items found</h2>
-            <p className="text-gray-500 mt-2">
-              Start by creating items that are not linked to auctions yet.
-            </p>
-          </div>
-        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((item) => (
               <div
@@ -91,7 +86,6 @@ export default function MyEmptyItemsPage() {
               </div>
             ))}
           </div>
-        )}
         <Pagination totalPages={totalPages} currentPage={currentPage} onChange={setCurrentPage} />
       </div>
     </>
