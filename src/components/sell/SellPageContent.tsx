@@ -30,7 +30,7 @@ export default function SellPageContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(showLoader('Listing your item...')); // ✅ Show global loader
+    dispatch(showLoader('Listing your item...'));
     try {
       const formData = new FormData();
       formData.append('title', title);
@@ -46,6 +46,7 @@ export default function SellPageContent() {
       dispatch(hideLoader());
     }
   };
+
 
   useEffect(() => {
     dispatch(hideLoader());

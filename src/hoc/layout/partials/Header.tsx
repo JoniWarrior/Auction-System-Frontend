@@ -37,6 +37,13 @@ export default function Header() {
     }
   }
 
+  const getAuctionsClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (pathname !== "/auctions") {
+      dispatch(showLoader("Loading Auctions Page..."));
+      router.push("/auctions")
+    }
+  }
 
   return (
     <header className="bg-white shadow-md">
@@ -50,7 +57,7 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex space-x-6">
-            <Link href="/auctions" className="text-gray-600 hover:text-purple-600 font-medium">
+            <Link href="/auctions" className="text-gray-600 hover:text-purple-600 font-medium" onClick={getAuctionsClick}>
               Auctions
             </Link>
             <Link href="/sell" className="text-gray-600 hover:text-purple-600 font-medium">

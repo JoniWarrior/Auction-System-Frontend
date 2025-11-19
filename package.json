@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@nebula-ltd/pok-payments-js": "^1.5.2",
     "@reduxjs/toolkit": "^2.9.2",
     "axios": "^1.12.2",
     "lodash": "^4.17.21",

@@ -12,6 +12,7 @@ import BiddingService from '@/services/BiddingService';
 import AuctionService from '@/services/AuctionService';
 import Image from 'next/image';
 import GradientButton from '@/core/buttons/electrons/GradientButton';
+import { useRouter } from 'next/navigation';
 
 let socket: any;
 let socketInitialized = false;
@@ -28,6 +29,7 @@ export default function AuctionDetailContent() {
   const [outBidNotification, setOutBidNotification] = useState<string | null>(null);
   const user = useSelector((state: RootState) => state?.auth?.user);
 
+  const router = useRouter();
   // Socket initialization
   useEffect(() => {
     if (!socketInitialized) {
@@ -141,6 +143,12 @@ export default function AuctionDetailContent() {
         auctionId,
         amount: Number(bidAmount),
       });
+
+      const sdkOrderId = await response?.data?.data?.transaction?.sdkOrderId; // maybe another .data?
+      console.log('SDK Order ID:', sdkOrderId);
+      if (sdkOrderId) {
+        router.push(`/pay/${sdkOrderId}`);
+      }
 
       setBidAmount('');
       if (auction) {

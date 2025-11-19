@@ -4,47 +4,14 @@ import { FaClock, FaGavel, FaTag, FaStar, FaArrowRight } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import AuctionService, { GetAuctionsParams } from '@/services/AuctionService';
 import Image from 'next/image';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/store/store';
-import { hideLoader, showLoader } from '@/store/loadingSlice';
-import { router } from 'next/client';
-import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [featuredAuctions, setFeaturedAuctions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
-
-  const viewAllClick = async (e : React.MouseEvent) => {
-    e.preventDefault();
-    dispatch(showLoader("Displaying Auctions..."))
-    router.push('/auctions');
-  };
-
-  const viewMyAuctionsClick = async (e : React.MouseEvent) => {
-    e.preventDefault();
-    dispatch(showLoader("Displaying Auctions..."))
-    router.push('/my-auctions-seller');
-  }
-
-  const viewMyBiddingsClick = async (e : React.MouseEvent) => {
-    e.preventDefault();
-    dispatch(showLoader("Displaying Your Auctions..."))
-    router.push('/my-auctions-bidder');
-  }
-
-  const sellItemClick = async (e : React.MouseEvent) => {
-    e.preventDefault();
-    dispatch(showLoader("Displaying Item Selling Page..."))
-    router.push('/sell');
-  }
-
+  const linkHref = '/my-auctions-seller';
+  const linkText = 'My Auctions';
 
   const fetchAuctions = async () => {
-    setLoading(true);
-    dispatch(showLoader("Displaying Auctions..."))
     try {
       const params: GetAuctionsParams = {
         status: 'active',
@@ -58,13 +25,8 @@ export default function Home() {
       console.error('Error fetching the items from the backend,', err);
     } finally {
       setLoading(false);
-      dispatch(hideLoader())
     }
   };
-
-  useEffect(() => {
-    dispatch(hideLoader())
-  }, [dispatch]);
 
   useEffect(() => {
     fetchAuctions();
@@ -86,23 +48,20 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
-              href="#"
-              onClick={viewMyAuctionsClick}
+              href={linkHref}
               className="bg-white text-purple-700 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition duration-300 flex items-center justify-center">
-              {"My Auctions"} <FaArrowRight className="ml-2" />
+              {linkText} <FaArrowRight className="ml-2" />
             </Link>
 
             {
               <Link
-                href={'#'}
-                onClick={viewMyBiddingsClick}
+                href={'my-auctions-bidder'}
                 className="bg-white text-purple-700 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition duration-300 flex items-center justify-center">
                 {'My Biddings'} <FaArrowRight className="ml-2" />
               </Link>
             }
             <Link
-              href="#"
-              onClick={sellItemClick}
+              href="/sell"
               className="bg-transparent border-2 border-white text-white font-semibold py-3 px-8 rounded-lg hover:bg-white hover:text-purple-700 transition duration-300">
               Sell an Item
             </Link>
@@ -116,66 +75,55 @@ export default function Home() {
           <div className="flex justify-between items-center mb-10">
             <h2 className="text-3xl font-bold">Featured Auctions</h2>
             <Link
-              href="#"
-              onClick={viewAllClick}
+              href="/auctions"
               className="text-purple-600 hover:text-purple-800 font-medium flex items-center">
               View All <FaArrowRight className="ml-2" />
             </Link>
           </div>
 
-          {loading ? (
-            <p className="text-center mt-20">Loading All Auctions...</p>
-          ) : featuredAuctions?.length === 0 ? (
-            <div className="text-center py-12">
-              <h2 className="text-2xl font-semibold text-gray-600">No auctions found</h2>
-              <p className="text-gray-500 mt-2">Try adjusting your search or filter criteria</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredAuctions?.length > 0 &&
-                featuredAuctions
-                  ?.filter((auction) => auction?.status === 'active' || auction?.status === 'pending')
-                  .slice(0, 8)
-                  .map((auction) => (
-                    <div
-                      key={auction.id}
-                      className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                      <div className="h-48 bg-gray-200 relative">
-                        <Image
-                          src={auction.item.imageURL}
-                          alt={auction.item.title}
-                          fill
-                          className="object-cover rounded-lg"
-                        />
-                        <div
-                          className={`absolute top-4 left-4 text-white text-sm font-medium py-1 px-3 rounded-full ${
-                            auction.status !== 'finished' ? 'bg-green-500' : 'bg-red-500'
-                          }`}>
-                          <FaClock className="inline mr-1" />{' '}
-                          {auction.status !== 'finished'
-                            ? new Date(auction.endTime).toLocaleString()
-                            : 'Finished'}
-                        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredAuctions?.length > 0 &&
+              featuredAuctions
+                ?.filter((auction) => auction?.status === 'active' || auction?.status === 'pending')
+                .slice(0, 8)
+                .map((auction) => (
+                  <div
+                    key={auction.id}
+                    className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                    <div className="h-48 bg-gray-200 relative">
+                      <Image
+                        src={auction.item.imageURL}
+                        alt={auction.item.title}
+                        fill
+                        className="object-cover rounded-lg"
+                      />
+                      <div
+                        className={`absolute top-4 left-4 text-white text-sm font-medium py-1 px-3 rounded-full ${
+                          auction.status !== 'finished' ? 'bg-green-500' : 'bg-red-500'
+                        }`}>
+                        <FaClock className="inline mr-1" />{' '}
+                        {auction.status !== 'finished'
+                          ? new Date(auction.endTime).toLocaleString()
+                          : 'Finished'}
                       </div>
-                      <div className="p-4">
-                        <h3 className="font-semibold text-lg mb-2 truncate">{auction.item.title}</h3>
-                        <div className="flex justify-between items-center mb-3">
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-lg mb-2 truncate">{auction.item.title}</h3>
+                      <div className="flex justify-between items-center mb-3">
                         <span className="text-2xl font-bold text-purple-700">
                           ${auction.currentPrice.toLocaleString()}
                         </span>
-                        </div>
-
-                        <Link
-                          href={`/auctions/${auction.id}`}
-                          className="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all">
-                          Place Bid
-                        </Link>
                       </div>
-                    </div>
-                  ))}
-            </div>
-          )}
 
+                      <Link
+                        href={`/auctions/${auction.id}`}
+                        className="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium py-2 rounded-lg hover:from-purple-700 hover:to-blue-600 transition-all">
+                        Place Bid
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+          </div>
         </div>
       </section>
 

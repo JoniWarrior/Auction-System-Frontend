@@ -24,3 +24,25 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 } */
+
+/*
+ * IMPORTANT: Always scope your custom styles under #pok-payment-container
+ * This ensures your styles don't conflict with other components
+ */
+
+/* Example: Change the primary button color */
+/*#pok-payment-container .pok-payment-button {*/
+/*    background-color: #your-custom-color;*/
+/*}*/
+
+/*!* Example: Modify input field styles *!*/
+/*#pok-payment-container .pok-payment-input {*/
+/*    border-color: #your-custom-color;*/
+/*    border-radius: 8px;*/
+/*}*/
+
+/*!* Example: Customize error message appearance *!*/
+/*#pok-payment-container .pok-payment-error-message {*/
+/*    background-color: #your-custom-color;*/
+/*    border-color: #your-custom-color;*/
+/*}*/
