@@ -28,6 +28,7 @@ export default function AuctionDetailContent() {
   const [biddingUsers, setBiddingUsers] = useState<string[]>([]);
   const [outBidNotification, setOutBidNotification] = useState<string | null>(null);
   const user = useSelector((state: RootState) => state?.auth?.user);
+  const [isBidding, setIsBidding] = useState(false);
 
   const router = useRouter();
   // Socket initialization
@@ -125,6 +126,7 @@ export default function AuctionDetailContent() {
 
   // Place bid
   const handlePlaceBid = async (e: React.FormEvent) => {
+    setIsBidding(true);
     e.preventDefault();
     try {
       const userId = user?.id;
@@ -161,7 +163,7 @@ export default function AuctionDetailContent() {
       }
       console.error('Error placing bid:', err);
     } finally {
-      setLoading(false);
+      setIsBidding(false);
     }
   };
 
@@ -219,7 +221,7 @@ export default function AuctionDetailContent() {
             <input
               type="number"
               value={bidAmount}
-              onChange={(e) => setBidAmount(e.target.value)}
+              onChange={(e  ) => setBidAmount(e.target.value)}
               placeholder="Enter your bid"
               className="border border-gray-300 rounded-md px-3 py-2 w-full"
               required
@@ -227,6 +229,7 @@ export default function AuctionDetailContent() {
             <GradientButton
               type="submit"
               label="Place Bid"
+              isLoading={isBidding}
               fromColor="from-purple-600"
               toColor="to-blue-500"
               hoverFromColor="hover:from-purple-700"

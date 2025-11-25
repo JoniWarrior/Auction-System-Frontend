@@ -1,29 +1,29 @@
 "use client";
 
-import { AddCardForm } from "@nebula-ltd/pok-payments-js/react";
+import { renderAddCardForm } from "@nebula-ltd/pok-payments-js";
 import "@nebula-ltd/pok-payments-js/lib/index.css";
 import { PaymentErrorResponse, AddCardData } from '@nebula-ltd/pok-payments-js';
 
-export default function App() {
+export default function AddCard() {
 
   const handleSuccess = (cardPayload: AddCardData) => {
     console.log("Card added successfully!", cardPayload);
-    // Here you would typically send this data to your backend
-    // to store or process as needed
+    // Send to backend if needed
   };
 
   const handleError = (error: PaymentErrorResponse) => {
     console.error("Adding card failed:", error);
   };
 
-  return (
-    <AddCardForm
-      onSuccess={handleSuccess}
-      onError={handleError}
-      buttonTitle="Save Card" // Optional, defaults to "Add Card"
-      options={{
-        env: 'production', // or 'staging' for test environment
-        locale: 'it',
+  const initializeCardForm = () => {
+    renderAddCardForm(
+      'add-card-form-container', // Target div ID
+      'Save Card',               // Button label
+      handleSuccess,             // ✅ pass reference
+      handleError,               // ✅ pass reference
+      {
+        env: 'staging',
+        locale: 'al',
         initialState: {
           cardNumber: "",
           email: "email@example.com",
@@ -37,7 +37,17 @@ export default function App() {
           postalCode: "",
           phoneNumber: ""
         }
-      }}
-    />
+      }
+    );
+  };
+
+  return (
+    <div className="card-form-page">
+      <button onClick={initializeCardForm}>
+        Add New Card
+      </button>
+
+      <div id="add-card-form-container"></div>
+    </div>
   );
 }
