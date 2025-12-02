@@ -9,8 +9,8 @@ import _ from 'lodash';
 import Pagination from '@/core/pagination/Pagination';
 import CSearch from '@/core/inputs/CSearch';
 import CFilter from '@/core/inputs/Cfilter';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store/store';
 import { hideLoader, showLoader } from '@/store/loadingSlice';
 
 export default function MyAuctionsPage() {
@@ -21,6 +21,7 @@ export default function MyAuctionsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch<AppDispatch>();
 
+  const isLoading = useSelector((state: RootState) => state.loading.show);
   const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 500);
   const fetchAuctions = async () => {
     dispatch(showLoader(true));
@@ -44,7 +45,9 @@ export default function MyAuctionsPage() {
     fetchAuctions();
   }, [searchTerm, filter, currentPage])
 
-  return (
+  return isLoading ? (
+    <p className="text-center mt-20">Loading Auctions...</p>
+  ) : (
   <>
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">

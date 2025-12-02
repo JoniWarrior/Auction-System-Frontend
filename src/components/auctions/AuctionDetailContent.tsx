@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { FaClock, FaArrowLeft } from 'react-icons/fa';
 import { io } from 'socket.io-client';
 import BiddingHistory from './BiddingHistory';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store/store';
 import { showError } from '@/utils/functions';
 import axios from 'axios';
 import BiddingService from '@/services/BiddingService';
@@ -13,6 +13,7 @@ import AuctionService from '@/services/AuctionService';
 import Image from 'next/image';
 import GradientButton from '@/core/buttons/electrons/GradientButton';
 import { useRouter } from 'next/navigation';
+import { hideLoader, showLoader } from '@/store/loadingSlice';
 
 let socket: any;
 let socketInitialized = false;
@@ -23,12 +24,12 @@ export default function AuctionDetailContent() {
   const [auction, setAuction] = useState<any>();
   const [bidAmount, setBidAmount] = useState('');
   const [timeRemaining, setTimeRemaining] = useState('');
-  const [loading, setLoading] = useState(true);
   const [biddings, setBiddings] = useState<any[]>([]);
   const [biddingUsers, setBiddingUsers] = useState<string[]>([]);
   const [outBidNotification, setOutBidNotification] = useState<string | null>(null);
   const user = useSelector((state: RootState) => state?.auth?.user);
-  const [isBidding, setIsBidding] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const isLoading = useSelector((state: RootState) => state.loading.show);
 
   const router = useRouter();
   // Socket initialization
@@ -40,7 +41,7 @@ export default function AuctionDetailContent() {
       socketInitialized = true;
 
       socket.on('outBid', (notification: any) => {
-        setOutBidNotification(`${notification.message ?? 'You were outbid!'}`);
+        (`${notification.message ?? 'You were outbid!'}`);
         setTimeout(() => setOutBidNotification(null), 5000);
       });
     }
@@ -48,7 +49,6 @@ export default function AuctionDetailContent() {
     return () => {};
   }, []);
 
-  // Join auction room and listen for updates
   useEffect(() => {
     if (!user?.id || !auctionId || !socket) return;
 
@@ -56,6 +56,7 @@ export default function AuctionDetailContent() {
 
     const handleNewBid = (bid: any) => {
       setBiddings((prev) => [bid, ...prev]);
+      setAuction((prev : any) => ({ ...prev, currentPrice: bid.amount }));
     };
 
     const handleBiddingIndicator = ({
@@ -84,9 +85,8 @@ export default function AuctionDetailContent() {
     };
   }, [auctionId, user?.id]);
 
-  // Fetch auction
   const fetchAuction = async () => {
-    setLoading(true);
+    dispatch(showLoader("Fetch Auction"));
     try {
       const response = await AuctionService.getSingleAuction(auctionId);
       setAuction(response.data.data);
@@ -94,13 +94,18 @@ export default function AuctionDetailContent() {
     } catch (err) {
       console.error('Error fetching the auction:', err);
     } finally {
-      setLoading(false);
+      dispatch(hideLoader())
     }
   };
 
   useEffect(() => {
     fetchAuction();
   }, [auctionId]);
+
+  useEffect(() => {
+    dispatch(hideLoader())
+  }, [dispatch]);
+
 
   // Countdown timer
   useEffect(() => {
@@ -126,8 +131,8 @@ export default function AuctionDetailContent() {
 
   // Place bid
   const handlePlaceBid = async (e: React.FormEvent) => {
-    setIsBidding(true);
     e.preventDefault();
+    dispatch(showLoader("Placing Bid"));
     try {
       const userId = user?.id;
 
@@ -163,14 +168,15 @@ export default function AuctionDetailContent() {
       }
       console.error('Error placing bid:', err);
     } finally {
-      setIsBidding(false);
+      dispatch(hideLoader())
     }
   };
 
-  // ===================== RETURN =====================
-  return loading ? (
-    <p className="text-center mt-20">Loading Auction Details...</p>
-  ) : (
+  useEffect(() => {
+    dispatch(hideLoader())
+  }, [dispatch]);
+
+  return (
     <div className="container mx-auto px-4 py-8">
       <Link
         href="/auctions"
@@ -191,8 +197,8 @@ export default function AuctionDetailContent() {
         <div>
           <div className="bg-gray-200 rounded-lg overflow-hidden h-80 relative">
             <Image
-              src={auction?.item?.imageURL}
-              alt={auction?.item?.title}
+              src={auction?.item?.imageURL || "https://res.cloudinary.com/dorwowkmx/image/upload/v1762869969/auction_items/qpdx6ya0osltucvqowvl.png"}
+              alt={auction?.item?.title || "image"}
               fill
               className="w-full h-full object-cover"
             />
@@ -229,7 +235,7 @@ export default function AuctionDetailContent() {
             <GradientButton
               type="submit"
               label="Place Bid"
-              isLoading={isBidding}
+              isLoading={isLoading}
               fromColor="from-purple-600"
               toColor="to-blue-500"
               hoverFromColor="hover:from-purple-700"

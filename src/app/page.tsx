@@ -4,12 +4,38 @@ import { FaClock, FaGavel, FaTag, FaStar, FaArrowRight } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import AuctionService, { GetAuctionsParams } from '@/services/AuctionService';
 import Image from 'next/image';
+import { showLoader } from '@/store/loadingSlice';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store/store';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [featuredAuctions, setFeaturedAuctions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const linkHref = '/my-auctions-seller';
   const linkText = 'My Auctions';
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  const isLoading = useSelector((state: RootState) => state.loading.show);
+
+  const MyAuctionsSellerClick = async (e : React.MouseEvent) => {
+    e.preventDefault();
+    dispatch(showLoader("Displaying Your Auctions ..."));
+    router.push("/my-auctions-seller");
+  }
+  const MyAuctionsBidderClick = async (e : React.MouseEvent) => {
+    e.preventDefault();
+    dispatch(showLoader("Displaying Your Biddings..."));
+    router.push("/my-auctions-bidder");
+  }
+
+  const SellItemClick = async (e : React.MouseEvent) => {
+    e.preventDefault();
+    dispatch(showLoader("Displaying Sell Item Page..."));
+    router.push("/sell");
+  }
+
+
 
   const fetchAuctions = async () => {
     try {
@@ -48,20 +74,23 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
-              href={linkHref}
+              href="#"
+              onClick={MyAuctionsSellerClick}
               className="bg-white text-purple-700 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition duration-300 flex items-center justify-center">
               {linkText} <FaArrowRight className="ml-2" />
             </Link>
 
             {
               <Link
-                href={'my-auctions-bidder'}
+                href="#"
+                onClick={MyAuctionsBidderClick}
                 className="bg-white text-purple-700 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition duration-300 flex items-center justify-center">
                 {'My Biddings'} <FaArrowRight className="ml-2" />
               </Link>
             }
             <Link
-              href="/sell"
+              href="#"
+              onClick={SellItemClick}
               className="bg-transparent border-2 border-white text-white font-semibold py-3 px-8 rounded-lg hover:bg-white hover:text-purple-700 transition duration-300">
               Sell an Item
             </Link>

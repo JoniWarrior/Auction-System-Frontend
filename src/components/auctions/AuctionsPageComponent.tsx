@@ -21,7 +21,7 @@ export default function AuctionsPageComponent() {
   const [currentPage, setCurrentPage] = useState(1);
   const user = useSelector((state: RootState) => state.auth.user);
 
-  const handleSearchChange = _.debounce((value: string) => setSearchTerm(value), 500);
+  const handleSearchChange   = _.debounce((value: string) => setSearchTerm(value), 500);
 
   const fetchAuctions = async () => {
     dispatch(showLoader(true));

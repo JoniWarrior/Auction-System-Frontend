@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FaClock, FaUser } from 'react-icons/fa';
+import { FaClock } from 'react-icons/fa';
 import { showError } from '@/utils/functions';
 import axios from 'axios';
 import AuctionService, { passParams } from '@/services/AuctionService';
@@ -12,10 +12,9 @@ import _ from 'lodash';
 import Pagination from '@/core/pagination/Pagination';
 import CSearch from '@/core/inputs/CSearch';
 import CFilter from '@/core/inputs/Cfilter';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store/store';
 import { hideLoader, showLoader } from '@/store/loadingSlice';
-import { router } from 'next/client';
 import { useRouter } from 'next/navigation';
 
 export default function MyAuctionsPage() {
@@ -27,6 +26,8 @@ export default function MyAuctionsPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const dispatch = useDispatch<AppDispatch>();
+  const isLoading = useSelector((state: RootState) => state.loading.show);
+
   const MyEmptyItemsClick = async (e : React.MouseEvent) => {
     e.preventDefault();
     dispatch(showLoader("Displaying Your Empty Items..."));
@@ -77,7 +78,9 @@ export default function MyAuctionsPage() {
     fetchAuctions();
   }, [searchTerm, filter, currentPage]);
 
-  return (
+  return  isLoading ? (
+    <p className="text-center mt-20">Loading Auctions...</p>
+  ) : (
     <>
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
@@ -159,6 +162,7 @@ export default function MyAuctionsPage() {
 
                   {auction.status !== 'finished' && (
                     <GradientButton
+                      isLoading={isLoading}
                       label="Close Auction"
                       onClick={() => handleCloseAuction(auction.id)}
                       fromColor="from-red-500"

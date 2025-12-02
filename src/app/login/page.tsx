@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaGavel, FaArrowLeft } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store/store';
 import { loginSucces } from '@/store/auth/authSlice';
 import { handleRequestErrors } from '@/utils/functions';
 import CEmailInput from '@/core/inputs/CEmailInput';
@@ -19,22 +19,20 @@ export default function LoginPage() {
   const dispatch = useDispatch<AppDispatch>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const isLoading = useSelector((state: RootState) => state.loading.show);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(showLoader("Logging in..."));
-    setIsLoading(true);
     try {
       const response = await AuthService.login(email, password);
       const { user, accessToken, refreshToken } = response.data.data;
       dispatch(loginSucces({ user, accessToken, refreshToken }));
-      router.push('/');
+      router.push(' /');
     } catch (err) {
       handleRequestErrors(err);
     } finally {
-      setIsLoading(false);
       dispatch(hideLoader());
     }
   };
@@ -43,12 +41,7 @@ export default function LoginPage() {
     dispatch(hideLoader())
   }, [dispatch]);
 
-  return isLoading ? (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-purple-600"></div>
-      <span className="ml-3 text-lg text-gray-700">Loading Login Page...</span>
-    </div>
-    ) : (
+  return (
     <GuestRoute>
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 space-y-8">
