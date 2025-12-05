@@ -28,8 +28,8 @@ export default function MyEmptyItemsPage() {
         qs: searchTerm || ''
       };
       const response = await ItemService.getEmptyItems(params);
-      setItems(response?.data?.data?.data);
-      setTotalPages(response?.data?.data?.meta?.totalPages);
+      setItems(response?.data);
+      setTotalPages(response?.meta?.totalPages);
     } catch (err) {
       console.error('Error fetching empty items', err);
     } finally {

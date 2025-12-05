@@ -16,7 +16,7 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
-  } 
+  }
 }
 
 body {
@@ -35,14 +35,87 @@ body {
 /*    background-color: #your-custom-color;*/
 /*}*/
 
-/*!* Example: Modify input field styles *!*/
+/*/* Example: Modify input field styles */
 /*#pok-payment-container .pok-payment-input {*/
 /*    border-color: #your-custom-color;*/
 /*    border-radius: 8px;*/
 /*}*/
 
-/*!* Example: Customize error message appearance *!*/
+/*/* Example: Customize error message appearance */
 /*#pok-payment-container .pok-payment-error-message {*/
 /*    background-color: #your-custom-color;*/
 /*    border-color: #your-custom-color;*/
 /*}*/
+/* Custom Carousel Animations */
+@keyframes slide-in-left {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slide-in-right {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.slide-left {
+    animation: slide-in-left 0.3s ease-out;
+}
+
+.slide-right {
+    animation: slide-in-right 0.3s ease-out;
+}
+
+/* Fade animation for modal */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+}
+
+/* Pulse animation for active card */
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(139, 92, 246, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+    }
+}
+
+.pulse-ring {
+    animation: pulse-ring 2s infinite;
+}
+
+/* Smooth transitions */
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}

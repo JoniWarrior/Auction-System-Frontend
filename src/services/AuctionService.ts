@@ -23,17 +23,21 @@ export const passParams = (
 });
 
 const AuctionService = {
-  getBidderAuctions: (params: GetAuctionsParams) => {
-    return API.get('/auctions/my-auctions-as-bidder', { params });
+  getBidderAuctions: async (params: GetAuctionsParams) => {
+    const response = await API.get('/auctions/my-auctions-as-bidder', { params });
+    return response?.data?.data
   },
-  getSellerAuctions: (params: GetAuctionsParams) => {
-    return API.get('/auctions/my-auctions-as-seller', { params });
+  getSellerAuctions: async (params: GetAuctionsParams) => {
+    const response = await API.get('/auctions/my-auctions-as-seller', { params });
+    return response?.data?.data;
   },
   getSingleAuction: async (auctionId: string) => {
-    return API.get(`/auctions/${auctionId}`);
+    const response = await API.get(`/auctions/${auctionId}`);
+    return response?.data?.data;
   },
-  getAllAuctions: (params: GetAuctionsParams) => {
-    return API.get('/auctions', { params });
+  getAllAuctions: async (params: GetAuctionsParams) => {
+    const response = await API.get('/auctions', { params });
+    return response?.data?.data;
   },
   createAuction: (payload: CreateAuctionPayload) => {
     return API.post('/auctions', payload);

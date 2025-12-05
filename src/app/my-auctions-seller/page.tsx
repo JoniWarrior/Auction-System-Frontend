@@ -60,8 +60,8 @@ export default function MyAuctionsPage() {
       const params = passParams(filter, currentPage, searchTerm);
 
       const response = await AuctionService.getSellerAuctions(params);
-      setAuctions(response.data?.data?.data);
-      setTotalPages(response?.data?.data?.meta?.totalPages);
+      setAuctions(response.data);
+      setTotalPages(response.meta?.totalPages);
     } catch (err) {
       console.error('Error fetching the data ', err);
     } finally {

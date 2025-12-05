@@ -46,7 +46,7 @@ export default function Home() {
         qs: ''
       };
       const response = await AuctionService.getAllAuctions(params);
-      setFeaturedAuctions(response?.data.data.data || []);
+      setFeaturedAuctions(response?.data || []);
     } catch (err) {
       console.error('Error fetching the items from the backend,', err);
     } finally {

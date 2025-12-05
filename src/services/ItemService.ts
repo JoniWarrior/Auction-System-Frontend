@@ -6,7 +6,10 @@ export interface GetItemsParams {
 const ItemService = {
   create: async (payload: FormData) =>
     API.post('/items', payload, { headers: { 'Content-Type': 'multipart/form-data' } }),
-  getEmptyItems: (params : GetItemsParams) => API.get('items/my-empty-items', {params})
+  getEmptyItems: async (params : GetItemsParams) => {
+    const response = await API.get('items/my-empty-items', {params});
+    return response?.data?.data;
+  }
 };
 
 export default ItemService;

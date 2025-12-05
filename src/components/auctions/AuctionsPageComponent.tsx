@@ -28,8 +28,8 @@ export default function AuctionsPageComponent() {
     try {
       const params = passParams(filter, currentPage, searchTerm);
       const response = await AuctionService.getAllAuctions(params);
-      setAuctions(response?.data?.data?.data); // matcehs beckend {data,meta }
-      setTotalPages(response?.data?.data?.meta?.totalPages);
+      setAuctions(response?.data); // matches beckend {data,meta }
+      setTotalPages(response?.meta?.totalPages);
     } catch (err: any) {
       console.error('Error fetching the data ', err.response?.data || err);
     } finally {

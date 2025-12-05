@@ -28,8 +28,8 @@ export default function MyAuctionsPage() {
     try {
       const params = passParams(filter, currentPage, searchTerm);
       const response = await AuctionService.getBidderAuctions(params);
-      setAuctions(response?.data?.data?.data);
-      setTotalPages(response?.data?.data?.meta?.totalPages);
+      setAuctions(response?.data);
+      setTotalPages(response?.meta?.totalPages);
     } catch (err) {
       console.error('Error fetching auctions:', err);
     } finally {

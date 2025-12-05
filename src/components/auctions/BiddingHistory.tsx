@@ -8,8 +8,6 @@ interface BiddingHistoryProps {
 export default function BiddingHistory({ biddings }: BiddingHistoryProps) {
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Bid History</h2>
-
       {biddings.length === 0 ? (
         <p className="text-gray-500">No bids yet. Be the first to bid!</p>
       ) : (

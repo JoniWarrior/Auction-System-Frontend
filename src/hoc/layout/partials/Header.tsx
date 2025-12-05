@@ -8,6 +8,7 @@ import { RootState } from '@/store/store';
 import { logOut } from '@/store/auth/authSlice';
 import GradientButton from '@/core/buttons/electrons/GradientButton';
 import { showLoader } from '@/store/loadingSlice';
+import { useState } from 'react';
 
 export default function Header() {
   const router = useRouter();
@@ -64,6 +65,8 @@ export default function Header() {
               Sell
             </Link>
           </nav>
+
+
 
           <div className="flex items-center space-x-4">
             {isLoggedIn && <NotificationBell />}
