@@ -6,10 +6,11 @@ interface BidFormProps {
   user : any,
   isProcessing : boolean,
   hasDefaultCard : boolean
+  socket : any
 }
 
 const BidForm = ({handlePlaceBid,bidAmount, setBidAmount, auction, user, isProcessing,
-                   hasDefaultCard} : BidFormProps) => {
+                   hasDefaultCard, socket} : BidFormProps) => {
   return (
     <div>
       <div className="space-y-4 w-full">
@@ -26,7 +27,20 @@ const BidForm = ({handlePlaceBid,bidAmount, setBidAmount, auction, user, isProce
                 id="bidAmount"
                 type="number"
                 value={bidAmount}
-                onChange={(e) => setBidAmount(e.target.value)}
+                onChange={
+                (e) => setBidAmount(e.target.value)}
+                onFocus={(e) => {
+                  socket?.emit("startBidding", {
+                  auctionId: auction?.id,
+                  userName: user?.name,
+                });
+                }}
+                onBlur={(e) => {
+                  socket?.emit("stopBidding", {
+                    auctionId : auction?.id,
+                    userName : user?.name
+                  })
+                }}
                 placeholder={`Enter amount above $${auction?.currentPrice || '0.00'}`}
                 className="w-full pl-8 pr-4 py-3 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                 required

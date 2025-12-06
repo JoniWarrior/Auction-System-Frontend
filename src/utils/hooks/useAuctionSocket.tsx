@@ -1,51 +1,83 @@
-import { useEffect, useRef } from "react";
-import { io, Socket } from "socket.io-client";
+import { io, Socket } from 'socket.io-client';
+import { useEffect, useRef } from 'react';
 
-export default function useAuctionSocket({ userId, auctionId, onOutBid, onNewBid, onBiddingIndicator }: {
-  userId: string | undefined;
-  auctionId: string | undefined;
-  onOutBid: (msg: string) => void;
-  onNewBid: (bid: any) => void;
-  onBiddingIndicator: (data: { userName: string; isBidding: boolean }) => void;
-}) {
+let socketInstance: Socket | null = null;
+interface useAuctionSocketProps {
+  user: any;
+  auctionId: string;
+  setBiddings: any;
+  setAuction: any;
+  biddingUsers : any;
+  setBiddingUsers: any;
+  setOutBidNotification: any;
+
+}
+export function useAuctionSocket({
+  user,
+  auctionId,
+  setBiddings,
+  setAuction,
+  setBiddingUsers,
+  setOutBidNotification
+}: useAuctionSocketProps) {
   const socketRef = useRef<Socket | null>(null);
 
-  // Initialize socket
+  const handleNewBid = (bid: any) => {
+    setBiddings((prev : any) => [bid, ...prev]);
+    setAuction((prev: any) => ({ ...prev, currentPrice: bid.amount }));
+  };
+
+  const handleBiddingIndicator = ({
+    userName,
+    isBidding
+  }: {
+    userName: string;
+    isBidding: boolean;
+  }) => {
+    setBiddingUsers((prev : any) =>
+      isBidding
+        ? prev.includes(userName)
+          ? prev
+          : [...prev, userName]
+        : prev.filter((u : any) => u !== userName)
+    );
+  };
+
+  // Socket :
   useEffect(() => {
-    if (!userId || socketRef.current) return;
+    if (!user?.id) return;
+    if (!socketInstance) {
+      socketInstance = io(process.env.NEXT_PUBLIC_BACKEND_URL, {
+        query: { userId: user?.id }
+      });
+    }
 
-    const socket = io(process.env.NEXT_PUBLIC_BACKEND_URL!, {
-      query: { userId }
-    });
+    socketRef.current = socketInstance;
 
-    socketRef.current = socket;
-
-    socket.on("outBid", (n: any) => {
-      onOutBid(n.message ?? "You were outbid!");
+    socketInstance.on('outBid', (notification: any) => {
+      setOutBidNotification(notification.message ?? 'You were outbid!');
+      setTimeout(() => setOutBidNotification(null), 5000);
     });
 
     return () => {
-      socket.disconnect();
-      socketRef.current = null;
+      socketInstance?.disconnect();
+      socketInstance = null;
     };
-  }, [userId, onOutBid]);
+  }, [user?.id]);
 
-  // Join auction + listen to auction events
   useEffect(() => {
+    if (!user?.id || !auctionId || !socketRef.current) return;
+
     const socket = socketRef.current;
-    if (!userId || !auctionId || !socket) return;
-
-    socket.emit("joinAuction", auctionId);
-
-    socket.on("newBid", onNewBid);
-    socket.on("biddingIndicator", onBiddingIndicator);
+    socket.emit('joinAuction', auctionId);
+    socket.on('newBid', handleNewBid);
+    socket.on('biddingIndicator', handleBiddingIndicator);
 
     return () => {
-      socket.emit("leaveAuction", auctionId);
-      socket.off("newBid", onNewBid);
-      socket.off("biddingIndicator", onBiddingIndicator);
+      socket.emit('leaveAuction', auctionId);
+      socket.off('newBid', handleNewBid);
+      socket.off('biddingIndicator', handleBiddingIndicator);
     };
-  }, [auctionId, userId, onNewBid, onBiddingIndicator]);
-
-  return socketRef;
+  }, [auctionId, user?.id]);
+  return socketRef.current;
 }

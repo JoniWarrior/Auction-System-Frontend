@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { FaClock, FaArrowLeft, FaExclamationTriangle } from 'react-icons/fa';
+import { FaArrowLeft, FaClock, FaExclamationTriangle } from 'react-icons/fa';
 import Image from 'next/image';
-import { io } from 'socket.io-client';
 import BiddingHistory from './BiddingHistory';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
@@ -15,10 +14,10 @@ import { hideLoader, showLoader } from '@/store/loadingSlice';
 import useAuctionCountDown from '@/utils/hooks/AuctionCountdown';
 import useUserCards from '@/utils/hooks/useUserCards';
 import {
-  renderAddCardForm,
-  setUpCardTokenPayment,
+  AddCardData,
   PaymentErrorResponse,
-  AddCardData
+  renderAddCardForm,
+  setUpCardTokenPayment
 } from '@nebula-ltd/pok-payments-js';
 import '@nebula-ltd/pok-payments-js/lib/index.css';
 import CardService from '@/services/CardService';
@@ -26,9 +25,9 @@ import BiddingService from '@/services/BiddingService';
 import AuctionSelectCard from '@/components/auctions/AuctionSelectCard';
 import BidForm from '@/components/auctions/BidForm';
 import AuctionLiveInfo from '@/components/auctions/AuctionLiveInfo';
+import { useAuctionSocket } from '@/utils/hooks/useAuctionSocket';
 
 let socket: any;
-let socketInitialized = false;
 
 export function AuctionDetailContent() {
   const params = useParams();
@@ -50,63 +49,16 @@ export function AuctionDetailContent() {
   const { defaultCard, hasDefaultCard, cards: userCards, refresh } = useUserCards();
 
   // Socket initialization
-  useEffect(() => {
-    if (!socketInitialized && user?.id) {
-      socket = io(process.env.NEXT_PUBLIC_BACKEND_URL, {
-        query: { userId: user?.id }
-      });
-      socketInitialized = true;
+  socket = useAuctionSocket({
+    user,
+    auctionId,
+    setBiddings,
+    setAuction,
+    biddingUsers,
+    setBiddingUsers,
+    setOutBidNotification
+  });
 
-      socket.on('outBid', (notification: any) => {
-        setOutBidNotification(notification.message ?? 'You were outbid!');
-        setTimeout(() => setOutBidNotification(null), 5000);
-      });
-    }
-
-    return () => {
-      if (socket) {
-        socket.disconnect();
-        socketInitialized = false;
-      }
-    };
-  }, [user?.id]);
-
-  useEffect(() => {
-    if (!user?.id || !auctionId || !socket) return;
-
-    socket.emit('joinAuction', auctionId);
-
-    const handleNewBid = (bid: any) => {
-      setBiddings((prev) => [bid, ...prev]);
-      setAuction((prev: any) => ({ ...prev, currentPrice: bid.amount }));
-    };
-
-    const handleBiddingIndicator = ({
-      userName,
-      isBidding
-    }: {
-      userName: string;
-      isBidding: boolean;
-    }) => {
-      setBiddingUsers((prev) =>
-        isBidding
-          ? prev.includes(userName)
-            ? prev
-            : [...prev, userName]
-          : prev.filter((u) => u !== userName)
-      );
-      console.log("Bidding Users: ",biddingUsers);
-    };
-
-    socket.on('newBid', handleNewBid);
-    socket.on('biddingIndicator', handleBiddingIndicator);
-
-    return () => {
-      socket.emit('leaveAuction', auctionId);
-      socket.off('newBid', handleNewBid);
-      socket.off('biddingIndicator', handleBiddingIndicator);
-    };
-  }, [auctionId, user?.id, socket]);
 
   // Fetch auction data
   const fetchAuction = async () => {
@@ -323,26 +275,15 @@ export function AuctionDetailContent() {
             </div>
 
             {/* Bidding indicators */}
-            {/*Bidding indicator component*/}
             {biddingUsers.length > 0 && (
-              <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center -space-x-2">
-                    {biddingUsers.slice(0, 3).map((user, index) => (
-                      <div
-                        key={index}
-                        className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold border-2 border-white">
-                        {user.charAt(0).toUpperCase()}
-                      </div>
-                    ))}
-                  </div>
-                  <div>
-                    <p className="text-sm text-blue-700 font-medium">
-                      {biddingUsers.length} active bidder{biddingUsers.length !== 1 ? 's' : ''}
-                    </p>
-                    <p className="text-xs text-blue-600">Currently bidding on this item</p>
-                  </div>
-                </div>
+              <div className="flex items-center gap-2 text-blue-700 font-medium mb-2">
+                <div className="h-3 w-3 rounded-full bg-red-700 animate-pulse"></div>
+
+                <span>
+                  {biddingUsers.length === 1
+                    ? `${biddingUsers[0]} is bidding...`
+                    : `${biddingUsers.join(', ')} are bidding...`}
+                </span>
               </div>
             )}
           </div>
@@ -402,6 +343,7 @@ export function AuctionDetailContent() {
             user={user}
             isProcessing={isProcessing}
             hasDefaultCard={hasDefaultCard}
+            socket={socket}
           />
         </div>
       </div>
