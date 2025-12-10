@@ -25,7 +25,7 @@ export default function useUserCards() {
       setCards(fetchedCards || []);
 
       const defaultCard = fetchedCards.find((card: any) => card.isDefault);
-      setDefaultCard(defaultCard || null);
+      setDefaultCard(defaultCard ?? fetchedCards[0] ?? null);
     } catch (err) {
       console.error('Error fetching cards:', err);
       setCards([]);

@@ -21,11 +21,12 @@ import {
 } from '@nebula-ltd/pok-payments-js';
 import '@nebula-ltd/pok-payments-js/lib/index.css';
 import CardService from '@/services/CardService';
-import BiddingService from '@/services/BiddingService';
+import BiddingService, { PlaceBidPayload } from '@/services/BiddingService';
 import AuctionSelectCard from '@/components/auctions/AuctionSelectCard';
 import BidForm from '@/components/auctions/BidForm';
 import AuctionLiveInfo from '@/components/auctions/AuctionLiveInfo';
 import { useAuctionSocket } from '@/utils/hooks/useAuctionSocket';
+import TransactionService, { UpdateTransactionPayload } from '@/services/TransactionService';
 
 let socket: any;
 
@@ -59,7 +60,6 @@ export function AuctionDetailContent() {
     setOutBidNotification
   });
 
-
   // Fetch auction data
   const fetchAuction = async () => {
     if (!auctionId) return;
@@ -80,6 +80,16 @@ export function AuctionDetailContent() {
     fetchAuction();
   }, [auctionId]);
 
+  const createBidding = async ({ auctionId, amount }: PlaceBidPayload) => {
+    const response = await BiddingService.placeBid({ auctionId, amount });
+    return response;
+  };
+
+  const updateAndCancelTransaction = async ({previousTransaction, currentTransaction, bidding} : UpdateTransactionPayload) => {
+    const response = await TransactionService.updateAndCancelTransaction({previousTransaction, currentTransaction, bidding});
+    return response;
+  }
+
   // Initialize add card form
   const initializeAddCardForm = () => {
     const container = document.getElementById('add-card-form-container');
@@ -94,6 +104,7 @@ export function AuctionDetailContent() {
         try {
           dispatch(showLoader('Saving card...'));
           await CardService.tokenizeGuestCard(cardPayload);
+          await refresh();
           showSuccess('Card saved successfully!');
           setShowAddCardForm(false);
         } catch (err) {
@@ -135,7 +146,10 @@ export function AuctionDetailContent() {
     }
   }, [showAddCardForm]);
 
-  const processPayment = async () => {
+  const processPayment = async (
+    bidValue : number,
+    transaction : any
+    ) => {
     if (!defaultCard) {
       showError('No payment method found. Please add a card first.');
       return false;
@@ -144,34 +158,35 @@ export function AuctionDetailContent() {
     setPaymentError(null);
     dispatch(showLoader('Processing payment...'));
 
+    const sdkOrderId = transaction?.sdkOrderId;
     try {
-      // First cretae the bid // not like this, confirm payment then create bid + transaction
-      const bidResponse = await BiddingService.placeBid({
-        auctionId,
-        amount: Number(bidAmount)
-      });
-
-      const sdkOrderId = bidResponse?.data?.data?.transaction?.sdkOrderId;
-
-      if (!sdkOrderId) {
-        showError('Payment initialization failed');
-        setIsProcessing(false);
-        return false;
-      }
-
-      // Then process payment with the bid's sdkOrderId
+      // 1. Call setUpTokenized3DS :
       const res = await CardService.setupTokenized3DS({
         selectedCardId: defaultCard.pokCardId,
         sdkOrderId
       });
-
       const payerAuthentication = res;
 
       setUpCardTokenPayment({
         containerId: 'payment-processor-container',
         orderId: sdkOrderId,
         payerAuthentication,
-        onSuccess: () => {
+        onSuccess: async () => {
+          const bidResponse = await BiddingService.placeBid({
+            auctionId,
+            amount: bidValue
+          });
+          console.log("bidResponse: ", bidResponse);
+
+          // if (bidResponse.previousTransaction) {
+            await TransactionService.updateAndCancelTransaction({
+              previousTransaction : bidResponse.previousTransaction, // sdkOrderId checked V
+              currentTransaction : transaction.id, // normal ID of DB checked V
+              bidding : bidResponse.bidding // object checked V
+            });
+          // }
+
+          showSuccess("Bid placed successfully!"); // could be removed
           showSuccess('Payment successful!');
           fetchAuction();
           setBidAmount('');
@@ -217,7 +232,33 @@ export function AuctionDetailContent() {
       setShowAddCardForm(true);
       return;
     }
-    await processPayment();
+    const newTransaction = await TransactionService.createTransaction({
+      amount: bidValue,
+      auctionId
+    });
+    const paymentSuccess = await processPayment(
+      bidValue,
+      newTransaction
+      );
+    if (!paymentSuccess) {
+      showError("Payment failed");
+      return;
+    }
+
+    // const bidResponse = await BiddingService.placeBid({
+    //   auctionId,
+    //   amount: bidValue
+    // });
+    //
+    // if (bidResponse.previousTransaction) {
+    //   await TransactionService.updateAndCancelTransaction({
+    //     previousTransaction : bidResponse.previousTransaction, // sdkOrderId checked V
+    //     currentTransaction : newTransaction.id, // normal ID of DB checked V
+    //     bidding : bidResponse.bidding // object checked V
+    //   });
+    // }
+    //
+    // showSuccess("Bid placed successfully!")
   };
 
   // Set card as default
@@ -278,7 +319,6 @@ export function AuctionDetailContent() {
             {biddingUsers.length > 0 && (
               <div className="flex items-center gap-2 text-blue-700 font-medium mb-2">
                 <div className="h-3 w-3 rounded-full bg-red-700 animate-pulse"></div>
-
                 <span>
                   {biddingUsers.length === 1
                     ? `${biddingUsers[0]} is bidding...`
@@ -335,19 +375,24 @@ export function AuctionDetailContent() {
           />
 
           {/* Bid form */}
-          <BidForm
-            handlePlaceBid={handlePlaceBid}
-            bidAmount={bidAmount}
-            setBidAmount={setBidAmount}
-            auction={auction}
-            user={user}
-            isProcessing={isProcessing}
-            hasDefaultCard={hasDefaultCard}
-            socket={socket}
-          />
+          {auction?.status !== 'finished' ? (
+            <BidForm
+              handlePlaceBid={handlePlaceBid}
+              bidAmount={bidAmount}
+              setBidAmount={setBidAmount}
+              auction={auction}
+              user={user}
+              isProcessing={isProcessing}
+              hasDefaultCard={hasDefaultCard}
+              socket={socket}
+            />
+          ) : (
+            <span className="text-center text-gray-500">Auction has finished</span>
+          )}
         </div>
       </div>
-      <div id="payment-processor-container" className="hidden"></div>
+      {/*<div id="payment-processor-container" className="hidden"></div>*/}
+      <div id="payment-processor-container"></div>
     </div>
   );
 }

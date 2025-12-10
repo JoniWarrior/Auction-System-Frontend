@@ -1,5 +1,5 @@
 import { FaCreditCard, FaExclamationTriangle, FaPlus } from 'react-icons/fa';
-import CardSelectionSection from '@/components/cards/CardSelection';
+import CardSelectionSection, { Card } from '@/components/cards/CardSelection';
 
 interface AuctionSelectCardProps {
   user: any;
@@ -9,7 +9,7 @@ interface AuctionSelectCardProps {
   showCardSelection: boolean;
   setShowCardSelection: (show: boolean) => void;
   defaultCard: any;
-  userCards: any[];
+  userCards: Card[];
   paymentError: string | null;
   handleSetAsDefault: (cardId: string) => void;
 }
@@ -32,7 +32,7 @@ const AuctionSelectCard = ({
       {user?.id && (
         <div className="space-y-4">
           {/* No Cards - Show Add Card Form */}
-          {!hasDefaultCard && !showAddCardForm && (
+          {userCards?.length < 1 && !showAddCardForm && (
             <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-yellow-100 rounded-lg">
@@ -77,9 +77,11 @@ const AuctionSelectCard = ({
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-gray-900">{defaultCard.cardType}</span>
-                      <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
-                        Default
-                      </span>
+                      {defaultCard.isDefault && (
+                        <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                          Default
+                        </span>
+                      )}
                     </div>
                     <p className="text-gray-700 text-sm mt-1">
                       Ending in •••• {defaultCard.hiddenNumber?.slice(-4) || '••••'}

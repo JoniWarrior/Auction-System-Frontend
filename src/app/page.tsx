@@ -16,7 +16,6 @@ export default function Home() {
   const linkText = 'My Auctions';
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const isLoading = useSelector((state: RootState) => state.loading.show);
 
   const MyAuctionsSellerClick = async (e : React.MouseEvent) => {
     e.preventDefault();
@@ -34,8 +33,6 @@ export default function Home() {
     dispatch(showLoader("Displaying Sell Item Page..."));
     router.push("/sell");
   }
-
-
 
   const fetchAuctions = async () => {
     try {

@@ -6,7 +6,15 @@ export interface PlaceBidPayload {
 }
 
 const BiddingService = {
-  placeBid: (payload: PlaceBidPayload) => API.post("/biddings", payload)
+  placeBid: async (payload: PlaceBidPayload) => {
+    const response = await API.post("/biddings", payload);
+    return response?.data?.data;
+  },
+  //     return {
+  //       previousTransaction,
+  //       bidding: fullBid,
+  //     };
+
 };
 
 export default BiddingService;

@@ -54,6 +54,7 @@ export function useAuctionSocket({
 
     socketRef.current = socketInstance;
 
+    socketInstance.on('biddingIndicator', handleBiddingIndicator);
     socketInstance.on('outBid', (notification: any) => {
       setOutBidNotification(notification.message ?? 'You were outbid!');
       setTimeout(() => setOutBidNotification(null), 5000);

@@ -1,16 +1,24 @@
 interface BidFormProps {
-  handlePlaceBid : any,
-  bidAmount : string,
-  setBidAmount : (bidAmount : string) => void,
-  auction : any,
-  user : any,
-  isProcessing : boolean,
-  hasDefaultCard : boolean
-  socket : any
+  handlePlaceBid: any;
+  bidAmount: string;
+  setBidAmount: (bidAmount: string) => void;
+  auction: any;
+  user: any;
+  isProcessing: boolean;
+  hasDefaultCard: boolean;
+  socket: any;
 }
 
-const BidForm = ({handlePlaceBid,bidAmount, setBidAmount, auction, user, isProcessing,
-                   hasDefaultCard, socket} : BidFormProps) => {
+const BidForm = ({
+  handlePlaceBid,
+  bidAmount,
+  setBidAmount,
+  auction,
+  user,
+  isProcessing,
+  hasDefaultCard,
+  socket
+}: BidFormProps) => {
   return (
     <div>
       <div className="space-y-4 w-full">
@@ -27,19 +35,18 @@ const BidForm = ({handlePlaceBid,bidAmount, setBidAmount, auction, user, isProce
                 id="bidAmount"
                 type="number"
                 value={bidAmount}
-                onChange={
-                (e) => setBidAmount(e.target.value)}
+                onChange={(e) => setBidAmount(e.target.value)}
                 onFocus={(e) => {
-                  socket?.emit("startBidding", {
-                  auctionId: auction?.id,
-                  userName: user?.name,
-                });
+                  socket?.emit('startBidding', {
+                    auctionId: auction?.id,
+                    userId: user?.id
+                  });
                 }}
                 onBlur={(e) => {
-                  socket?.emit("stopBidding", {
-                    auctionId : auction?.id,
-                    userName : user?.name
-                  })
+                  socket?.emit('stopBidding', {
+                    auctionId: auction?.id,
+                    userId: user?.id
+                  });
                 }}
                 placeholder={`Enter amount above $${auction?.currentPrice || '0.00'}`}
                 className="w-full pl-8 pr-4 py-3 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
@@ -72,8 +79,8 @@ const BidForm = ({handlePlaceBid,bidAmount, setBidAmount, auction, user, isProce
                 Place Bid
                 {bidAmount && (
                   <span className="ml-2 px-3 py-1 bg-white/20 rounded-full">
-                        ${Number(bidAmount)}
-                      </span>
+                    ${Number(bidAmount)}
+                  </span>
                 )}
               </>
             )}
@@ -81,7 +88,7 @@ const BidForm = ({handlePlaceBid,bidAmount, setBidAmount, auction, user, isProce
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default BidForm;

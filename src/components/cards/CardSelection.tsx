@@ -3,7 +3,7 @@
 import { FiCreditCard, FiX } from 'react-icons/fi';
 import { FaPlus } from 'react-icons/fa';
 
-interface Card {
+export interface Card {
   id: string;
   hiddenNumber?: string;
   isDefault: boolean;

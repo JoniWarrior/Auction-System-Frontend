@@ -8,7 +8,7 @@ import ItemService from '@/services/ItemService';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import GradientButton from '@/core/buttons/electrons/GradientButton';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '@/store/store';
 import { showLoader, hideLoader } from '@/store/loadingSlice';
 
@@ -19,6 +19,7 @@ export default function SellPageContent() {
   const [imageURL, setImageURL] = useState('');
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
+  const isLoading = useSelector((state: any) => state.loading.show);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -52,7 +53,9 @@ export default function SellPageContent() {
     dispatch(hideLoader());
   }, [dispatch]);
 
-  return (
+  return isLoading ? (
+    <p className="text-center mt-20">Loading Auctions...</p>
+  ) : (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-lg mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-6 space-y-8">
         {/* Header */}
