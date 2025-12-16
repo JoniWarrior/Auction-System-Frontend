@@ -8,7 +8,7 @@ export interface GetAuctionsParams {
 }
 
 export interface CreateAuctionPayload {
-  itemId?: any;
+  itemId?: string;
   startingPrice: number;
   endTime: any;
 }

@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import CardService from '@/services/CardService';
+import { Card } from '@/components/cards/CardSelection';
 
 export default function useUserCards() {
   const user = useSelector((state: RootState) => state.auth.user);
-  const [cards, setCards] = useState<any[]>([]);
+  const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [defaultCard, setDefaultCard] = useState<any>(null);
 

@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import NotificationService from '@/services/NotificationService';
 import GradientButton from '@/core/buttons/electrons/GradientButton';
+import { User } from '@/components/auctions/BidForm';
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -14,7 +15,7 @@ export default function NotificationBell() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const user = useSelector((state: RootState) => state.auth.user);
 
-  const fetchNotifications = async (user: any) => {
+  const fetchNotifications = async (user: User) => {
     try {
       const response = await NotificationService.getUnreadNotification(user?.id);
       setNotifications(response || []);
@@ -35,6 +36,7 @@ export default function NotificationBell() {
       setNotifications((prev) => [notification, ...prev]);
       setUnreadCount((prev) => prev + 1);
       setToastMessage(notification.message);
+      console.log("Outbid arriving in front via socket",notification);
       setTimeout(() => setToastMessage(null), 5000);
     });
 

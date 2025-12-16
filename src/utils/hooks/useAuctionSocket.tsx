@@ -1,5 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { useEffect, useRef } from 'react';
+import { Bidding } from '@/components/auctions/BiddingHistory';
 
 let socketInstance: Socket | null = null;
 interface useAuctionSocketProps {
@@ -22,7 +23,7 @@ export function useAuctionSocket({
 }: useAuctionSocketProps) {
   const socketRef = useRef<Socket | null>(null);
 
-  const handleNewBid = (bid: any) => {
+  const handleNewBid = (bid: Bidding) => {
     setBiddings((prev : any) => [bid, ...prev]);
     setAuction((prev: any) => ({ ...prev, currentPrice: bid.amount }));
   };

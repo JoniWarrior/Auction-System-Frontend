@@ -6,12 +6,13 @@ import AuctionService, { GetAuctionsParams } from '@/services/AuctionService';
 import Image from 'next/image';
 import { showLoader } from '@/store/loadingSlice';
 
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/store/store';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/store/store';
 import { useRouter } from 'next/navigation';
+import { Auction } from '@/components/auctions/AuctionLiveInfo';
 
 export default function Home() {
-  const [featuredAuctions, setFeaturedAuctions] = useState<any[]>([]);
+  const [featuredAuctions, setFeaturedAuctions] = useState<Auction[]>([]);
   const [loading, setLoading] = useState(true);
   const linkText = 'My Auctions';
   const router = useRouter();
@@ -118,8 +119,8 @@ export default function Home() {
                     className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                     <div className="h-48 bg-gray-200 relative">
                       <Image
-                        src={auction.item.imageURL}
-                        alt={auction.item.title}
+                        src={auction?.item?.imageURL ?? "Undefined"}
+                        alt={auction?.item?.title ?? "Undefined"}
                         fill
                         className="object-cover rounded-lg"
                       />
@@ -134,10 +135,10 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="p-4">
-                      <h3 className="font-semibold text-lg mb-2 truncate">{auction.item.title}</h3>
+                      <h3 className="font-semibold text-lg mb-2 truncate">{auction?.item?.title}</h3>
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-2xl font-bold text-purple-700">
-                          ${auction.currentPrice.toLocaleString()}
+                          ${auction?.currentPrice?.toLocaleString()}
                         </span>
                       </div>
 

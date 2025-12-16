@@ -10,11 +10,6 @@ const BiddingService = {
     const response = await API.post("/biddings", payload);
     return response?.data?.data;
   },
-  //     return {
-  //       previousTransaction,
-  //       bidding: fullBid,
-  //     };
-
 };
 
 export default BiddingService;

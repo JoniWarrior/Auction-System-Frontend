@@ -16,7 +16,7 @@ interface CardSelectionSectionProps {
   showCardSelection: boolean;
   setShowAddCardForm: (show: boolean) => void;
   handleSetAsDefault: (cardId: string) => void;
-  setShowCardSelection: (show: boolean) => void; // Add this prop
+  setShowCardSelection: (show: boolean) => void;
 }
 
 export default function CardSelectionSection({
@@ -25,14 +25,14 @@ export default function CardSelectionSection({
   showCardSelection,
   setShowAddCardForm,
   handleSetAsDefault,
-  setShowCardSelection // Destructure the new prop
+  setShowCardSelection
 }: CardSelectionSectionProps) {
   if (!showCardSelection || userCards.length === 0) {
     return null;
   }
 
   const handleCancel = () => {
-    setShowCardSelection(false); // Hide the card selection
+    setShowCardSelection(false);
   };
 
   return (

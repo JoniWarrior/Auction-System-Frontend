@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft, FaClock, FaExclamationTriangle } from 'react-icons/fa';
 import Image from 'next/image';
-import BiddingHistory from './BiddingHistory';
+import BiddingHistory, { Bidding } from './BiddingHistory';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { showError, showSuccess } from '@/utils/functions';
@@ -21,13 +21,12 @@ import {
 } from '@nebula-ltd/pok-payments-js';
 import '@nebula-ltd/pok-payments-js/lib/index.css';
 import CardService from '@/services/CardService';
-import BiddingService, { PlaceBidPayload } from '@/services/BiddingService';
+import BiddingService from '@/services/BiddingService';
 import AuctionSelectCard from '@/components/auctions/AuctionSelectCard';
 import BidForm from '@/components/auctions/BidForm';
 import AuctionLiveInfo from '@/components/auctions/AuctionLiveInfo';
 import { useAuctionSocket } from '@/utils/hooks/useAuctionSocket';
-import TransactionService, { UpdateTransactionPayload } from '@/services/TransactionService';
-
+import TransactionService from '@/services/TransactionService';
 let socket: any;
 
 export function AuctionDetailContent() {
@@ -39,7 +38,7 @@ export function AuctionDetailContent() {
   const [auction, setAuction] = useState<any>(null);
   const timeRemaining = useAuctionCountDown(auction?.endTime);
   const [bidAmount, setBidAmount] = useState('');
-  const [biddings, setBiddings] = useState<any[]>([]);
+  const [biddings, setBiddings] = useState<Bidding[]>([]);
   const [biddingUsers, setBiddingUsers] = useState<string[]>([]);
   const [outBidNotification, setOutBidNotification] = useState<string | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -79,16 +78,6 @@ export function AuctionDetailContent() {
   useEffect(() => {
     fetchAuction();
   }, [auctionId]);
-
-  const createBidding = async ({ auctionId, amount }: PlaceBidPayload) => {
-    const response = await BiddingService.placeBid({ auctionId, amount });
-    return response;
-  };
-
-  const updateAndCancelTransaction = async ({previousTransaction, currentTransaction, bidding} : UpdateTransactionPayload) => {
-    const response = await TransactionService.updateAndCancelTransaction({previousTransaction, currentTransaction, bidding});
-    return response;
-  }
 
   // Initialize add card form
   const initializeAddCardForm = () => {
@@ -146,10 +135,7 @@ export function AuctionDetailContent() {
     }
   }, [showAddCardForm]);
 
-  const processPayment = async (
-    bidValue : number,
-    transaction : any
-    ) => {
+  const processPayment = async (bidValue: number, transaction: any) => {
     if (!defaultCard) {
       showError('No payment method found. Please add a card first.');
       return false;
@@ -166,7 +152,6 @@ export function AuctionDetailContent() {
         sdkOrderId
       });
       const payerAuthentication = res;
-
       setUpCardTokenPayment({
         containerId: 'payment-processor-container',
         orderId: sdkOrderId,
@@ -176,17 +161,13 @@ export function AuctionDetailContent() {
             auctionId,
             amount: bidValue
           });
-          console.log("bidResponse: ", bidResponse);
+          await TransactionService.updateAndCancelTransaction({
+            previousTransaction: bidResponse.previousTransaction, // sdkOrderId checked V
+            currentTransaction: transaction.id, // normal ID of DB checked V
+            bidding: bidResponse.bidding // object checked V
+          });
 
-          // if (bidResponse.previousTransaction) {
-            await TransactionService.updateAndCancelTransaction({
-              previousTransaction : bidResponse.previousTransaction, // sdkOrderId checked V
-              currentTransaction : transaction.id, // normal ID of DB checked V
-              bidding : bidResponse.bidding // object checked V
-            });
-          // }
-
-          showSuccess("Bid placed successfully!"); // could be removed
+          showSuccess('Bid placed successfully!'); // could be removed
           showSuccess('Payment successful!');
           fetchAuction();
           setBidAmount('');
@@ -236,29 +217,11 @@ export function AuctionDetailContent() {
       amount: bidValue,
       auctionId
     });
-    const paymentSuccess = await processPayment(
-      bidValue,
-      newTransaction
-      );
+    const paymentSuccess = await processPayment(bidValue, newTransaction);
     if (!paymentSuccess) {
-      showError("Payment failed");
+      showError('Payment failed');
       return;
     }
-
-    // const bidResponse = await BiddingService.placeBid({
-    //   auctionId,
-    //   amount: bidValue
-    // });
-    //
-    // if (bidResponse.previousTransaction) {
-    //   await TransactionService.updateAndCancelTransaction({
-    //     previousTransaction : bidResponse.previousTransaction, // sdkOrderId checked V
-    //     currentTransaction : newTransaction.id, // normal ID of DB checked V
-    //     bidding : bidResponse.bidding // object checked V
-    //   });
-    // }
-    //
-    // showSuccess("Bid placed successfully!")
   };
 
   // Set card as default
@@ -277,7 +240,8 @@ export function AuctionDetailContent() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    // <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-6">
       {/* Back button */}
       <Link
         href="/auctions"
@@ -296,25 +260,24 @@ export function AuctionDetailContent() {
       )}
 
       {/* Main content grid */}
-      <div className="flex space-x-8">
-        {/* Left side: Image */}
-        <div className="space-y-6 w-2/5">
-          <div className="space-y-3">
-            <div className="relative flex justify-center h-96 w-96 bg-gray-100 rounded-2xl overflow-hidden shadow-lg">
+      <div className="flex sm:flex-row flex-col space-x-6">
+        <div className="space-y-1 sm:w-2/5 w-full">
+          <div className="space-y-3 justify-center items-center flex flex-col">
+            <div className="relative w-full sm:max-w-sm md:max-w-md lg:w-65 aspect-square sm:aspect-video md:aspect-[4/3] bg-gray-100 rounded-2xl md:rounded-3xl overflow-hidden shadow-md mx-auto">
               {auction?.item?.imageURL ? (
                 <Image
                   src={auction.item.imageURL}
                   alt={auction?.item?.title || 'Auction item'}
                   fill
                   className="object-cover object-contain"
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, (max-width: 1024px) 60vw, 400px"
                 />
               ) : (
-                <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm sm:text-base">
                   No image available
                 </div>
               )}
             </div>
-
             {/* Bidding indicators */}
             {biddingUsers.length > 0 && (
               <div className="flex items-center gap-2 text-blue-700 font-medium mb-2">
@@ -350,15 +313,14 @@ export function AuctionDetailContent() {
         </div>
 
         {/* Right side: Auction details */}
-        <div className="flex flex-col w-full space-y-6">
+        <div className="flex flex-col sm:w-3/4 w-full space-y-6">
           {/* Auction title and description */}
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+          <div className="w-full max-w-3xl flex flex-col items-center">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               {auction?.item?.title || 'Loading...'}
             </h1>
           </div>
 
-          {/* Auction status */}
           <AuctionLiveInfo timeRemaining={timeRemaining} auction={auction} />
 
           <AuctionSelectCard
@@ -375,7 +337,7 @@ export function AuctionDetailContent() {
           />
 
           {/* Bid form */}
-          {auction?.status !== 'finished' ? (
+          {auction?.status !== 'finished' && auction?.item?.seller?.id !== user?.id ? (
             <BidForm
               handlePlaceBid={handlePlaceBid}
               bidAmount={bidAmount}
@@ -387,11 +349,14 @@ export function AuctionDetailContent() {
               socket={socket}
             />
           ) : (
-            <span className="text-center text-gray-500">Auction has finished</span>
+            <span className="text-center text-gray-500">
+              {auction?.status === 'finished'
+                ? 'Auction has finished'
+                : 'You cannot bid on your own auction'}
+            </span>
           )}
         </div>
       </div>
-      {/*<div id="payment-processor-container" className="hidden"></div>*/}
       <div id="payment-processor-container"></div>
     </div>
   );

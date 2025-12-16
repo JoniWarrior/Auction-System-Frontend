@@ -1,8 +1,16 @@
 import { formatDate } from "@/utils/functions";
 import { FaUser } from "react-icons/fa";
 
+export interface Bidding {
+  id : string;
+  bidder : {
+    name : string
+  }
+  amount : number,
+  createdAt : string
+}
 interface BiddingHistoryProps {
-  biddings: any[];
+  biddings: Bidding[];
 }
 
 export default function BiddingHistory({ biddings }: BiddingHistoryProps) {
@@ -12,7 +20,7 @@ export default function BiddingHistory({ biddings }: BiddingHistoryProps) {
         <p className="text-gray-500">No bids yet. Be the first to bid!</p>
       ) : (
         <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
-          {biddings.map((bidding: any) => (
+          {biddings.map((bidding: Bidding) => (
             <div
               key={bidding.id}
               className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
@@ -21,7 +29,7 @@ export default function BiddingHistory({ biddings }: BiddingHistoryProps) {
                 <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
                   <FaUser className="text-purple-600" />
                 </div>
-                <span className="font-medium">{bidding.bidder.name}</span>
+                <span className="font-medium">{bidding?.bidder?.name}</span>
               </div>
               <div className="text-right">
                 <div className="font-semibold">

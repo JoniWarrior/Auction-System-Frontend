@@ -1,4 +1,5 @@
 import API from '@/utils/API/API';
+import { Bidding } from '@/components/auctions/BiddingHistory';
 
 export interface TransactionPayload {
   amount: any;
@@ -8,7 +9,7 @@ export interface TransactionPayload {
 export interface UpdateTransactionPayload {
   previousTransaction : string,
   currentTransaction : string,
-  bidding : any
+  bidding : Bidding
 }
 
 const TransactionService = {
