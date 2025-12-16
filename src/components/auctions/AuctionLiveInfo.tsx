@@ -17,6 +17,7 @@ export interface Auction {
   endTime ?: any;
   biddings ?: Bidding[];
   item?: Item
+  length : any
 }
 
 

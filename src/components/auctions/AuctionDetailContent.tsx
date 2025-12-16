@@ -27,6 +27,7 @@ import BidForm from '@/components/auctions/BidForm';
 import AuctionLiveInfo from '@/components/auctions/AuctionLiveInfo';
 import { useAuctionSocket } from '@/utils/hooks/useAuctionSocket';
 import TransactionService from '@/services/TransactionService';
+
 let socket: any;
 
 export function AuctionDetailContent() {
@@ -71,6 +72,7 @@ export function AuctionDetailContent() {
       console.error('Error fetching the auction:', err);
       showError('Failed to load auction details');
     } finally {
+      console.log("hideLoader 1");
       dispatch(hideLoader());
     }
   };
@@ -100,6 +102,7 @@ export function AuctionDetailContent() {
           console.error(err);
           showError('Failed to save card');
         } finally {
+          console.log("hideLoader 2");
           dispatch(hideLoader());
         }
       },
@@ -142,10 +145,9 @@ export function AuctionDetailContent() {
     }
     setIsProcessing(true);
     setPaymentError(null);
-    dispatch(showLoader('Processing payment...'));
+    // dispatch(showLoader('Processing payment...'));
 
     const sdkOrderId = transaction?.sdkOrderId;
-    try {
       // 1. Call setUpTokenized3DS :
       const res = await CardService.setupTokenized3DS({
         selectedCardId: defaultCard.pokCardId,
@@ -157,20 +159,42 @@ export function AuctionDetailContent() {
         orderId: sdkOrderId,
         payerAuthentication,
         onSuccess: async () => {
-          const bidResponse = await BiddingService.placeBid({
-            auctionId,
-            amount: bidValue
-          });
-          await TransactionService.updateAndCancelTransaction({
-            previousTransaction: bidResponse.previousTransaction, // sdkOrderId checked V
-            currentTransaction: transaction.id, // normal ID of DB checked V
-            bidding: bidResponse.bidding // object checked V
-          });
+          // dispatch(showLoader('Processing payment...'));
+          try {
+            const bidResponse = await BiddingService.placeBid({
+              auctionId,
+              amount: bidValue
+            });
+            await TransactionService.updateAndCancelTransaction({
+              previousTransaction: bidResponse.previousTransaction, // sdkOrderId checked V
+              currentTransaction: transaction.id, // normal ID of DB checked V
+              bidding: bidResponse.bidding // object checked V
+            });
 
-          showSuccess('Bid placed successfully!'); // could be removed
-          showSuccess('Payment successful!');
-          fetchAuction();
-          setBidAmount('');
+            showSuccess('Bid placed successfully!'); // could be removed
+            showSuccess('Payment successful!');
+            fetchAuction();
+            setBidAmount('');
+          } catch (error: any) {
+            console.error('Payment processing error:', error);
+          } finally {
+            console.log("po tani?")
+            dispatch(hideLoader());
+          }
+          // const bidResponse = await BiddingService.placeBid({
+          //   auctionId,
+          //   amount: bidValue
+          // });
+          // await TransactionService.updateAndCancelTransaction({
+          //   previousTransaction: bidResponse.previousTransaction, // sdkOrderId checked V
+          //   currentTransaction: transaction.id, // normal ID of DB checked V
+          //   bidding: bidResponse.bidding // object checked V
+          // });
+          //
+          // showSuccess('Bid placed successfully!'); // could be removed
+          // showSuccess('Payment successful!');
+          // fetchAuction();
+          // setBidAmount('');
         },
         onError: (error: PaymentErrorResponse) => {
           console.error('Payment failed:', error);
@@ -181,13 +205,6 @@ export function AuctionDetailContent() {
       });
 
       return true;
-    } catch (err: any) {
-      console.error('Payment processing error:', err);
-      return false;
-    } finally {
-      setIsProcessing(false);
-      dispatch(hideLoader());
-    }
   };
 
   // Place bid
@@ -213,6 +230,7 @@ export function AuctionDetailContent() {
       setShowAddCardForm(true);
       return;
     }
+    dispatch(showLoader('Placing bid...'));
     const newTransaction = await TransactionService.createTransaction({
       amount: bidValue,
       auctionId
@@ -235,12 +253,12 @@ export function AuctionDetailContent() {
       console.error(err);
       showError('Failed to set default card.');
     } finally {
+      console.log("hideLoader 4");
       dispatch(hideLoader());
     }
   };
 
   return (
-    // <div className="container mx-auto px-4 py-8">
     <div className="container mx-auto px-4 py-6">
       {/* Back button */}
       <Link

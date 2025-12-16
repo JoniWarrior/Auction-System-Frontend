@@ -1,14 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FaClock, FaSearch } from 'react-icons/fa';
+import { FaClock } from 'react-icons/fa';
 import { showError } from '@/utils/functions';
 import axios from 'axios';
 import AuctionService, { passParams } from '@/services/AuctionService';
 import Image from 'next/image';
 import GradientButton from '@/core/buttons/electrons/GradientButton';
-import _ from 'lodash';
 import Pagination from '@/core/pagination/Pagination';
 import CSearch from '@/core/inputs/CSearch';
 import CFilter from '@/core/inputs/Cfilter';
@@ -17,6 +16,7 @@ import { AppDispatch, RootState } from '@/store/store';
 import { hideLoader, showLoader } from '@/store/loadingSlice';
 import { useRouter } from 'next/navigation';
 import { Auction } from '@/components/auctions/AuctionLiveInfo';
+import NoAuctionMsg from '@/components/auctions/NoAuctionMsg';
 
 export default function MyAuctionsPage() {
   const router = useRouter();
@@ -95,18 +95,20 @@ export default function MyAuctionsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {isLoading ? (
-            <p className="text-center mt-20">Loading Auctions...</p>
-          ) : (
-            auctions.map((auction) => (
+        {isLoading ? (
+          <p className="text-center mt-20">Loading Auctions...</p>
+        ) : auctions.length === 0 ? (
+          <NoAuctionMsg />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {auctions.map((auction) => (
               <div
                 key={auction.id}
                 className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 <div className="h-48 bg-gray-200 relative">
                   <Image
-                    src={auction?.item?.imageURL ?? "Undefined"}
-                    alt={auction?.item?.title ?? "Undefined"}
+                    src={auction?.item?.imageURL ?? 'Undefined'}
+                    alt={auction?.item?.title ?? 'Undefined'}
                     fill
                     className="w-full h-full object-cover"
                   />
@@ -162,7 +164,7 @@ export default function MyAuctionsPage() {
                     <GradientButton
                       isLoading={isLoading}
                       label="Close Auction"
-                      onClick={() => handleCloseAuction(auction.id ?? "")}
+                      onClick={() => handleCloseAuction(auction.id ?? '')}
                       fromColor="from-red-500"
                       toColor="to-red-700"
                       hoverFromColor="hover:from-red-600"
@@ -172,9 +174,9 @@ export default function MyAuctionsPage() {
                   )}
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
       <Pagination totalPages={totalPages} currentPage={currentPage} onChange={setCurrentPage} />
     </>

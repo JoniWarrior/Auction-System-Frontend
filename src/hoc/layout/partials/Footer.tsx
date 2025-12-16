@@ -4,9 +4,7 @@ import { FaFacebook, FaGavel, FaInstagram, FaTwitter } from 'react-icons/fa';
 
 export default function Footer() {
   return (
-    // <footer className="bg-gray-900 text-white pt-8 md:pt-10 pb-6 fullfill-viewport">
     <footer className="bg-gray-900 text-white pt-8 md:pt-10 pb-6 w-full overflow-hidden">
-      {/*<div className="container mx-auto px-4 sm:px-6 lg:px-8">*/}
       <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {/* Brand & Social */}

@@ -25,28 +25,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 } */
 
-/*
- * IMPORTANT: Always scope your custom styles under #pok-payment-container
- * This ensures your styles don't conflict with other components
- */
-
-/* Example: Change the primary button color */
-/*#pok-payment-container .pok-payment-button {*/
-/*    background-color: #your-custom-color;*/
-/*}*/
-
-/*/* Example: Modify input field styles */
-/*#pok-payment-container .pok-payment-input {*/
-/*    border-color: #your-custom-color;*/
-/*    border-radius: 8px;*/
-/*}*/
-
-/*/* Example: Customize error message appearance */
-/*#pok-payment-container .pok-payment-error-message {*/
-/*    background-color: #your-custom-color;*/
-/*    border-color: #your-custom-color;*/
-/*}*/
-/* Custom Carousel Animations */
 @keyframes slide-in-left {
     from {
         transform: translateX(-100%);
@@ -93,7 +71,6 @@ body {
     animation: fade-in 0.3s ease-out;
 }
 
-/* Pulse animation for active card */
 @keyframes pulse-ring {
     0% {
         transform: scale(0.95);
@@ -113,7 +90,6 @@ body {
     animation: pulse-ring 2s infinite;
 }
 
-/* Smooth transitions */
 .transition-all {
     transition-property: all;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);

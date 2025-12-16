@@ -35,7 +35,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Story Section */}
       <section className="py-16 bg-gray-800">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center">
@@ -90,7 +89,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Values Section */}
       <section className="py-16 bg-gray-900">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">Our Values</h2>

@@ -87,7 +87,6 @@ export default function CardSelectionSection({
             </div>
           ))}
         </div>
-        {/* Add Another Card Button */}
         <button
           onClick={() => setShowAddCardForm(true)}
           className="w-full mt-4 p-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors flex items-center justify-center gap-2 text-purple-600 font-medium">

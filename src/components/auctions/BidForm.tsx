@@ -29,8 +29,7 @@ const BidForm = ({
     <div className="w-full">
       <form onSubmit={handlePlaceBid} className="w-full">
         <div className="space-y-3">
-          <div className="flex sm:flex-row flex-col sm:items-start items-center sm:gap-6">
-            {/* Input section with label above */}
+          <div className="flex md:flex-row flex-col md:items-start items-center md:gap-6">
             <div className="flex flex-col">
               <div className="flex justify-center mb-2">
                 <label htmlFor="bidAmount" className="text-sm font-medium text-gray-900">
@@ -66,9 +65,8 @@ const BidForm = ({
               </div>
             </div>
 
-            {/* Bid button - wider and shows only amount when bidding */}
             <div className="flex flex-col">
-              <div className="h-6 mb-2"></div> {/* Spacer to align with input */}
+              <div className="h-6 mb-2"></div>
               <button
                 type="submit"
                 disabled={!user?.id || !bidAmount || !hasDefaultCard || isProcessing}
@@ -88,7 +86,7 @@ const BidForm = ({
                   'Add Payment'
                 ) : bidAmount ? (
                   // Show only the bid amount when bidding
-                  <span className="text-base font-semibold">${Number(bidAmount)}</span>
+                  <span className="text-base font-semibold  ">${Number(bidAmount)}</span>
                 ) : (
                   // Show "Place Bid" only when no amount entered
                   'Place Bid'

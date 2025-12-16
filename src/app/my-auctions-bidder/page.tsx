@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { hideLoader, showLoader } from '@/store/loadingSlice';
 import { Auction } from '@/components/auctions/AuctionLiveInfo';
+import NoAuctionMsg from '@/components/auctions/NoAuctionMsg';
 
 export default function MyAuctionsPage() {
   const [auctions, setAuctions] = useState<Auction[]>([]);
@@ -59,18 +60,21 @@ export default function MyAuctionsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {isLoading ? (
             <p className="text-center mt-20">Loading Auctions...</p>
+          ) : auctions.length === 0 ? (
+            <NoAuctionMsg />
           ) : (
-            auctions.map((auction) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+              {auctions.map((auction: any) => (
               <div
                 key={auction.id}
                 className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 <div className="h-48 bg-gray-200 relative">
                   <Image
-                    src={auction?.item?.imageURL ?? "Undefined"}
-                    alt={auction?.item?.title ?? "Undefined"}
+                    src={auction?.item?.imageURL ?? 'Undefined'}
+                    alt={auction?.item?.title ?? 'Undefined'}
                     fill
                     className="w-full h-full object-cover"
                   />
@@ -113,7 +117,7 @@ export default function MyAuctionsPage() {
                   </div>
 
                   <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
-                    <span>{auction?.biddings?.length} bids</span>
+                    <span>{auction?.biddings.length} bids</span>
                   </div>
 
                   <Link
@@ -123,11 +127,11 @@ export default function MyAuctionsPage() {
                   </Link>
                 </div>
               </div>
-            ))
+            ))}
+            </div>
           )}
         </div>
         <Pagination totalPages={totalPages} currentPage={currentPage} onChange={setCurrentPage} />
-      </div>
     </>
   );
 }
