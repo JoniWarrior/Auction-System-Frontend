@@ -3,6 +3,7 @@ import API from '@/utils/API/API';
 export interface PlaceBidPayload {
   auctionId: string;
   amount: number;
+  transactionId : string
 }
 
 const BiddingService = {

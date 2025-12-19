@@ -46,6 +46,7 @@ export function AuctionDetailContent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showAddCardForm, setShowAddCardForm] = useState(false);
   const [showCardSelection, setShowCardSelection] = useState(false);
+  const [paymentCurrency, setPaymentCurrency] = useState<'ALL' | 'EUR'>('ALL');
 
   const { defaultCard, hasDefaultCard, cards: userCards, refresh } = useUserCards();
 
@@ -72,7 +73,7 @@ export function AuctionDetailContent() {
       console.error('Error fetching the auction:', err);
       showError('Failed to load auction details');
     } finally {
-      console.log("hideLoader 1");
+      console.log('hideLoader 1');
       dispatch(hideLoader());
     }
   };
@@ -102,7 +103,7 @@ export function AuctionDetailContent() {
           console.error(err);
           showError('Failed to save card');
         } finally {
-          console.log("hideLoader 2");
+          console.log('hideLoader 2');
           dispatch(hideLoader());
         }
       },
@@ -148,67 +149,51 @@ export function AuctionDetailContent() {
     // dispatch(showLoader('Processing payment...'));
 
     const sdkOrderId = transaction?.sdkOrderId;
-      // 1. Call setUpTokenized3DS :
-      const res = await CardService.setupTokenized3DS({
-        selectedCardId: defaultCard.pokCardId,
-        sdkOrderId
-      });
-      const payerAuthentication = res;
-      setUpCardTokenPayment({
-        containerId: 'payment-processor-container',
-        orderId: sdkOrderId,
-        payerAuthentication,
-        onSuccess: async () => {
-          // dispatch(showLoader('Processing payment...'));
-          try {
-            const bidResponse = await BiddingService.placeBid({
-              auctionId,
-              amount: bidValue
-            });
-            await TransactionService.updateAndCancelTransaction({
-              previousTransaction: bidResponse.previousTransaction, // sdkOrderId checked V
-              currentTransaction: transaction.id, // normal ID of DB checked V
-              bidding: bidResponse.bidding // object checked V
-            });
+    // 1. Call setUpTokenized3DS :
+    const res = await CardService.setupTokenized3DS({
+      selectedCardId: defaultCard.pokCardId,
+      sdkOrderId
+    });
+    const payerAuthentication = res;
+    setUpCardTokenPayment({
+      containerId: 'payment-processor-container',
+      orderId: sdkOrderId,
+      payerAuthentication,
+      onSuccess: async () => {
+        try {
+          const bidResponse = await BiddingService.placeBid({
+            auctionId,
+            transactionId: transaction?.id,
+            amount: bidValue
+          });
+          await TransactionService.updateAndCancelTransaction({
+            previousTransaction: bidResponse?.previousTransaction, // sdkOrderId checked V
+            currentTransaction: transaction?.id, // normal ID of DB checked V
+            bidding: bidResponse?.bidding // object checked V
+          });
+          showSuccess('Payment successful!');
+          await fetchAuction();
+          setBidAmount('');
+        } catch (error: any) {
+          console.error('Payment processing error:', error);
+        } finally {
+          console.log('po tani?');
+          dispatch(hideLoader());
+        }
+      },
+      onError: (error: PaymentErrorResponse) => {
+        console.error('Payment failed:', error);
+        setPaymentError(error.message || 'Payment failed. Please try again.');
+        showError('Payment failed. Please try again.');
+      },
+      env: 'staging'
+    });
 
-            showSuccess('Bid placed successfully!'); // could be removed
-            showSuccess('Payment successful!');
-            fetchAuction();
-            setBidAmount('');
-          } catch (error: any) {
-            console.error('Payment processing error:', error);
-          } finally {
-            console.log("po tani?")
-            dispatch(hideLoader());
-          }
-          // const bidResponse = await BiddingService.placeBid({
-          //   auctionId,
-          //   amount: bidValue
-          // });
-          // await TransactionService.updateAndCancelTransaction({
-          //   previousTransaction: bidResponse.previousTransaction, // sdkOrderId checked V
-          //   currentTransaction: transaction.id, // normal ID of DB checked V
-          //   bidding: bidResponse.bidding // object checked V
-          // });
-          //
-          // showSuccess('Bid placed successfully!'); // could be removed
-          // showSuccess('Payment successful!');
-          // fetchAuction();
-          // setBidAmount('');
-        },
-        onError: (error: PaymentErrorResponse) => {
-          console.error('Payment failed:', error);
-          setPaymentError(error.message || 'Payment failed. Please try again.');
-          showError('Payment failed. Please try again.');
-        },
-        env: 'staging'
-      });
-
-      return true;
+    return true;
   };
 
   // Place bid
-  const handlePlaceBid = async (e: React.FormEvent) => {
+  const handlePlaceBid = async (e: React.FormEvent, currency: 'ALL' | 'EUR') => {
     e.preventDefault();
 
     if (!user?.id) {
@@ -231,11 +216,29 @@ export function AuctionDetailContent() {
       return;
     }
     dispatch(showLoader('Placing bid...'));
-    const newTransaction = await TransactionService.createTransaction({
-      amount: bidValue,
-      auctionId
-    });
+    let newTransaction;
+    try {
+      newTransaction = await TransactionService.createTransaction({
+        amount: bidValue,
+        auctionId,
+        paymentCurrency: currency
+      });
+      if (bidValue <= auction?.currentPrice) {
+        showError(`Bid must be higher than highest Bid`)
+        dispatch(hideLoader());
+        return;
+      }
+    } catch (err: any) {
+      console.error('Backend error:', err.response?.data.message || err.message || err);
+      showError(err.response?.data?.message || 'Failed to place bid. Please try again.');
+      dispatch(hideLoader());
+      return;
+    }
+
+
+
     const paymentSuccess = await processPayment(bidValue, newTransaction);
+    setIsProcessing(false);
     if (!paymentSuccess) {
       showError('Payment failed');
       return;
@@ -253,7 +256,7 @@ export function AuctionDetailContent() {
       console.error(err);
       showError('Failed to set default card.');
     } finally {
-      console.log("hideLoader 4");
+      console.log('hideLoader 4');
       dispatch(hideLoader());
     }
   };
@@ -340,7 +343,6 @@ export function AuctionDetailContent() {
           </div>
 
           <AuctionLiveInfo timeRemaining={timeRemaining} auction={auction} />
-
           <AuctionSelectCard
             user={user}
             hasDefaultCard={hasDefaultCard}
@@ -354,7 +356,6 @@ export function AuctionDetailContent() {
             handleSetAsDefault={handleSetAsDefault}
           />
 
-          {/* Bid form */}
           {auction?.status !== 'finished' && auction?.item?.seller?.id !== user?.id ? (
             <BidForm
               handlePlaceBid={handlePlaceBid}
@@ -365,6 +366,8 @@ export function AuctionDetailContent() {
               isProcessing={isProcessing}
               hasDefaultCard={hasDefaultCard}
               socket={socket}
+              paymentCurrency={paymentCurrency}
+              setPaymentCurrency={setPaymentCurrency}
             />
           ) : (
             <span className="text-center text-gray-500">

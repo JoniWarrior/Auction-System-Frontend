@@ -7,8 +7,10 @@ export interface Bidding {
     name : string
   }
   amount : number,
-  createdAt : string
+  createdAt : string,
+  transaction ?: { paymentCurrency : string}
 }
+
 interface BiddingHistoryProps {
   biddings: Bidding[];
 }
@@ -33,7 +35,9 @@ export default function BiddingHistory({ biddings }: BiddingHistoryProps) {
               </div>
               <div className="text-right">
                 <div className="font-semibold">
-                  ${bidding.amount.toLocaleString()}
+                  <div>
+                    Amount: {`${bidding?.transaction?.paymentCurrency === 'EUR' ? '€' : 'L'}${bidding.amount.toLocaleString()}`}
+                  </div>
                 </div>
                 <div className="text-sm text-gray-500">
                   {formatDate(bidding.createdAt)}

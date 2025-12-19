@@ -10,6 +10,13 @@ const API = Axios.create({
   },
 });
 
+const refreshAPI = Axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 const guestRoutes = ['/auth/login', '/auth/register'];
 
 API.interceptors.request.use(
@@ -35,6 +42,7 @@ API.interceptors.response.use(
     ) {
       originalRequest._retry = true;
 
+      // Begin refreshing the token
       try {
         const { refreshToken, user } = store.getState().auth;
         if (!refreshToken) {
@@ -46,8 +54,6 @@ API.interceptors.response.use(
           userId: user?.id,
           refreshToken,
         });
-        
-
         const { accessToken: newAccessToken, user: newUser } = response.data.data;
         store.dispatch(
           loginSucces({

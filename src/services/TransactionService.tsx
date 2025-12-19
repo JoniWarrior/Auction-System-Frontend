@@ -4,12 +4,13 @@ import { Bidding } from '@/components/auctions/BiddingHistory';
 export interface TransactionPayload {
   amount: any;
   auctionId: string;
+  paymentCurrency: 'ALL' | 'EUR'; // ALL / EUR
 }
 
 export interface UpdateTransactionPayload {
-  previousTransaction : string,
-  currentTransaction : string,
-  bidding : Bidding
+  previousTransaction: string;
+  currentTransaction: string;
+  bidding: Bidding;
 }
 
 const TransactionService = {
@@ -17,8 +18,8 @@ const TransactionService = {
     const response = await API.post('/transactions', payload);
     return response?.data?.data;
   },
-  updateAndCancelTransaction : async (payload : UpdateTransactionPayload) => {
-    const response = await API.post("/transactions/update-cancel", payload);
+  updateAndCancelTransaction: async (payload: UpdateTransactionPayload) => {
+    const response = await API.post('/transactions/update-cancel', payload);
     return response?.data?.data;
   }
 };

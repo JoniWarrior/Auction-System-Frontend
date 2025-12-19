@@ -1,7 +1,6 @@
 import { Auction } from '@/components/auctions/AuctionLiveInfo';
-
 export interface User {
-  id : string
+  id: string;
 }
 
 interface BidFormProps {
@@ -13,6 +12,8 @@ interface BidFormProps {
   isProcessing: boolean;
   hasDefaultCard: boolean;
   socket: any;
+  paymentCurrency: 'ALL' | 'EUR';
+  setPaymentCurrency: (paymentCurrency: 'ALL' | 'EUR') => void;
 }
 
 const BidForm = ({
@@ -23,18 +24,37 @@ const BidForm = ({
   user,
   isProcessing,
   hasDefaultCard,
-  socket
+  socket,
+  paymentCurrency,
+  setPaymentCurrency
 }: BidFormProps) => {
   return (
     <div className="w-full">
-      <form onSubmit={handlePlaceBid} className="w-full">
+      <form onSubmit={(e) => handlePlaceBid(e, paymentCurrency)} className="w-full">
         <div className="space-y-3">
           <div className="flex md:flex-row flex-col md:items-start items-center md:gap-6">
             <div className="flex flex-col">
-              <div className="flex justify-center mb-2">
-                <label htmlFor="bidAmount" className="text-sm font-medium text-gray-900">
-                  Bid Amount (USD)
-                </label>
+              <div className="flex justify-center mb-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPaymentCurrency('ALL')}
+                  className={`px-4 py-1 rounded-lg text-sm font-medium ${
+                    paymentCurrency === 'ALL'
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-gray-200 text-gray-700'
+                  }`}>
+                  ALL
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentCurrency('EUR')}
+                  className={`px-4 py-1 rounded-lg text-sm font-medium ${
+                    paymentCurrency === 'EUR'
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-gray-200 text-gray-700'
+                  }`}>
+                  EUR
+                </button>
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -57,7 +77,7 @@ const BidForm = ({
                       userId: user?.id
                     });
                   }}
-                  placeholder={`Enter amount above $${auction?.currentPrice || '0.00'}`}
+                  placeholder={`Enter amount above ${auction?.currentPrice || '0.00'}`}
                   className="w-[320px] pl-8 pr-4 py-2.5 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                   required
                   disabled={!user?.id || isProcessing}
@@ -85,10 +105,8 @@ const BidForm = ({
                 ) : !hasDefaultCard ? (
                   'Add Payment'
                 ) : bidAmount ? (
-                  // Show only the bid amount when bidding
                   <span className="text-base font-semibold  ">${Number(bidAmount)}</span>
                 ) : (
-                  // Show "Place Bid" only when no amount entered
                   'Place Bid'
                 )}
               </button>

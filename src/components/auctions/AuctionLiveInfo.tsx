@@ -27,6 +27,7 @@ interface AuctionLiveInfoProps {
 }
 
 const AuctionLiveInfo = ({ timeRemaining, auction }: AuctionLiveInfoProps) => {
+  const highestBidCurrency = auction?.biddings?.[0]?.transaction?.paymentCurrency;
   return (
     <div className="w-full">
       <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
@@ -48,7 +49,7 @@ const AuctionLiveInfo = ({ timeRemaining, auction }: AuctionLiveInfoProps) => {
         <div className="p-3 md:p-4 bg-gray-50 rounded-lg md:rounded-xl order-2">
           <span className="text-xs md:text-sm text-gray-500">Current Price</span>
           <p className="text-xl md:text-2xl font-bold text-purple-600">
-            ${auction?.currentPrice || '0.00'}
+            {`${highestBidCurrency === "EUR" ? "€" : "L"}${auction?.currentPrice?.toLocaleString() || '0.00'}`}
           </p>
         </div>
 
