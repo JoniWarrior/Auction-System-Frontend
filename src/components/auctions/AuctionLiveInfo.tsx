@@ -2,32 +2,34 @@ import { FaClock } from 'react-icons/fa';
 import { Bidding } from '@/components/auctions/BiddingHistory';
 
 export interface Item {
-  description ?: string;
-  imageURL ?: string;
-  title ?: string;
-  seller ?: {
-    id ?: string;
-    name ?: string;
+  description?: string;
+  imageURL?: string;
+  title?: string;
+  seller?: {
+    id?: string;
+    name?: string;
   }
 }
+
 export interface Auction {
   id?: string;
   currentPrice?: number;
-  status ?: string;
-  endTime ?: any;
-  biddings ?: Bidding[];
-  item?: Item
-  length : any
+  status?: string;
+  endTime?: any;
+  biddings?: Bidding[];
+  item?: Item;
+  length: any;
 }
-
 
 interface AuctionLiveInfoProps {
   timeRemaining: string;
   auction: Auction;
+  highestBidCurrency?: string; // optional, but we will override if biddings exist
 }
 
 const AuctionLiveInfo = ({ timeRemaining, auction }: AuctionLiveInfoProps) => {
-  const highestBidCurrency = auction?.biddings?.[0]?.transaction?.paymentCurrency;
+  const highestBidCurrency = auction?.biddings?.[0]?.transaction?.paymentCurrency || 'ALL';
+
   return (
     <div className="w-full">
       <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
@@ -49,7 +51,7 @@ const AuctionLiveInfo = ({ timeRemaining, auction }: AuctionLiveInfoProps) => {
         <div className="p-3 md:p-4 bg-gray-50 rounded-lg md:rounded-xl order-2">
           <span className="text-xs md:text-sm text-gray-500">Current Price</span>
           <p className="text-xl md:text-2xl font-bold text-purple-600">
-            {`${highestBidCurrency === "EUR" ? "€" : "L"}${auction?.currentPrice?.toLocaleString() || '0.00'}`}
+            {`${highestBidCurrency === 'EUR' ? '€' : 'L'}${auction?.currentPrice?.toLocaleString() || '0.00'}`}
           </p>
         </div>
 

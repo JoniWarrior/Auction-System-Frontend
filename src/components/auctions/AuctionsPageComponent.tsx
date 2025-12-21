@@ -12,7 +12,7 @@ import Pagination from '@/core/pagination/Pagination';
 import CFilter from '@/core/inputs/Cfilter';
 import { hideLoader, showLoader } from '@/store/loadingSlice';
 import CSearch from '@/core/inputs/CSearch';
-import NoAuctionMsg from '@/components/auctions/NoAuctionMsg';
+import NoAuctionsMsg from '@/components/auctions/NoAuctionsMsg';
 
 export default function AuctionsPageComponent() {
   const dispatch = useDispatch<AppDispatch>();
@@ -60,7 +60,7 @@ export default function AuctionsPageComponent() {
         <div className="flex justify-center items-center space-x-4 mt-6"></div>
 
         {auctions.length === 0 ? (
-          <NoAuctionMsg />
+          <NoAuctionsMsg/>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
             <>
@@ -103,7 +103,7 @@ export default function AuctionsPageComponent() {
                       <div>
                         <span className="text-sm text-gray-500">Current bid</span>
                         <span className="text-2xl font-bold text-purple-700 block">
-                          ${auction.currentPrice.toLocaleString()}
+                         ${auction.currentPrice.toLocaleString()}
                         </span>
                       </div>
                     </div>

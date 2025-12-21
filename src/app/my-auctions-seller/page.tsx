@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FaClock } from 'react-icons/fa';
+import { FaBan, FaClock } from 'react-icons/fa';
 import { showError } from '@/utils/functions';
 import axios from 'axios';
 import AuctionService, { passParams } from '@/services/AuctionService';
@@ -16,7 +16,7 @@ import { AppDispatch, RootState } from '@/store/store';
 import { hideLoader, showLoader } from '@/store/loadingSlice';
 import { useRouter } from 'next/navigation';
 import { Auction } from '@/components/auctions/AuctionLiveInfo';
-import NoAuctionMsg from '@/components/auctions/NoAuctionMsg';
+import NoAuctionsMsg from '@/components/auctions/NoAuctionsMsg';
 
 export default function MyAuctionsPage() {
   const router = useRouter();
@@ -41,16 +41,30 @@ export default function MyAuctionsPage() {
     if (!confirmed) return;
 
     try {
-      const response = await AuctionService.closeAuction(auctionId);
+      await AuctionService.closeAuction(auctionId);
       setUpdated(updated + 1);
-    } catch (err) {
+    } catch (err : any) {
       if (axios.isAxiosError(err)) {
-        // @ts-ignore
-        showError(err.response.data.message);
+        showError(err.response?.data.message);
       }
       console.error('Error closing the auction, ', err);
     }
   };
+
+  const cancelAuction = async (auctionId : string) => {
+    const confirmed = window.confirm("Are you sure to cancel the auction? No transaction will be captured! ");
+    if (!confirmed) return;
+
+    try {
+      await AuctionService.cancelAuction(auctionId);
+      setUpdated(updated + 1);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        showError(err.response?.data.message);
+      }
+      console.error('Error cancelling the auction, ', err);
+    }
+  }
 
   const fetchAuctions = async () => {
     dispatch(showLoader(true));
@@ -98,7 +112,7 @@ export default function MyAuctionsPage() {
         {isLoading ? (
           <p className="text-center mt-20">Loading Auctions...</p>
         ) : auctions.length === 0 ? (
-          <NoAuctionMsg />
+          <NoAuctionsMsg />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {auctions.map((auction) => (
@@ -106,6 +120,16 @@ export default function MyAuctionsPage() {
                 key={auction.id}
                 className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 <div className="h-48 bg-gray-200 relative">
+                  {auction.status !== 'finished' && (
+                    <button
+                      onClick={() => cancelAuction(auction.id ?? '')}
+                      title="Cancel auction"
+                      className="absolute top-3 right-3 z-10 bg-orange-500 hover:bg-orange-600 text-white p-2 rounded-full shadow-lg transition-all hover:scale-105"
+                    >
+                      <FaBan size={14} />
+                    </button>
+                  )}
+
                   <Image
                     src={auction?.item?.imageURL ?? 'Undefined'}
                     alt={auction?.item?.title ?? 'Undefined'}
@@ -161,16 +185,16 @@ export default function MyAuctionsPage() {
                   </Link>
 
                   {auction.status !== 'finished' && (
-                    <GradientButton
-                      isLoading={isLoading}
-                      label="Close Auction"
-                      onClick={() => handleCloseAuction(auction.id ?? '')}
-                      fromColor="from-red-500"
-                      toColor="to-red-700"
-                      hoverFromColor="hover:from-red-600"
-                      hoverToColor="hover:to-red-800"
-                      className="w-full text-white font-medium py-2 rounded-lg transition mt-2"
-                    />
+                      <GradientButton
+                        isLoading={isLoading}
+                        label="Close Auction"
+                        onClick={() => handleCloseAuction(auction.id ?? '')}
+                        fromColor="from-red-500"
+                        toColor="to-red-700"
+                        hoverFromColor="hover:from-red-600"
+                        hoverToColor="hover:to-red-800"
+                        className="w-full text-white font-medium py-2 rounded-lg transition mt-2"
+                      />
                   )}
                 </div>
               </div>

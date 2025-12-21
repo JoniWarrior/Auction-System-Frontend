@@ -182,7 +182,7 @@ export function AuctionDetailContent() {
         }
       },
       onError: (error: PaymentErrorResponse) => {
-        console.error('Payment failed:', error);
+        console.log('Payment failed:', error);
         setPaymentError(error.message || 'Payment failed. Please try again.');
         showError('Payment failed. Please try again.');
       },
@@ -223,11 +223,7 @@ export function AuctionDetailContent() {
         auctionId,
         paymentCurrency: currency
       });
-      if (bidValue <= auction?.currentPrice) {
-        showError(`Bid must be higher than highest Bid`)
-        dispatch(hideLoader());
-        return;
-      }
+
     } catch (err: any) {
       console.error('Backend error:', err.response?.data.message || err.message || err);
       showError(err.response?.data?.message || 'Failed to place bid. Please try again.');
@@ -342,7 +338,7 @@ export function AuctionDetailContent() {
             </h1>
           </div>
 
-          <AuctionLiveInfo timeRemaining={timeRemaining} auction={auction} />
+          <AuctionLiveInfo timeRemaining={timeRemaining} auction={auction} highestBidCurrency={paymentCurrency} />
           <AuctionSelectCard
             user={user}
             hasDefaultCard={hasDefaultCard}

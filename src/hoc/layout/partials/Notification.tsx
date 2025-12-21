@@ -43,7 +43,7 @@ export default function NotificationBell() {
     return () => {
       socket.disconnect();
     };
-  }, [user]);
+  }, [user, unreadCount]);
 
   const markAsRead = async (id: string) => {
     try {

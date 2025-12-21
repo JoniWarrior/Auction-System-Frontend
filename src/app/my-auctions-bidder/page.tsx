@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { hideLoader, showLoader } from '@/store/loadingSlice';
 import { Auction } from '@/components/auctions/AuctionLiveInfo';
-import NoAuctionMsg from '@/components/auctions/NoAuctionMsg';
+import NoAuctionsMsg from '@/components/auctions/NoAuctionsMsg';
 
 export default function MyAuctionsPage() {
   const [auctions, setAuctions] = useState<Auction[]>([]);
@@ -63,7 +63,7 @@ export default function MyAuctionsPage() {
           {isLoading ? (
             <p className="text-center mt-20">Loading Auctions...</p>
           ) : auctions.length === 0 ? (
-            <NoAuctionMsg />
+            <NoAuctionsMsg />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 

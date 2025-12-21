@@ -44,6 +44,9 @@ const AuctionService = {
   },
   closeAuction: (auctionId: string) => {
     return API.post(`/auctions/${auctionId}/close`);
+  },
+  cancelAuction : (auctionId : string) => {
+    return API.post(`/auctions/${auctionId}/cancel`);
   }
 };
 
