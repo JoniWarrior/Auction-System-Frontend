@@ -25,7 +25,7 @@ export default function Home() {
   }
   const MyAuctionsBidderClick = async (e : React.MouseEvent) => {
     e.preventDefault();
-    dispatch(showLoader("Displaying Your Biddings..."));
+    dispatch(showLoader("Displaying Your Bids..."));
     router.push("/my-auctions-bidder");
   }
 
@@ -138,7 +138,7 @@ export default function Home() {
                       <h3 className="font-semibold text-lg mb-2 truncate">{auction?.item?.title}</h3>
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-2xl font-bold text-purple-700">
-                          ${auction?.currentPrice?.toLocaleString()}
+                          L{auction?.currentPrice?.toLocaleString()}
                         </span>
                       </div>
 

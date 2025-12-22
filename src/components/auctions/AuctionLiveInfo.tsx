@@ -41,9 +41,9 @@ const AuctionLiveInfo = ({ timeRemaining, auction }: AuctionLiveInfoProps) => {
           </div>
           <p
             className={`text-base md:text-lg font-bold ${
-              timeRemaining === 'Finished' ? 'text-red-600' : 'text-gray-900'
+              auction?.status === 'finished' ? 'text-red-500 ' : 'text-gray-900'
             }`}>
-            {timeRemaining === 'Finished' ? 'Auction Ended' : timeRemaining}
+            {auction?.status === 'finished' ? 'Auction Ended' : timeRemaining}
           </p>
         </div>
 

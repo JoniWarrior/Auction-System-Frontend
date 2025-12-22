@@ -163,13 +163,13 @@ export default function MyAuctionsPage() {
                     <div>
                       <span className="text-sm text-gray-500">Current bid</span>
                       <span className="text-2xl font-bold text-purple-700 block">
-                        ${auction?.currentPrice?.toLocaleString()}
+                        L{auction?.currentPrice?.toLocaleString()}
                       </span>
                     </div>
                     <div className="text-right">
                       <span className="text-sm text-gray-500">Current Price</span>
                       <span className="text-lg font-semibold block">
-                        ${auction.currentPrice?.toLocaleString()}
+                        L{auction.currentPrice?.toLocaleString()}
                       </span>
                     </div>
                   </div>

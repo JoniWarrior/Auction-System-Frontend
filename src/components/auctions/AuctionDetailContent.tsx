@@ -210,6 +210,12 @@ export function AuctionDetailContent() {
       showError('You cannot bid on your own auction');
       return;
     }
+
+    if (bidValue <= auction?.currentPrice) {
+      showError(`Bid amount must be higher than ${auction?.currentPrice}`);
+      return;
+    }
+
     if (!hasDefaultCard) {
       showError('Please add a payment method first');
       setShowAddCardForm(true);
@@ -223,15 +229,12 @@ export function AuctionDetailContent() {
         auctionId,
         paymentCurrency: currency
       });
-
     } catch (err: any) {
       console.error('Backend error:', err.response?.data.message || err.message || err);
       showError(err.response?.data?.message || 'Failed to place bid. Please try again.');
       dispatch(hideLoader());
       return;
     }
-
-
 
     const paymentSuccess = await processPayment(bidValue, newTransaction);
     setIsProcessing(false);
@@ -338,7 +341,11 @@ export function AuctionDetailContent() {
             </h1>
           </div>
 
-          <AuctionLiveInfo timeRemaining={timeRemaining} auction={auction} highestBidCurrency={paymentCurrency} />
+          <AuctionLiveInfo
+            timeRemaining={timeRemaining}
+            auction={auction}
+            highestBidCurrency={paymentCurrency}
+          />
           <AuctionSelectCard
             user={user}
             hasDefaultCard={hasDefaultCard}

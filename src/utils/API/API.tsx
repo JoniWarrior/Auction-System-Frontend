@@ -38,10 +38,7 @@ API.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      // !guestRoutes.includes(originalRequest.url)
-      !originalRequest.url?.includes('/auth/login') &&
-      !originalRequest.url?.includes('/auth/register') &&
-      !originalRequest.url?.includes('/auth/refresh')
+      !guestRoutes.includes(originalRequest.url) // perhaps remove?
     ) {
       originalRequest._retry = true;
 
