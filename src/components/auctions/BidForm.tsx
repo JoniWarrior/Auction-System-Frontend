@@ -65,13 +65,13 @@ const BidForm = ({
                   type="number"
                   value={bidAmount}
                   onChange={(e) => setBidAmount(e.target.value)}
-                  onFocus={(e) => {
+                  onFocus={() => {
                     socket?.emit('startBidding', {
                       auctionId: auction?.id,
                       userId: user?.id
                     });
                   }}
-                  onBlur={(e) => {
+                  onBlur={() => {
                     socket?.emit('stopBidding', {
                       auctionId: auction?.id,
                       userId: user?.id

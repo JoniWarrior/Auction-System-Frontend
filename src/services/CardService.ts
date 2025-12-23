@@ -27,7 +27,6 @@ const CardService = {
       const response = await API.post("/cards/get-guest-card-info", {cardId});
       return response?.data?.data;
     }
-    // mix getGuestCardInfo with listUserCards to send the label too // or save the label in db instead of hiddenNumber
 }
 
 export default CardService;

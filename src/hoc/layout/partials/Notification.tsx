@@ -36,7 +36,6 @@ export default function NotificationBell() {
       setNotifications((prev) => [notification, ...prev]);
       setUnreadCount((prev) => prev + 1);
       setToastMessage(notification.message);
-      console.log("Outbid arriving in front via socket",notification);
       setTimeout(() => setToastMessage(null), 5000);
     });
 

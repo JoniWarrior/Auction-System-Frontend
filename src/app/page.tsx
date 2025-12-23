@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { FaClock, FaGavel, FaTag, FaStar, FaArrowRight } from 'react-icons/fa';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuctionService, { GetAuctionsParams } from '@/services/AuctionService';
 import Image from 'next/image';
 import { showLoader } from '@/store/loadingSlice';
@@ -33,6 +33,11 @@ export default function Home() {
     e.preventDefault();
     dispatch(showLoader("Displaying Sell Item Page..."));
     router.push("/sell");
+  }
+
+  const handleSignupClick = () => {
+    dispatch(showLoader("Displaying Signup Page..."));
+    router.push("/signup");
   }
 
   const fetchAuctions = async () => {
@@ -119,8 +124,8 @@ export default function Home() {
                     className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
                     <div className="h-48 bg-gray-200 relative">
                       <Image
-                        src={auction?.item?.imageURL ?? "Undefined"}
-                        alt={auction?.item?.title ?? "Undefined"}
+                        src={auction?.item?.imageURL ?? 'Undefined'}
+                        alt={auction?.item?.title ?? 'Undefined'}
                         fill
                         className="object-cover rounded-lg"
                       />
@@ -135,7 +140,9 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="p-4">
-                      <h3 className="font-semibold text-lg mb-2 truncate">{auction?.item?.title}</h3>
+                      <h3 className="font-semibold text-lg mb-2 truncate">
+                        {auction?.item?.title}
+                      </h3>
                       <div className="flex justify-between items-center mb-3">
                         <span className="text-2xl font-bold text-purple-700">
                           L{auction?.currentPrice?.toLocaleString()}
@@ -198,6 +205,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
+              onClick={handleSignupClick}
               href="/signup"
               className="bg-white text-purple-700 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition duration-300">
               Create Account

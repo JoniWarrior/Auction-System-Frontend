@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FaClock, FaSearch } from 'react-icons/fa';
-import _ from 'lodash';
+import { FaClock } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import AuctionService, { passParams } from '@/services/AuctionService';
@@ -28,7 +27,7 @@ export default function AuctionsPageComponent() {
     try {
       const params = passParams(filter, currentPage, searchTerm);
       const response = await AuctionService.getAllAuctions(params);
-      setAuctions(response?.data); // matches beckend {data,meta }
+      setAuctions(response?.data);
       setTotalPages(response?.meta?.totalPages);
     } catch (err: any) {
       console.error('Error fetching the data ', err.response?.data || err);
@@ -89,28 +88,28 @@ export default function AuctionsPageComponent() {
 
                   <div className="p-4 flex flex-col flex-grow">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-semibold text-lg truncate">{auction.item.title}</h3>
+                      <h3 className="font-semibold text-lg truncate">{auction?.item?.title}</h3>
                       <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                        By {auction.item.seller.name}
+                        By {auction?.item?.seller?.name}
                       </span>
                     </div>
 
                     <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                      {auction.item.description}
+                      {auction?.item.description}
                     </p>
 
                     <div className="flex justify-between items-center mb-3">
                       <div>
                         <span className="text-sm text-gray-500">Current bid</span>
                         <span className="text-2xl font-bold text-purple-700 block">
-                         ${auction.currentPrice.toLocaleString()}
+                         ${auction?.currentPrice.toLocaleString()}
                         </span>
                       </div>
                     </div>
 
                     <div className="flex justify-between items-center text-sm text-gray-500 mb-4"></div>
 
-                    {auction.status === 'finished' ? (
+                    {auction?.status === 'finished' ? (
                       <div className="flex justify-center mt-4 mb-4">
                         <p className="flex items-center gap-3 text-sm text-gray-700 border border-black rounded-lg px-4 py-2 bg-white shadow-md font-medium">
                           🏆 <span>Winner: </span>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FaArrowLeft, FaTag, FaAlignLeft, FaUpload } from 'react-icons/fa';
 import { handleRequestErrors, showSuccess } from '@/utils/functions';

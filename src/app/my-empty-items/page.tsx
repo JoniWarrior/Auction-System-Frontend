@@ -17,6 +17,7 @@ interface Item {
   title: string;
   description: string;
 }
+
 export default function MyEmptyItemsPage() {
   const [items, setItems] = useState<Item[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -86,6 +87,7 @@ export default function MyEmptyItemsPage() {
 
                   <Link
                     href={`/auctions/create/${item.id}`}
+                    onClick={() => dispatch(showLoader(true))}
                     className="w-full bg-gradient-to-r from-green-600 to-teal-500 text-white font-medium py-2 rounded-lg hover:from-green-700 hover:to-teal-600 transition-all flex items-center justify-center gap-2">
                     <FaPlus /> Create Auction
                   </Link>

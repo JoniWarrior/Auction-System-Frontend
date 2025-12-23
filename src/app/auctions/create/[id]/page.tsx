@@ -1,18 +1,23 @@
 'use client';
 import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AuctionService, { CreateAuctionPayload } from '@/services/AuctionService';
 import GradientButton from '@/core/buttons/electrons/GradientButton';
+import { showError } from '@/utils/functions';
+import { hideLoader, showLoader } from '@/store/loadingSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '@/store/store';
 
 export default function CreateAuctionPage() {
   const params = useParams();
-  const itemId = params.id;
+  const itemId = params.id as string;
   const router = useRouter();
-
   const [startingPrice, setStartingPrice] = useState('');
   const [endTime, setEndTime] = useState('');
-
+  const dispatch = useDispatch<AppDispatch>();
+  const isLoading = useSelector((state: any) => state.loading.show);
   const handleCreateAuction = async (e: React.FormEvent) => {
+    dispatch(showLoader(true));
     e.preventDefault();
     try {
       const payload: CreateAuctionPayload = {
@@ -23,37 +28,50 @@ export default function CreateAuctionPage() {
 
       const response = await AuctionService.createAuction(payload);
       router.push(`/auctions/${response.data.data.id}`);
-    } catch (err) {
+    } catch (err: any) {
+      showError(err.response?.data?.message || 'Error creating auction');
       console.error('Error creating auction', err);
+    } finally {
+      dispatch(hideLoader());
     }
   };
 
+  useEffect(() => {
+    dispatch(hideLoader());
+  }, [dispatch]);
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">Create Auction for Item</h1>
-      <form onSubmit={handleCreateAuction} className="space-y-4 max-w-md">
-        <div>
-          <label>Starting Price:</label>
-          <input
-            type="number"
-            value={startingPrice}
-            onChange={(e) => setStartingPrice(e.target.value)}
-            className="border px-3 py-2 w-full rounded"
-            required
-          />
-        </div>
-        <div>
-          <label>End Time:</label>
-          <input
-            type="datetime-local"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            className="border px-3 py-2 w-full rounded"
-            required
-          />
-        </div>
-        <GradientButton type="submit" label="Create Auction"/>
-      </form>
+      {isLoading ? (
+        <p className="text-center mt-20">Creating Auction...</p>
+      ) : (
+        <>
+          <h1 className="text-2xl font-bold mb-4">Create Auction for Item</h1>
+          <form onSubmit={handleCreateAuction} className="space-y-4 max-w-md">
+            <div>
+              <label>Starting Price:</label>
+              <input
+                type="number"
+                value={startingPrice}
+                onChange={(e) => setStartingPrice(e.target.value)}
+                className="border px-3 py-2 w-full rounded"
+                required
+              />
+            </div>
+            <div>
+              <label>End Time:</label>
+              <input
+                type="datetime-local"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                className="border px-3 py-2 w-full rounded"
+                required
+              />
+            </div>
+            <GradientButton type="submit" label="Create Auction"/>
+          </form>
+        </>
+      )}
     </div>
   );
 }

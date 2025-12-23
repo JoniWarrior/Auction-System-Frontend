@@ -16,7 +16,7 @@ const AuthRoute = ({ children }: PropsWithChildren) => {
   }, [isAuthenticated, router]);
 
   if (!isAuthenticated) {
-    return null; // or a loading spinner
+    return null;
   }
 
   return <>{children}</>;

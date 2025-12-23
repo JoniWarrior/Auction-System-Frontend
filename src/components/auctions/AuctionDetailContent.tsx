@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft, FaClock, FaExclamationTriangle } from 'react-icons/fa';
@@ -61,7 +61,6 @@ export function AuctionDetailContent() {
     setOutBidNotification
   });
 
-  // Fetch auction data
   const fetchAuction = async () => {
     if (!auctionId) return;
     dispatch(showLoader('Loading auction...'));
@@ -82,7 +81,6 @@ export function AuctionDetailContent() {
     fetchAuction();
   }, [auctionId]);
 
-  // Initialize add card form
   const initializeAddCardForm = () => {
     const container = document.getElementById('add-card-form-container');
     if (!container) return;
@@ -146,8 +144,6 @@ export function AuctionDetailContent() {
     }
     setIsProcessing(true);
     setPaymentError(null);
-    // dispatch(showLoader('Processing payment...'));
-
     const sdkOrderId = transaction?.sdkOrderId;
     // 1. Call setUpTokenized3DS :
     const res = await CardService.setupTokenized3DS({
@@ -177,14 +173,13 @@ export function AuctionDetailContent() {
         } catch (error: any) {
           console.error('Payment processing error:', error);
         } finally {
-          console.log('po tani?');
           dispatch(hideLoader());
         }
       },
       onError: (error: PaymentErrorResponse) => {
-        console.log('Payment failed:', error);
         setPaymentError(error.message || 'Payment failed. Please try again.');
         showError('Payment failed. Please try again.');
+        dispatch(hideLoader());
       },
       env: 'staging'
     });
@@ -192,7 +187,6 @@ export function AuctionDetailContent() {
     return true;
   };
 
-  // Place bid
   const handlePlaceBid = async (e: React.FormEvent, currency: 'ALL' | 'EUR') => {
     e.preventDefault();
 
@@ -244,7 +238,6 @@ export function AuctionDetailContent() {
     }
   };
 
-  // Set card as default
   const handleSetAsDefault = async (cardId: string) => {
     try {
       await CardService.setDefaultCard(cardId);
@@ -286,7 +279,7 @@ export function AuctionDetailContent() {
             <div className="relative w-full sm:max-w-sm md:max-w-md lg:w-65 aspect-square sm:aspect-video md:aspect-[4/3] bg-gray-100 rounded-2xl md:rounded-3xl overflow-hidden shadow-md mx-auto">
               {auction?.item?.imageURL ? (
                 <Image
-                  src={auction.item.imageURL}
+                  src={auction?.item?.imageURL}
                   alt={auction?.item?.title || 'Auction item'}
                   fill
                   className="object-cover object-contain"

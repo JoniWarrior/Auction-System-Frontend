@@ -24,7 +24,7 @@ export interface Auction {
 interface AuctionLiveInfoProps {
   timeRemaining: string;
   auction: Auction;
-  highestBidCurrency?: string; // optional, but we will override if biddings exist
+  highestBidCurrency?: string;
 }
 
 const AuctionLiveInfo = ({ timeRemaining, auction }: AuctionLiveInfoProps) => {

@@ -235,11 +235,12 @@ export default function AboutPage() {
             </p>
             <div className="flex justify-center space-x-4">
               <Link 
-                href="/signup" 
+                href="/signup"
                 className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-8 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-blue-600 transition-all shadow-lg"
               >
                 Create Account
               </Link>
+
               <Link 
                 href="/auctions" 
                 className="border-2 border-purple-400 text-purple-300 px-8 py-3 rounded-lg font-semibold hover:bg-purple-400 hover:text-gray-900 transition-all"
